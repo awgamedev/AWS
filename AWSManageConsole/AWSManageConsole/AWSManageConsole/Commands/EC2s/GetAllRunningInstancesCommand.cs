@@ -1,10 +1,10 @@
-﻿namespace AWSManageConsole.Commands;
+﻿namespace AWSManageConsole.Commands.EC2;
 
 internal class GetAllRunningInstancesCommand : BaseCommand
 {
 	public GetAllRunningInstancesCommand(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-	public override string Name => "Get All Running EC2 Instances";
+	public override string Name => "[EC2] Get All Running EC2 Instances";
 
 	public override async Task ExecuteAsync()
 	{
@@ -31,14 +31,14 @@ internal class GetAllRunningInstancesCommand : BaseCommand
 				"Instance Type",
 				"State",
 				"Public IP",
-				"Name"
+				"Name",
+				"Security Groups"
 			],
 		];
 
 		if (response.Reservations == null || response.Reservations.Count == 0)
 		{
 			"No running EC2 instances found.".WriteInfo();
-			await SelectCommandAsync();
 			return;
 		}
 
@@ -57,13 +57,14 @@ internal class GetAllRunningInstancesCommand : BaseCommand
 					instance.InstanceType.Value,
 					instance.State.Name.Value,
 					instance.PublicIpAddress ?? "N/A",
-					instance.Tags?.FirstOrDefault(t => t.Key == "Name")?.Value ?? "N/A"
+					instance.Tags?.FirstOrDefault(t => t.Key == "Name")?.Value ?? "N/A",
+					instance.SecurityGroups != null
+						? string.Join(", ", instance.SecurityGroups.Select(sg => sg.GroupName))
+						: "N/A"
 				]);
 			}
 		}
 
 		table.PrintTable();
-
-		await SelectCommandAsync();
 	}
 }

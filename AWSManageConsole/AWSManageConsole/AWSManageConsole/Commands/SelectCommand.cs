@@ -14,7 +14,20 @@ internal class SelectCommand : BaseCommand
 		BaseCommand selectedCommand = availableCommands
 			.SelectAnOptionFromList("Select a command to execute:", c => c.Name);
 
+		Console.WriteLine();
+		"Executing Command:".Write(ConsoleColor.Cyan);
+		$" {selectedCommand.Name}".WriteInfo();
+		Console.WriteLine();
+
 		await selectedCommand.ExecuteAsync();
+
+		if (selectedCommand.Name != "Clear Console")
+		{
+			Console.WriteLine();
+		}
+
+		SelectCommand selectCommand = new(_serviceProvider);
+		await selectCommand.ExecuteAsync();
 	}
 
 	private List<BaseCommand> GetAvailableCommands()
@@ -31,7 +44,7 @@ internal class SelectCommand : BaseCommand
 						&& baseType.IsAssignableFrom(t)
 						&& t != currentType);
 
-		foreach (Type t in commandTypes.OrderBy(t => t.Name))
+		foreach (Type t in commandTypes)
 		{
 			try
 			{
@@ -47,6 +60,8 @@ internal class SelectCommand : BaseCommand
 				e.Message.WriteError();
 			}
 		}
+
+		commands.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
 
 		return commands;
 	}

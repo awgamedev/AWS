@@ -1,10 +1,10 @@
-﻿namespace AWSManageConsole.Commands;
+﻿namespace AWSManageConsole.Commands.EC2;
 
 internal class StartNewEC2InstanceCommand : BaseCommand
 {
 	public StartNewEC2InstanceCommand(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-	public override string Name => "Start New EC2 Instance";
+	public override string Name => "[EC2] Start New EC2 Instance";
 
 	public override async Task ExecuteAsync()
 	{
@@ -67,8 +67,7 @@ internal class StartNewEC2InstanceCommand : BaseCommand
 				["Instance Type", instanceType.Value],
 				["AMI ID", imageId],
 				["Requested Name", instanceName],
-				["Current State", newInstance.State.Name.Value],
-				["Public IP", newInstance.PublicIpAddress ?? "N/A"]
+				["Current State", newInstance.State.Name.Value]
 			];
 
 			// Assuming PrintTable is an extension method for List<string[]>
@@ -83,7 +82,5 @@ internal class StartNewEC2InstanceCommand : BaseCommand
 		{
 			Console.WriteLine($"An unexpected error occurred: {ex.Message}");
 		}
-
-		await SelectCommandAsync();
 	}
 }

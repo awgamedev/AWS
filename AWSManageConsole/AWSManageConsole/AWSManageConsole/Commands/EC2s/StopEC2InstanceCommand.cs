@@ -1,12 +1,12 @@
-﻿namespace AWSManageConsole.Commands;
+﻿namespace AWSManageConsole.Commands.EC2;
 
 internal class StopEC2InstanceCommand : BaseCommand
 {
 	public StopEC2InstanceCommand(IServiceProvider serviceProvider) : base(serviceProvider) { }
-	public override string Name => "Stop EC2 Instance";
+	public override string Name => "[EC2] Stop EC2 Instance";
 	public override async Task ExecuteAsync()
 	{
-		string instanceId = "Enter the Instance ID of the EC2 instance to stop:".ReadValue<string>();
+		string instanceId = "Enter the Instance ID of the EC2 instance to stop: ".ReadValue<string>();
 		if (string.IsNullOrWhiteSpace(instanceId))
 		{
 			"Instance ID cannot be empty. Operation cancelled.".WriteError();
@@ -37,7 +37,5 @@ internal class StopEC2InstanceCommand : BaseCommand
 		{
 			Console.WriteLine($"An unexpected error occurred: {ex.Message}");
 		}
-
-		await SelectCommandAsync();
 	}
 }

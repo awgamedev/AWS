@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace AWSManageConsole.Helper;
+﻿namespace AWSManageConsole.Helper;
 
 internal static class ConsoleHelper
 {
@@ -69,7 +67,28 @@ internal static class ConsoleHelper
 		Console.ReadKey();
 	}
 
-	public static T SelectAnOptionFromList<T>(this IEnumerable<T> options, string prompt, Expression<Func<T, string>>? displaySelector = null)
+	public static bool ConfirmAction(this string prompt)
+	{
+		while (true)
+		{
+			string input = prompt + " (y/n): ";
+			string response = input.ReadValue<string>().ToLower();
+			if (response == "y")
+			{
+				return true;
+			}
+			else if (response == "n")
+			{
+				return false;
+			}
+			else
+			{
+				"Invalid input. Please enter 'y' or 'n'.".WriteError();
+			}
+		}
+	}
+
+	public static T SelectAnOptionFromList<T>(this IEnumerable<T> options, string prompt, Func<T, string>? displaySelector = null)
 	{
 		while (true)
 		{
@@ -80,8 +99,7 @@ internal static class ConsoleHelper
 				$"[{i + 1}]".Write(ConsoleColor.Yellow);
 				if (displaySelector != null)
 				{
-					Func<T, string> func = displaySelector.Compile();
-					$" {func(options.ElementAt(i))}".WriteLine(ConsoleColor.White);
+					$" {displaySelector(options.ElementAt(i))}".WriteLine(ConsoleColor.White);
 				}
 				else
 				{
@@ -98,6 +116,52 @@ internal static class ConsoleHelper
 			else
 			{
 				"Invalid selection. Please try again.".WriteError();
+			}
+		}
+	}
+
+	public static List<T> SelectOptionsFromList<T>(this IEnumerable<T> options, string prompt, Func<T, string>? displaySelector = null)
+	{
+		while (true)
+		{
+			prompt.WriteLine(ConsoleColor.Cyan);
+			for (int i = 0; i < options.Count(); i++)
+			{
+				$"[{i + 1}]".Write(ConsoleColor.Yellow);
+				if (displaySelector != null)
+				{
+					$" {displaySelector(options.ElementAt(i))}".WriteLine(ConsoleColor.White);
+				}
+				else
+				{
+					$" {options.ElementAt(i)}".WriteLine(ConsoleColor.White);
+				}
+			}
+			string input = "Enter selections as comma-separated numbers (e.g., 1,3,4): ".ReadValue<string>();
+			string[] parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
+			List<T> selectedOptions = new();
+			bool allValid = true;
+			foreach (string part in parts)
+			{
+				if (int.TryParse(part.Trim(), out int selectedIndex) &&
+					selectedIndex >= 1 &&
+					selectedIndex <= options.Count())
+				{
+					selectedOptions.Add(options.ElementAt(selectedIndex - 1));
+				}
+				else
+				{
+					allValid = false;
+					break;
+				}
+			}
+			if (allValid && selectedOptions.Count > 0)
+			{
+				return selectedOptions;
+			}
+			else
+			{
+				"Invalid selection(s). Please try again.".WriteError();
 			}
 		}
 	}

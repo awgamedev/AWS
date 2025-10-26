@@ -1,5 +1,4 @@
-﻿using AWSManageConsole.Config;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace AWSManageConsole.Services;
 
@@ -18,6 +17,18 @@ internal class ConfigurationService : IConfigurationService
 
 	public AWSConfiguration LoadAwsConfiguration()
 	{
-		return _configuration.GetSection("AWSConfiguration").Get<AWSConfiguration>() ?? new AWSConfiguration();
+		AWSConfiguration? config = _configuration.GetSection("AWSConfiguration").Get<AWSConfiguration>();
+
+		if (config == null)
+		{
+			throw new InvalidOperationException("AWS configuration section is missing in the configuration file.");
+		}
+
+		if (!config.IsValid())
+		{
+			throw new InvalidOperationException("AWS configuration is invalid or incomplete. Please check your configuration settings.");
+		}
+
+		return config;
 	}
 }

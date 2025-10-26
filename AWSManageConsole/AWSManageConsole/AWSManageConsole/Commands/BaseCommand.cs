@@ -15,10 +15,4 @@ internal abstract class BaseCommand
 
 	public abstract string Name { get; }
 	public abstract Task ExecuteAsync();
-
-	public async Task SelectCommandAsync()
-	{
-		SelectCommand selectCommand = new(_serviceProvider);
-		await selectCommand.ExecuteAsync();
-	}
 }
