@@ -1,28 +1,14 @@
-﻿
-namespace AWSManageConsole.Commands;
+﻿namespace AWSManageConsole.Commands;
 
 internal class GetAllRunningInstancesCommand : BaseCommand
 {
-	public GetAllRunningInstancesCommand(IServiceProvider serviceProvider) : base(serviceProvider)
-	{
-	}
+	public GetAllRunningInstancesCommand(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
 	public override string Name => "Get All Running EC2 Instances";
 
 	public override async Task ExecuteAsync()
 	{
-		// 1. Specify the profile name you want to use
-		const string ProfileName = "default";
-
-		// 2. Load the credentials for that profile
-		AWSCredentials credentials = new CredentialProfileStoreChain()
-			.TryGetAWSCredentials(ProfileName, out AWSCredentials? creds) && creds != null
-			? creds
-			: throw new InvalidOperationException($"Could not load AWS credentials for profile '{ProfileName}'.");
-
-		// 3. Create the client with the loaded credentials
-		RegionEndpoint region = RegionEndpoint.GetBySystemName("eu-north-1");
-		AmazonEC2Client ec2Client = new(credentials, region);
+		AmazonEC2Client ec2Client = _awsService.GetEC2Client();
 
 		Filter runningInstancesFilter = new()
 		{

@@ -13,15 +13,16 @@ internal class Program
 			.Build();
 
 		// Configure DI
-		IServiceCollection service = new ServiceCollection();
+		IServiceCollection services = new ServiceCollection();
 
 		// Register IConfiguration so it can be injected where needed
-		service.AddSingleton(configuration);
+		services.AddSingleton(configuration);
 
 		// Existing registrations
-		service.AddSingleton<IConfigurationService, ConfigurationService>();
+		services.AddSingleton<IAWSService, AWSService>();
+		services.AddSingleton<IConfigurationService, ConfigurationService>();
 
-		ServiceProvider provider = service.BuildServiceProvider();
+		ServiceProvider provider = services.BuildServiceProvider();
 		IConfigurationService configService = provider.GetRequiredService<IConfigurationService>();
 
 		"Willkommen in der AWS Console".WriteInfo();

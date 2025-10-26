@@ -1,6 +1,12 @@
 ﻿namespace AWSManageConsole.Services;
 
-internal class AWSService
+internal interface IAWSService
+{
+	AWSCredentials GetAWSCredentials();
+	AmazonEC2Client GetEC2Client();
+}
+
+internal class AWSService : IAWSService
 {
 	private readonly IConfigurationService _configurationService;
 	public AWSService(IConfigurationService configurationService)
@@ -18,5 +24,13 @@ internal class AWSService
 			: throw new InvalidOperationException($"Could not load AWS credentials for profile '{awsConfig.ProfileName}'.");
 
 		return credentials;
+	}
+
+	public AmazonEC2Client GetEC2Client()
+	{
+		AWSConfiguration awsConfig = _configurationService.LoadAwsConfiguration();
+		AWSCredentials credentials = GetAWSCredentials();
+		RegionEndpoint region = RegionEndpoint.GetBySystemName(awsConfig.Region);
+		return new AmazonEC2Client(credentials, region);
 	}
 }
