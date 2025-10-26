@@ -26,7 +26,7 @@ internal class Program
 
 		"Willkommen in der AWS Console".WriteInfo();
 
-		SelectCommand selectCommand = new();
+		SelectCommand selectCommand = new(provider);
 		await selectCommand.ExecuteAsync();
 	}
 }

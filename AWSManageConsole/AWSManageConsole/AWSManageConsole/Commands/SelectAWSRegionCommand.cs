@@ -1,7 +1,12 @@
-﻿namespace AWSManageConsole.Commands;
+﻿
+namespace AWSManageConsole.Commands;
 
 internal class SelectAWSRegionCommand : BaseCommand
 {
+	public SelectAWSRegionCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+	{
+	}
+
 	public override string Name => "Select AWS Region";
 
 	public override async Task ExecuteAsync()

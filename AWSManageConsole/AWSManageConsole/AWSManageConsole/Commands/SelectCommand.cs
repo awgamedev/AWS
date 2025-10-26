@@ -4,6 +4,10 @@ namespace AWSManageConsole.Commands;
 
 internal class SelectCommand : BaseCommand
 {
+	public SelectCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+	{
+	}
+
 	public override string Name => "Select and Execute a Command";
 
 	public override async Task ExecuteAsync()
@@ -34,7 +38,7 @@ internal class SelectCommand : BaseCommand
 			try
 			{
 				// Try to create instance, allow non-public parameterless constructors
-				object? instance = Activator.CreateInstance(t, nonPublic: true);
+				object? instance = Activator.CreateInstance(t, _serviceProvider);
 				if (instance is BaseCommand cmd)
 				{
 					commands.Add(cmd);

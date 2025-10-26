@@ -1,7 +1,12 @@
-﻿namespace AWSManageConsole.Commands;
+﻿
+namespace AWSManageConsole.Commands;
 
 internal class GetAllRunningInstancesCommand : BaseCommand
 {
+	public GetAllRunningInstancesCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+	{
+	}
+
 	public override string Name => "Get All Running EC2 Instances";
 
 	public override async Task ExecuteAsync()
@@ -33,15 +38,16 @@ internal class GetAllRunningInstancesCommand : BaseCommand
 		// Using the asynchronous approach is recommended
 		DescribeInstancesResponse response = await ec2Client.DescribeInstancesAsync(request);
 
-		List<string[]> table = new();
-		table.Add(new string[]
-		{
-			"Instance ID",
-			"Instance Type",
-			"State",
-			"Public IP",
-			"Name"
-		});
+		List<string[]> table =
+		[
+			[
+				"Instance ID",
+				"Instance Type",
+				"State",
+				"Public IP",
+				"Name"
+			],
+		];
 
 		foreach (Reservation? reservation in response.Reservations)
 		{

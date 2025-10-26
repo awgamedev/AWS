@@ -1,12 +1,17 @@
-﻿namespace AWSManageConsole.Commands;
+﻿
+namespace AWSManageConsole.Commands;
 
 internal class StartAWSEC2InstanceCommand : BaseCommand
 {
+	public StartAWSEC2InstanceCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+	{
+	}
+
 	public override string Name => "Start AWS EC2 Instance";
 
 	public override async Task ExecuteAsync()
 	{
-		SelectAWSRegionCommand selectRegionCommand = new();
+		SelectAWSRegionCommand selectRegionCommand = new(_serviceProvider);
 		await selectRegionCommand.ExecuteAsync();
 
 		//$@"aws ec2 run-instances

@@ -104,7 +104,7 @@ internal static class ConsoleHelper
 
 	public static void PrintTable(this IEnumerable<string[]> rows, bool isFirstRowHeader = true)
 	{
-		if (rows is null || rows.Count() == 0)
+		if (rows is null || !rows.Any())
 		{
 			return;
 		}
@@ -139,32 +139,28 @@ internal static class ConsoleHelper
 			string[] row = rows.ElementAt(rowIndex) ?? Array.Empty<string>();
 			bool headerRow = isFirstRowHeader && rowIndex == 0;
 
-			// Print row cells
+			// Print row with leading and trailing separators
+			" | ".Write(ConsoleColor.White);
 			for (int c = 0; c < columnCount; c++)
 			{
 				string cell = c < row.Length && row[c] != null ? row[c] : string.Empty;
 				string padded = cell.PadRight(columnWidths[c]);
 				padded.Write(headerRow ? ConsoleColor.Yellow : ConsoleColor.White);
 
-				// Column separator always " | "
-				if (c < columnCount - 1)
-				{
-					" | ".Write(ConsoleColor.White);
-				}
+				// Column separator always " | " (including after the last column)
+				" | ".Write(ConsoleColor.White);
 			}
 			Console.WriteLine();
 
-			// After printing header row, print separator line of dashes matching column widths
+			// After printing header row, print separator line of dashes matching column widths with leading/trailing separators
 			if (headerRow)
 			{
+				" | ".Write(ConsoleColor.White);
 				for (int c = 0; c < columnCount; c++)
 				{
 					string dashes = new('-', columnWidths[c]);
 					dashes.Write(ConsoleColor.White);
-					if (c < columnCount - 1)
-					{
-						" | ".Write(ConsoleColor.White);
-					}
+					" | ".Write(ConsoleColor.White);
 				}
 				Console.WriteLine();
 
