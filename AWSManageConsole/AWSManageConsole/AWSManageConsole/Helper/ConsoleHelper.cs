@@ -37,7 +37,7 @@ internal static class ConsoleHelper
 
 	public static void WriteInfo(this string message)
 	{
-		WriteLine(message, ConsoleColor.Cyan);
+		WriteLine(message, ConsoleColor.White);
 	}
 
 	public static T ReadValue<T>(this string prompt, ConsoleColor promptColor = ConsoleColor.Green)

@@ -35,9 +35,21 @@ internal class GetAllRunningInstancesCommand : BaseCommand
 			],
 		];
 
-		foreach (Reservation? reservation in response.Reservations)
+		if (response.Reservations == null || response.Reservations.Count == 0)
 		{
-			foreach (Instance? instance in reservation.Instances)
+			"No running EC2 instances found.".WriteInfo();
+			await SelectCommandAsync();
+			return;
+		}
+
+		foreach (Reservation reservation in response.Reservations)
+		{
+			if (reservation.Instances == null || reservation.Instances.Count == 0)
+			{
+				continue;
+			}
+
+			foreach (Instance instance in reservation.Instances)
 			{
 				table.Add(
 				[
@@ -51,5 +63,7 @@ internal class GetAllRunningInstancesCommand : BaseCommand
 		}
 
 		table.PrintTable();
+
+		await SelectCommandAsync();
 	}
 }

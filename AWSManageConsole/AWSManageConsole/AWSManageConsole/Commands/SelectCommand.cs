@@ -4,9 +4,7 @@ namespace AWSManageConsole.Commands;
 
 internal class SelectCommand : BaseCommand
 {
-	public SelectCommand(IServiceProvider serviceProvider) : base(serviceProvider)
-	{
-	}
+	public SelectCommand(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
 	public override string Name => "Select and Execute a Command";
 
@@ -44,9 +42,9 @@ internal class SelectCommand : BaseCommand
 					commands.Add(cmd);
 				}
 			}
-			catch
+			catch (Exception e)
 			{
-				// Ignore types that cannot be instantiated
+				e.Message.WriteError();
 			}
 		}
 
