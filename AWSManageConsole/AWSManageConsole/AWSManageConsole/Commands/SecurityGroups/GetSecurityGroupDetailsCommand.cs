@@ -13,6 +13,11 @@ internal class GetSecurityGroupDetailsCommand : BaseCommand
 			return;
 		}
 
+		await GetSecurityGroupDetails(groupId);
+	}
+
+	public async Task GetSecurityGroupDetails(string groupId)
+	{
 		AmazonEC2Client ec2Client = _awsService.GetEC2Client();
 		DescribeSecurityGroupsRequest request = new()
 		{
@@ -27,6 +32,7 @@ internal class GetSecurityGroupDetailsCommand : BaseCommand
 				$"No Security Group found with ID {groupId}.".WriteError();
 				return;
 			}
+
 			List<string[]> table =
 			[
 				["Property", "Value"],
