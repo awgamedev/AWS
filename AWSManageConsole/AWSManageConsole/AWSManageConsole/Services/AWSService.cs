@@ -1,6 +1,6 @@
-﻿using Amazon.SimpleSystemsManagement;
+﻿using Amazon.IdentityManagement;
+using Amazon.SimpleSystemsManagement;
 using Amazon.SimpleSystemsManagement.Model;
-using AWSManageConsole.Models;
 
 namespace AWSManageConsole.Services;
 
@@ -11,6 +11,7 @@ internal interface IAWSService
 	AWSCredentials GetAWSCredentials();
 	Task<CommandOutput> GetCommandOutputAsync(string commandId, string instanceId, int maxPollAttempts = 12);
 	AmazonEC2Client GetEC2Client();
+	AmazonIdentityManagementServiceClient GetIAMClient();
 }
 
 internal class AWSService : IAWSService
@@ -39,6 +40,14 @@ internal class AWSService : IAWSService
 		AWSCredentials credentials = GetAWSCredentials();
 		RegionEndpoint region = RegionEndpoint.GetBySystemName(awsConfig.Region);
 		return new AmazonEC2Client(credentials, region);
+	}
+
+	public AmazonIdentityManagementServiceClient GetIAMClient()
+	{
+		AWSConfiguration awsConfig = _configurationService.LoadAwsConfiguration();
+		AWSCredentials credentials = GetAWSCredentials();
+		RegionEndpoint region = RegionEndpoint.GetBySystemName(awsConfig.Region);
+		return new AmazonIdentityManagementServiceClient(credentials, region);
 	}
 
 	/// <summary>
