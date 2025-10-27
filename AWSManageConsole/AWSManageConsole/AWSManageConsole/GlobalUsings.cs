@@ -6,5 +6,6 @@ global using Amazon.Runtime.CredentialManagement;
 global using AWSManageConsole.Commands;
 global using AWSManageConsole.Config;
 global using AWSManageConsole.Helper;
+global using AWSManageConsole.Models;
 global using AWSManageConsole.Services;
 global using Microsoft.Extensions.DependencyInjection;

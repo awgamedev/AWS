@@ -1,4 +1,4 @@
-﻿namespace AWSManageConsole.Commands.EC2;
+﻿namespace AWSManageConsole.Commands.AWS.EC2s;
 
 internal class GetAllRunningInstancesCommand : BaseCommand
 {

@@ -4,6 +4,7 @@ namespace AWSManageConsole.Services;
 
 internal interface IConfigurationService
 {
+	WinScpConfiguration GetWinScpConfiguration();
 	AWSConfiguration LoadAwsConfiguration();
 }
 
@@ -27,6 +28,23 @@ internal class ConfigurationService : IConfigurationService
 		if (!config.IsValid())
 		{
 			throw new InvalidOperationException("AWS configuration is invalid or incomplete. Please check your configuration settings.");
+		}
+
+		return config;
+	}
+
+	public WinScpConfiguration GetWinScpConfiguration()
+	{
+		WinScpConfiguration? config = _configuration.GetSection("WinScpConfiguration").Get<WinScpConfiguration>();
+
+		if (config == null)
+		{
+			throw new InvalidOperationException("WinSCP configuration section is missing in the configuration file.");
+		}
+
+		if (!config.IsValid())
+		{
+			throw new InvalidOperationException("WinSCP configuration is invalid or incomplete. Please check your configuration settings.");
 		}
 
 		return config;

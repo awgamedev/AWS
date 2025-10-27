@@ -1,4 +1,4 @@
-﻿namespace AWSManageConsole.Commands.SecurityGroups;
+﻿namespace AWSManageConsole.Commands.AWS.SecurityGroups;
 
 internal class GetRulesForSecurityGroupCommand : BaseCommand
 {
