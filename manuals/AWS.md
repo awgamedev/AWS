@@ -110,19 +110,13 @@ aws ec2 create-security-group --group-name awdev-ssh-sg --description "Allow SSH
 aws ec2 delete-security-group --group-id SECURITY_GROUP_ID --region REGION
 ```
 
-## SSH für eine Sicherheitsgruppe einschalten
+## Sicherheitsgruppe Regel für den eingehenden Datenverkehr hinzufügen
+
+- Für SSH PORT durch 22 ersetzen
+- Will man eine Web App z.B. über Port 3000 erreichen PORT durch 3000 ersetzen
 
 ```bash
-aws ec2 authorize-security-group-ingress
-    --group-id SECURITY_GROUP_ID # ID der Sicherheitsgruppe
-    --protocol tcp
-    --port 22
-    --cidr 0.0.0.0/0 # Zugriff von überall
-    # --cidr <Ihre_öffentliche_IP>/32 # Deutlich sicherer (https://www.wieistmeineip.de/)
-    --region REGION
-
-# Einzeiler:
-aws ec2 authorize-security-group-ingress --group-id SECURITY_GROUP_ID --protocol tcp --port 22 --cidr 0.0.0.0/0 --region REGION
+aws ec2 authorize-security-group-ingress --group-id SECURITY_GROUP_ID --protocol tcp --port PORT --cidr 0.0.0.0/0 --region REGION
 ```
 
 ## Alle Subnetz Ids einer Region auslesen
