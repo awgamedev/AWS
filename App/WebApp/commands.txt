@@ -6,3 +6,7 @@ docker compose up --build -d
 
 # Stop the docker compose
 docker compose down
+docker compose down -v # Delete old volumes
+
+# Go into the container
+docker compose exec web sh

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '4.49.0'
 
 services:
   # 1. Node.js App Service
@@ -18,6 +18,11 @@ services:
     environment:
       # Passen Sie den Connection String in Ihrer server.js an
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+# 🌟 ADDED: Volume Mount for Live Sync
+    volumes:
+      - .:/usr/src/app 
+      - /usr/src/app/node_modules # <-- ADD THIS LINE to prevent node_modules sync
+    command: ["npm", "run", "dev"]
 
   # 2. MongoDB Service
   mongo:

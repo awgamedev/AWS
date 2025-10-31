@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
 // --- Route: Submit Message Form (GET /message) ---
 router.get("/message", (req, res) => {
   const content = `
-        <h2>Submit Your Message</h2>
+        <h2>Submitt Your Message</h2>
         <form action="/message" method="POST">
             <label for="username" style="display: block; margin-top: 15px; font-weight: bold;">Your Name:</label>
             <input type="text" id="username" name="username" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
