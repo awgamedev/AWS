@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker rm -f node-web-app
+sudo docker compose down

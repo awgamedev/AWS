@@ -5,36 +5,40 @@
 # Adjust these if you are using a different Linux distribution
 # =========================================================
 USER_TO_ADD=$(whoami)
-SERVICE_NAME="docker"
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
 # =========================================================
+
+echo "Update and Upgrade Ubuntu"
+
+sudo apt-get update -y && sudo apt-get upgrade -y
+
+echo "Starting Git Installation on AWS EC2..."
+
+sudo apt-get install git -y
 
 echo "Starting Docker Installation on AWS EC2..."
 
-# 1. Update the instance packages
-echo "Running system update..."
-sudo yum update -y
-
-# 2. Install Docker
+# Install Docker
 echo "Installing Docker..."
-sudo yum install docker
+# Add Docker's official GPG key:
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Check if Docker installation was successful
-if [ $? -ne 0 ]; then
-    echo "Docker installation failed. Exiting."
-    exit 1
-fi
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# 3. Start and enable the Docker service
-echo "Starting and enabling the Docker service..."
-sudo service $SERVICE_NAME start
-sudo systemctl enable $SERVICE_NAME
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# 4. Add the current user to the docker group
-echo "Adding user '$USER_TO_ADD' to the 'docker' group..."
-sudo usermod -aG $SERVICE_NAME $USER_TO_ADD
+sudo systemctl start docker
 
 echo "Docker installation and setup complete!"
-echo ""
-echo "--- IMPORTANT NEXT STEP ---"
-echo "You must log out and log back in (or run 'newgrp docker') for the user changes to take effect."
-echo "Once you've done that, run 'sudo docker run hello-world' to test the installation."
+
+echo "--------------------------------"
+echo "Install Docker Compose"
+
+sudo apt-get install docker-compose-plugin
+docker compose version

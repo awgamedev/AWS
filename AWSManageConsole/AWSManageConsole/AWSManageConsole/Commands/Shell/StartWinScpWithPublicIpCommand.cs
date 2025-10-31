@@ -12,10 +12,10 @@ internal class StartWinScpWithPublicIpCommand : BaseCommand
 
 	public override async Task ExecuteAsync()
 	{
-		string username = "Enter the username for SFTP connection: (default: ec2-user) ".ReadValue<string>();
+		string username = "Enter the username for SFTP connection: (default: ubuntu) ".ReadValue<string>();
 		if (string.IsNullOrWhiteSpace(username))
 		{
-			username = "ec2-user";
+			username = "ubuntu";
 		}
 
 		string publicIp = "Enter the Public IP of the EC2 instance: ".ReadValue<string>();

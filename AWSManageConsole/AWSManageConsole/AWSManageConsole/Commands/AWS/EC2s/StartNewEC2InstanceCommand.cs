@@ -17,7 +17,7 @@ internal class StartNewEC2InstanceCommand : BaseCommand
 
 		AmazonEC2Client ec2Client = _awsService.GetEC2Client();
 
-		string imageId = "ami-04c08fd8aa14af291";
+		string imageId = "ami-0a716d3f3b16d290c";
 		InstanceType instanceType = InstanceType.T3Micro;
 
 		Console.WriteLine($"Attempting to launch a new EC2 instance: {instanceName} ({instanceType.Value})...");
