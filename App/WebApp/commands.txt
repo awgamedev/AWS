@@ -1,0 +1,8 @@
+# Build Docker file
+docker build -t node-web-app .
+
+# Start the docker compose 
+docker compose up --build -d
+
+# Stop the docker compose
+docker compose down

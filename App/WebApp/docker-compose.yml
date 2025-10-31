@@ -1,22 +1,36 @@
+version: '3.8'
+
 services:
+  # 1. Node.js App Service
   web:
-    build: .
+    # Buildet das Image aus dem aktuellen Verzeichnis (wo das Dockerfile liegt)
+    build: . 
     container_name: node-web-app
+    # Mappt den Container-Port 3000 auf den Host-Port 3000
     ports:
       - "3000:3000"
+      - "9229:9229" # <-- debug port
+    # Stellt sicher, dass die Datenbank vor der App gestartet wird
     depends_on:
       - mongo
+    # Umgebungsvariable, die Ihre Node.js-App für die MongoDB-Verbindung benötigt.
+    # Der Hostname ist der Dienstname im Compose-Netzwerk (hier: 'mongo').
     environment:
+      # Passen Sie den Connection String in Ihrer server.js an
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
 
+  # 2. MongoDB Service
   mongo:
-    image: mongo:6.0
+    image: mongo:6.0 # Nutzt das offizielle MongoDB-Image
     container_name: mongodb
+    # Legt einen persistenten Speicher für die Datenbankdaten fest
     volumes:
-      - mongo-data:/data/db
+      - mongo-data:/data/db 
+    # Optionale Umgebungsvariablen für die Initialisierung (für Entwicklung oft weggelassen)
     # environment: 
     #   MONGO_INITDB_ROOT_USERNAME: admin
     #   MONGO_INITDB_ROOT_PASSWORD: secret
 
+# 3. Volumes für persistente Daten
 volumes:
   mongo-data:
