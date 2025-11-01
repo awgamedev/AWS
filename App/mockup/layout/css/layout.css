@@ -1,0 +1,66 @@
+/* Konfiguriere die Inter-Schriftart */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+:root {
+	font-family: 'Inter', sans-serif;
+}
+
+/* Definiere die Breite der Seitenleiste und den Übergang */
+.sidebar-width {
+	width: 256px; /* 64 Tailwind units */
+	transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+/* Die Seitenleiste ist standardmäßig auf Desktop-Geräten sichtbar */
+#sidebar {
+	transform: translateX(0);
+}
+
+/* Desktop-Fixierung für die Seitenleiste hinzufügen */
+@media (min-width: 768px) {
+	#sidebar {
+		position: fixed;
+		height: 100vh;
+		top: 0;
+		left: 0;
+	}
+}
+
+/* Auf kleinen Bildschirmen (Mobile) ist die Seitenleiste standardmäßig außerhalb des Bildschirms */
+@media (max-width: 767px) {
+	#sidebar {
+		transform: translateX(-256px);
+		position: fixed;
+		z-index: 50;
+		height: 100vh; /* Volle Höhe des Viewports auf Mobile */
+	}
+	/* Zeige die Seitenleiste, wenn die Klasse 'sidebar-open' hinzugefügt wird */
+	#sidebar.sidebar-open {
+		transform: translateX(0);
+	}
+}
+
+/* Inhalt: Anpassung der linken Einrückung basierend auf dem Sidebar-Zustand */
+#main-content {
+	transition: margin-left 0.3s ease-in-out;
+}
+
+/* Auf Desktop (md und größer), wo die Sidebar fest ist */
+@media (min-width: 768px) {
+	#main-content {
+		margin-left: 256px; /* Passt zur Seitenleistenbreite */
+	}
+	#sidebar.collapsed {
+		width: 0px; /* Seitenleiste auf 0px kollabieren */
+		transform: translateX(-256px); /* Seitenleiste aus dem Blickfeld bewegen */
+	}
+	#sidebar.collapsed ~ #main-content {
+		margin-left: 0px; /* Den Inhalt auf volle Breite erweitern */
+	}
+	/* Sidebar-Inhalt ausblenden, wenn kollabiert */
+	#sidebar.collapsed .sidebar-item-text {
+		display: none;
+	}
+	#sidebar.collapsed .logo-text {
+		display: none;
+	}
+}

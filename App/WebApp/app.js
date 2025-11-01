@@ -8,6 +8,7 @@ const dotenv = require("dotenv"); // 1. Import dotenv
 const passport = require("passport"); // 2. Import Passport
 const session = require("express-session"); // NEU: Session-Middleware importieren
 const winston = require("winston");
+const path = require("path");
 
 const logger = winston.createLogger({
   level: "info",
@@ -31,8 +32,9 @@ dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 // Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
 require("./config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
 
-const mainRouter = require("./routes/index"); // Import the main router
+const mainRouter = require("./index"); // Import the main router
 const authRouter = require("./routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
+const messageRouter = require("./routes/message"); // Import message routes
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -44,6 +46,8 @@ mongoose
 
 // Initialize the Express application
 const app = express();
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // --- Middleware and Configuration ---
 // Add middleware to parse URL-encoded form data (needed for HTML forms)
@@ -63,8 +67,9 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 
 // --- Routes ---
 // Use the imported router for all paths (e.g., / and /api/status)
-app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
 app.use("/", mainRouter);
+app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
+app.use("/", messageRouter); // Use message routes
 
 // Export the configured app for use in server.js
 module.exports = app;
