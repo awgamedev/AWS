@@ -1,0 +1,3 @@
+{"level":"info","message":"Die Anwendung wurde gestartet."}
+{"level":"warn","message":"Achtung: Ein optionaler Parameter fehlt."}
+{"error":{},"level":"error","message":"Fehler beim Zugriff auf die Datenbank!"}

@@ -7,6 +7,28 @@ const mongoose = require("mongoose"); // Import Mongoose
 const dotenv = require("dotenv"); // 1. Import dotenv
 const passport = require("passport"); // 2. Import Passport
 const session = require("express-session"); // NEU: Session-Middleware importieren
+const winston = require("winston");
+
+// Grundkonfiguration des Loggers
+const logger = winston.createLogger({
+  level: "info", // Standard-Log-Level
+  format: winston.format.json(), // Strukturierte Logs
+  transports: [
+    // Logs an die Konsole senden
+    new winston.transports.Console({
+      format: winston.format.simple(), // Einfaches Format für die Konsole
+    }),
+    // Logs in eine Datei schreiben
+    new winston.transports.File({ filename: "app.log" }),
+  ],
+});
+
+// Logging im Code verwenden
+logger.info("Die Anwendung wurde gestartet.");
+logger.warn("Achtung: Ein optionaler Parameter fehlt.");
+logger.error("Fehler beim Zugriff auf die Datenbank!", {
+  error: new Error("DB Connection failed"),
+});
 
 // Lade Umgebungsvariablen aus der .env-Datei
 dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
