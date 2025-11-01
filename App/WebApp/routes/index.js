@@ -6,6 +6,9 @@ const router = express.Router();
 const Message = require("../models/Message");
 const generateLayout = require("../utils/layout"); // <--- IMPORT THE LAYOUT
 
+const passport = require("passport"); // Wichtig für den Aufruf der Authentifizierung
+const { ensureAuthenticated, checkRole } = require("../middleware/auth"); // <-- NUR IMPORTIEREN!
+
 // --- Route: Home Page (GET /) ---
 router.get("/", (req, res) => {
   const content = `
@@ -29,24 +32,32 @@ router.get("/", (req, res) => {
 });
 
 // --- Route: Submit Message Form (GET /message) ---
-router.get("/message", (req, res) => {
-  const content = `
-        <h2>Submitt Your Message</h2>
-        <form action="/message" method="POST">
-            <label for="username" style="display: block; margin-top: 15px; font-weight: bold;">Your Name:</label>
-            <input type="text" id="username" name="username" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="message" style="display: block; margin-top: 15px; font-weight: bold;">Message:</label>
-            <textarea id="message" name="message" rows="4" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
-            
-            <button type="submit" style="background-color: #00796b; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1em;">Save to MongoDB</button>
-        </form>
-        <div style="margin-top: 20px; display: block; text-align: center;"><a href="/messages">View All Messages →</a></div>
-    `;
+router.get(
+  "/message",
+  passport.authenticate("jwt", { session: false, failureRedirect: "/login" }), // Optional: Redirect bei Fehler
+  ensureAuthenticated,
+  (req, res) => {
+    const username = req.user.username || ""; // req.user sollte von Passport gesetzt sein
 
-  // Use the layout function
-  res.send(generateLayout("Submit a Message", content));
-});
+    const content = `
+            <h2>Submitt Your Message</h2>
+            <p>Eingeloggt als: <strong>${username}</strong></p> 
+            <form action="/message" method="POST">
+                <label for="username" style="display: block; margin-top: 15px; font-weight: bold;">Your Name:</label>
+                <input type="text" id="username" name="username" value="${username}" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" readonly>
+                
+                <label for="message" style="display: block; margin-top: 15px; font-weight: bold;">Message:</label>
+                <textarea id="message" name="message" rows="4" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
+                
+                <button type="submit" style="background-color: #00796b; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1em;">Save to MongoDB</button>
+            </form>
+            <div style="margin-top: 20px; display: block; text-align: center;"><a href="/messages">View All Messages →</a></div>
+        `;
+
+    // Use the layout function
+    res.send(generateLayout("Submit a Message", content));
+  }
+);
 
 // --- Route: Handle Form Submission (POST /message) ---
 router.post("/message", async (req, res) => {

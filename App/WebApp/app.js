@@ -4,7 +4,17 @@
  */
 const express = require("express");
 const mongoose = require("mongoose"); // Import Mongoose
+const dotenv = require("dotenv"); // 1. Import dotenv
+const passport = require("passport"); // 2. Import Passport
+
+// Lade Umgebungsvariablen aus der .env-Datei
+dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
+
+// Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
+require("./config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
+
 const mainRouter = require("./routes/index"); // Import the main router
+const loginRouter = require("./routes/login"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 
 // --- MongoDB Connection ---
 const MONGODB_URI =
@@ -22,9 +32,11 @@ const app = express();
 // Add middleware to parse URL-encoded form data (needed for HTML forms)
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To handle JSON payloads
+app.use(passport.initialize());
 
 // --- Routes ---
 // Use the imported router for all paths (e.g., / and /api/status)
+app.use("/", loginRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
 app.use("/", mainRouter);
 
 // Export the configured app for use in server.js
