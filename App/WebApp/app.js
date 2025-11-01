@@ -35,6 +35,7 @@ require("./config/passport"); // 3. Importiere die Passport-Strategie-Konfigurat
 const mainRouter = require("./index"); // Import the main router
 const authRouter = require("./routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 const messageRouter = require("./routes/message"); // Import message routes
+const userRouter = require("./routes/user"); // Import user routes
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -70,6 +71,6 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 app.use("/", mainRouter);
 app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
 app.use("/", messageRouter); // Use message routes
-
+app.use("/", userRouter); // Use user routes
 // Export the configured app for use in server.js
 module.exports = app;
