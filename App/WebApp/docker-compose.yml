@@ -1,7 +1,7 @@
 version: '3.7' # Verwenden Sie '3.7' für Kompatibilität mit Promtail Volumes
 
 services:
-  # 1. Node.js App Service (Web)
+  # Node.js App Service (Web)
   web:
     # Buildet das Image aus dem aktuellen Verzeichnis
     build: . 
@@ -22,7 +22,7 @@ services:
     logging:
       driver: "json-file"
 
-  # 2. Loki: Speichert die gesammelten Logs
+  # Loki: Speichert die gesammelten Logs
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./loki-config.yml:/etc/loki/config.yml # Konfiguration für Loki
 
-  # 3. Promtail: Sammelt Logs vom Docker Host und sendet sie an Loki
+  # Promtail: Sammelt Logs vom Docker Host und sendet sie an Loki
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
@@ -49,7 +49,7 @@ services:
     networks:
       - default
 
-  # 4. Grafana: Visuelle Oberfläche zum Auslesen und Filtern
+  # Grafana: Visuelle Oberfläche zum Auslesen und Filtern
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -59,20 +59,15 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - loki
-    environment:
-     - GF_SERVER_ROOT_URL=http://localhost/grafana/ 
-     - GF_SERVER_SERVE_FROM_SUB_PATH=true 
-     - GF_SESSION_COOKIE_PATH=/grafana/ 
-     - GF_SERVER_PROTOCOL=http
     
-  # 5. MongoDB Service
+  # MongoDB Service
   mongo:
     image: mongo:6.0
     container_name: mongodb
     volumes:
       - mongo-data:/data/db 
 
-      # 6. Mongo Express (MongoDB Web-GUI)
+  # Mongo Express (MongoDB Web-GUI)
   mongo-express:
    image: mongo-express
    container_name: mongo-express

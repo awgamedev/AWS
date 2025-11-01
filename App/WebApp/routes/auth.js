@@ -80,6 +80,10 @@ router.get("/register", (req, res) => {
             <input type="password" id="password" name="password" required 
                    style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
             
+            <label for="confirmPassword" style="display: block; margin-top: 15px; font-weight: bold;">Passwort bestätigen:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required 
+                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+
             <button type="submit" 
                     style="background-color: #f57c00; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1em;">
                 Registrieren
@@ -92,15 +96,26 @@ router.get("/register", (req, res) => {
 
 // --- Registrierungs-Daten verarbeiten (POST /register) ---
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
 
-  if (!username || !email || !password) {
+  if (!username || !email || !password || !confirmPassword) {
     return res
       .status(400)
       .send(
         generateLayout(
           "Error",
           "<h2>Error</h2><p>Alle Felder sind erforderlich.</p><p><a href='/register'>Zurück zur Registrierung</a></p>"
+        )
+      );
+  }
+
+  if (password !== confirmPassword) {
+    return res
+      .status(400)
+      .send(
+        generateLayout(
+          "Error",
+          "<h2>Error</h2><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register'>Zurück zur Registrierung</a></p>"
         )
       );
   }
