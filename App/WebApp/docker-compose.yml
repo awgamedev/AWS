@@ -1,41 +1,115 @@
-version: '4.49.0'
+version: '3.7' # Verwenden Sie '3.7' für Kompatibilität mit Promtail Volumes
 
 services:
-  # 1. Node.js App Service
+  # 1. Node.js App Service (Web)
   web:
-    # Buildet das Image aus dem aktuellen Verzeichnis (wo das Dockerfile liegt)
+    # Buildet das Image aus dem aktuellen Verzeichnis
     build: . 
     container_name: node-web-app
-    # Mappt den Container-Port 3000 auf den Host-Port 3000
     ports:
-      - "3000:3000"
-      - "9229:9229" # <-- debug port
-    # Stellt sicher, dass die Datenbank vor der App gestartet wird
+      - "4000:4000"
+      - "9229:9229"
     depends_on:
       - mongo
-    # Umgebungsvariable, die Ihre Node.js-App für die MongoDB-Verbindung benötigt.
-    # Der Hostname ist der Dienstname im Compose-Netzwerk (hier: 'mongo').
+      - loki # Füge loki hinzu, damit promtail/grafana später logs haben
     environment:
-      # Passen Sie den Connection String in Ihrer server.js an
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
-# 🌟 ADDED: Volume Mount for Live Sync
     volumes:
       - .:/usr/src/app 
-      - /usr/src/app/node_modules # <-- ADD THIS LINE to prevent node_modules sync
+      - /usr/src/app/node_modules
     command: ["npm", "run", "dev"]
+    # WICHTIG: Verwende den Standard-Logging-Driver
+    logging:
+      driver: "json-file"
 
-  # 2. MongoDB Service
+  # 2. Loki: Speichert die gesammelten Logs
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/config.yml # Konfiguration für Loki
+
+  # 3. Promtail: Sammelt Logs vom Docker Host und sendet sie an Loki
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml # Promtail Konfiguration
+      # Mountet den Docker Socket, um Container-Metadaten zu lesen
+      - /var/run/docker.sock:/var/run/docker.sock 
+      # Mountet das Verzeichnis, in dem Docker die Log-Dateien speichert
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro 
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    # Stellt sicher, dass Promtail im selben Netzwerk wie Loki ist
+    networks:
+      - default
+
+  # 4. Grafana: Visuelle Oberfläche zum Auslesen und Filtern
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana Web-UI auf Port 3001
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+    environment:
+     - GF_SERVER_ROOT_URL=http://localhost/grafana/ 
+     - GF_SERVER_SERVE_FROM_SUB_PATH=true 
+     - GF_SESSION_COOKIE_PATH=/grafana/ 
+     - GF_SERVER_PROTOCOL=http
+    
+  # 5. MongoDB Service
   mongo:
-    image: mongo:6.0 # Nutzt das offizielle MongoDB-Image
+    image: mongo:6.0
     container_name: mongodb
-    # Legt einen persistenten Speicher für die Datenbankdaten fest
     volumes:
       - mongo-data:/data/db 
-    # Optionale Umgebungsvariablen für die Initialisierung (für Entwicklung oft weggelassen)
-    # environment: 
-    #   MONGO_INITDB_ROOT_USERNAME: admin
-    #   MONGO_INITDB_ROOT_PASSWORD: secret
 
-# 3. Volumes für persistente Daten
+      # 6. Mongo Express (MongoDB Web-GUI)
+  mongo-express:
+   image: mongo-express
+   container_name: mongo-express
+   restart: always
+   ports:
+     # Die Web-GUI wird auf Ihrem Host unter Port 8081 verfügbar sein
+     - "8081:8081" 
+   environment:
+     # Hostname des MongoDB-Containers (aus der docker-compose.yml)
+     ME_CONFIG_MONGODB_SERVER: mongo 
+     # Port des MongoDB-Containers
+     ME_CONFIG_MONGODB_PORT: 27017 
+     # Optionale Zugangsdaten, falls Sie sie für die GUI benötigen
+     ME_CONFIG_BASICAUTH_USERNAME: user 
+     ME_CONFIG_BASICAUTH_PASSWORD: password 
+     # Admin-Benutzer und Passwort, falls Sie MongoDB mit AUTH starten (derzeit nicht der Fall)
+     # ME_CONFIG_MONGODB_ADMINUSERNAME: rootuser 
+     # ME_CONFIG_MONGODB_ADMINPASSWORD: rootpassword
+   depends_on:
+     - mongo # Stellt sicher, dass MongoDB zuerst startet
+
+# NGINX Reverse Proxy Service
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    # Exponiert den Standard-HTTP-Port 80 nach außen
+    ports:
+      - "80:80" 
+    volumes:
+      # Mountet die lokale nginx.conf in den Container
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+      - mongo-express
+      - grafana # Fügen Sie alle Dienste hinzu, die Sie proxyn möchten
+
+# Volumes für persistente Daten
 volumes:
+  grafana-data:
   mongo-data:

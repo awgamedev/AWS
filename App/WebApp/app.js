@@ -9,17 +9,12 @@ const passport = require("passport"); // 2. Import Passport
 const session = require("express-session"); // NEU: Session-Middleware importieren
 const winston = require("winston");
 
-// Grundkonfiguration des Loggers
 const logger = winston.createLogger({
-  level: "info", // Standard-Log-Level
-  format: winston.format.json(), // Strukturierte Logs
+  level: "info",
+  format: winston.format.json(), // ⬅️ DIES IST WICHTIG FÜR DIE VISUALISIERUNG
   transports: [
-    // Logs an die Konsole senden
-    new winston.transports.Console({
-      format: winston.format.simple(), // Einfaches Format für die Konsole
-    }),
-    // Logs in eine Datei schreiben
-    new winston.transports.File({ filename: "app.log" }),
+    // In der Produktion/im Container loggen Sie einfach auf die Konsole (stdout)
+    new winston.transports.Console(),
   ],
 });
 

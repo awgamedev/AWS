@@ -10,3 +10,9 @@ docker compose down -v # Delete old volumes
 
 # Go into the container
 docker compose exec web sh
+
+# Web Browser mit der Url starten
+start http://localhost:4000/
+
+# Delete unused docker resources
+docker system prune -a --volumes

@@ -17,7 +17,7 @@ RUN npm install
 COPY . .
 
 # 6. Expose Port: Inform Docker that the container listens on this port.
-EXPOSE 3000
+EXPOSE 4000
 
 # 7. Command to Run: Execute the server script (the entry point for your application).
 CMD [ "node", "server.js" ]
