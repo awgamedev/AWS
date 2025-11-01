@@ -5,20 +5,20 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const generateLayout = require("../utils/layout");
-const User = require("../models/User"); // Wichtig: User Model importieren
-const bcrypt = require("bcryptjs"); // Wichtig: Für Passwort-Hashing
+const User = require("../models/User"); // used to register new users
+const bcrypt = require("bcryptjs"); // # used for password hashing
 
 // --- Funktion zum Hinzufügen von Links und Styling ---
 const getAuthLinks = () => `
     <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9em;">
-        <a href="/">← Zur Startseite</a>
-        <a href="/register">Noch kein Konto? Registrieren →</a>
+        <a href="/">Zur Startseite</a>
+        <a href="/register">Hier kannst du dich registrieren</a>
     </div>
 `;
 const getRegisterLinks = () => `
     <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9em;">
-        <a href="/">← Zur Startseite</a>
-        <a href="/login">Bereits registriert? Login →</a>
+        <a href="/">Zur Startseite</a>
+        <a href="/login">Hier geht es zum Login</a>
     </div>
 `;
 

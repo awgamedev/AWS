@@ -18,8 +18,7 @@ const mainRouter = require("./routes/index"); // Import the main router
 const authRouter = require("./routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 
 // --- MongoDB Connection ---
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/my-app-db";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(MONGODB_URI)
