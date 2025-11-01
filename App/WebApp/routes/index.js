@@ -32,14 +32,10 @@ router.get("/", (req, res) => {
 });
 
 // --- Route: Submit Message Form (GET /message) ---
-router.get(
-  "/message",
-  passport.authenticate("jwt", { session: false, failureRedirect: "/login" }), // Optional: Redirect bei Fehler
-  ensureAuthenticated,
-  (req, res) => {
-    const username = req.user.username || ""; // req.user sollte von Passport gesetzt sein
+router.get("/message", ensureAuthenticated, (req, res) => {
+  const username = req.user.username || ""; // req.user sollte von Passport gesetzt sein
 
-    const content = `
+  const content = `
             <h2>Submitt Your Message</h2>
             <p>Eingeloggt als: <strong>${username}</strong></p> 
             <form action="/message" method="POST">
@@ -54,10 +50,9 @@ router.get(
             <div style="margin-top: 20px; display: block; text-align: center;"><a href="/messages">View All Messages →</a></div>
         `;
 
-    // Use the layout function
-    res.send(generateLayout("Submit a Message", content));
-  }
-);
+  // Use the layout function
+  res.send(generateLayout("Submit a Message", content));
+});
 
 // --- Route: Handle Form Submission (POST /message) ---
 router.post("/message", async (req, res) => {

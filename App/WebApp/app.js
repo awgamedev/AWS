@@ -15,7 +15,7 @@ dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 require("./config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
 
 const mainRouter = require("./routes/index"); // Import the main router
-const loginRouter = require("./routes/login"); // <-- 1. LOGIN ROUTER IMPORTIEREN
+const authRouter = require("./routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 
 // --- MongoDB Connection ---
 const MONGODB_URI =
@@ -47,7 +47,7 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 
 // --- Routes ---
 // Use the imported router for all paths (e.g., / and /api/status)
-app.use("/", loginRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
+app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
 app.use("/", mainRouter);
 
 // Export the configured app for use in server.js
