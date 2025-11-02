@@ -8,6 +8,7 @@ const dotenv = require("dotenv"); // 1. Import dotenv
 const passport = require("passport"); // 2. Import Passport
 const session = require("express-session"); // NEU: Session-Middleware importieren
 const winston = require("winston");
+const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
 const path = require("path");
 
@@ -49,6 +50,14 @@ mongoose
 // Initialize the Express application
 const app = express();
 
+app.use((req, res, next) => {
+  req.logger = logger;
+  next();
+});
+
+// 2. Request Timer ausführen (MUSS NACH dem Logger laufen)
+app.use(requestTimer); // <-- HIER IST DIE NEUE MIDDLEWARE
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // --- Middleware and Configuration ---
@@ -70,9 +79,9 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 // --- Routes ---
 // Use the imported router for all paths (e.g., / and /api/status)
 app.use("/", mainRouter);
-app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
-app.use("/", messageRouter); // Use message routes
-app.use("/", userRouter); // Use user routes
+app.use("/", authRouter);
+app.use("/", messageRouter);
+app.use("/", userRouter);
 
 app.use(notFoundHandler);
 

@@ -25,7 +25,11 @@ const getRegisterLinks = () => `
 // ------------------------------------------------------------------
 // --- Login-Seite (Überarbeitet mit Link zur Registrierung) (GET /login) ---
 router.get("/login", (req, res) => {
+  const logger = req.logger;
+
   const redirectPath = req.query.redirect || ""; // Setze einen leeren String, falls nicht vorhanden
+
+  logger.info(`Login-Seite aufgerufen. Redirect-Pfad: ${redirectPath}`);
 
   // Falls Sie Fehler oder Nachrichten über Sessions speichern, können Sie diese hier anzeigen
   const message = req.query.error
