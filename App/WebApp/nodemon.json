@@ -1,10 +1,10 @@
 {
-  "watch": [
+"watch": [
     "server.js",
     "app.js",
-    "routes/",
-    "models/",
-    "utils/"
+    "index.js",
+    "src/",
+    "public/"
   ],
   "ignore": [
     "node_modules"

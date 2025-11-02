@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const generateLayout = require("./utils/layout"); // <--- IMPORT THE LAYOUT
+const generateLayout = require("./src/utils/layout"); // <--- IMPORT THE LAYOUT
 
 // --- Route: Home Page (GET /) ---
 router.get("/", (req, res) => {

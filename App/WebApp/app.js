@@ -30,12 +30,12 @@ logger.error("Fehler beim Zugriff auf die Datenbank!", {
 dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 
 // Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
-require("./config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
+require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
 
 const mainRouter = require("./index"); // Import the main router
-const authRouter = require("./routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
-const messageRouter = require("./routes/message"); // Import message routes
-const userRouter = require("./routes/user"); // Import user routes
+const authRouter = require("./src/routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
+const messageRouter = require("./src/routes/message"); // Import message routes
+const userRouter = require("./src/routes/user"); // Import user routes
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
