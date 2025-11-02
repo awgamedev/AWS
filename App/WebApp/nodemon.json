@@ -3,6 +3,7 @@
     "server.js",
     "app.js",
     "index.js",
+    "locales/",
     "src/",
     "public/"
   ],

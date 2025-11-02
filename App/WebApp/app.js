@@ -12,6 +12,7 @@ const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
 const path = require("path");
 const i18n = require("i18n");
+const cookieParser = require("cookie-parser");
 
 i18n.configure({
   locales: ["en", "de", "fr"], // supported languages
@@ -40,6 +41,7 @@ require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfig
 
 const mainRouter = require("./index"); // Import the main router
 const authRouter = require("./src/routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
+const langRouter = require("./src/routes/lang"); // Import language routes
 const messageRouter = require("./src/routes/message"); // Import message routes
 const userRouter = require("./src/routes/user"); // Import user routes
 
@@ -53,6 +55,8 @@ mongoose
 
 // Initialize the Express application
 const app = express();
+
+app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
 
 // Add i18n initialization middleware
 app.use(i18n.init);
@@ -87,6 +91,7 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 // Use the imported router for all paths (e.g., / and /api/status)
 app.use("/", mainRouter);
 app.use("/", authRouter);
+app.use("/", langRouter);
 app.use("/", messageRouter);
 app.use("/", userRouter);
 

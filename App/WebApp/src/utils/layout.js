@@ -42,6 +42,10 @@ const generateLayout = (title, bodyContent, currentPath, styles = "") => {
                 </button>
             </div>
 
+            <a href="/changelang/de">Deutsch</a>
+            <a href="/changelang/en">English</a>
+            <a href="/changelang/fr">Français</a>
+
             ${generateSidebar(currentPath)}
         </aside>
 

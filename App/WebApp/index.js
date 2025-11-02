@@ -5,6 +5,7 @@ const generateLayout = require("./src/utils/layout"); // <--- IMPORT THE LAYOUT
 // --- Route: Home Page (GET /) ---
 router.get("/", (req, res) => {
   const itemCount = 5;
+
   const welcome = req.__("WELCOME_MESSAGE");
   const items = req.__("ITEMS_FOUND", itemCount);
 
