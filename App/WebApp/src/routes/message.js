@@ -26,7 +26,7 @@ router.get("/message", ensureAuthenticated, (req, res) => {
         `;
 
   // Use the layout function
-  res.send(generateLayout("Submit a Message", content));
+  res.send(generateLayout("Submit a Message", content, req.path));
 });
 
 // --- Route: Handle Form Submission (POST /message) ---
@@ -39,7 +39,8 @@ router.post("/message", async (req, res) => {
         .send(
           generateLayout(
             "Error",
-            "<h2>Error</h2><p>Username and message are required.</p><p><a href='/message'>Go Back</a></p>"
+            "<h2>Error</h2><p>Username and message are required.</p><p><a href='/message'>Go Back</a></p>",
+            req.path
           )
         );
     }
@@ -54,7 +55,7 @@ router.post("/message", async (req, res) => {
                 <a href="/messages">View All Messages</a>
             </p>
         `;
-    res.send(generateLayout("Success", successContent));
+    res.send(generateLayout("Success", successContent, req.path));
   } catch (error) {
     console.error("Error saving message:", error);
     res
@@ -62,7 +63,8 @@ router.post("/message", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Server Error</h2><p>An error occurred while saving the data.</p><p><a href='/message'>Go Back</a></p>"
+          "<h2>Server Error</h2><p>An error occurred while saving the data.</p><p><a href='/message'>Go Back</a></p>",
+          req.path
         )
       );
   }
@@ -104,7 +106,7 @@ router.get("/messages", async (req, res) => {
         `;
 
     // Use the layout function
-    res.send(generateLayout("All Stored Messages", content, styles));
+    res.send(generateLayout("All Stored Messages", content, req.path, styles));
   } catch (error) {
     console.error("Error fetching messages:", error);
     res
@@ -112,7 +114,8 @@ router.get("/messages", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Server Error</h2><p>An error occurred while retrieving messages.</p><p><a href='/'>Go Home</a></p>"
+          "<h2>Server Error</h2><p>An error occurred while retrieving messages.</p><p><a href='/'>Go Home</a></p>",
+          req.path
         )
       );
   }

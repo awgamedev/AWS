@@ -18,7 +18,9 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
     // Im Fehlerfall: Senden Sie eine Fehlermeldung an den Benutzer
     return res
       .status(500)
-      .send(generateLayout("Fehler", "Fehler beim Laden der Nutzerliste."));
+      .send(
+        generateLayout("Fehler", "Fehler beim Laden der Nutzerliste.", req.path)
+      );
   }
 
   // 3. Nun können Sie das 'users'-Array mappen
@@ -49,7 +51,7 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
         </table>
     `;
 
-  res.send(generateLayout("Nutzer-Liste", content));
+  res.send(generateLayout("Nutzer-Liste", content, req.path));
 });
 
 // Export the router

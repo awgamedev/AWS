@@ -8,6 +8,7 @@ const dotenv = require("dotenv"); // 1. Import dotenv
 const passport = require("passport"); // 2. Import Passport
 const session = require("express-session"); // NEU: Session-Middleware importieren
 const winston = require("winston");
+const { notFoundHandler } = require("./src/middleware/notFound");
 const path = require("path");
 
 const logger = winston.createLogger({
@@ -72,5 +73,8 @@ app.use("/", mainRouter);
 app.use("/", authRouter); // <-- 2. LOGIN ROUTER HINZUFÜGEN (behandelt /login)
 app.use("/", messageRouter); // Use message routes
 app.use("/", userRouter); // Use user routes
+
+app.use(notFoundHandler);
+
 // Export the configured app for use in server.js
 module.exports = app;

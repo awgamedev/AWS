@@ -54,7 +54,7 @@ router.get("/login", (req, res) => {
         ${getAuthLinks()}
     `;
 
-  res.send(generateLayout("Login", content));
+  res.send(generateLayout("Login", content, req.path));
 });
 
 // --- Login-Daten verarbeiten (POST /login) ---
@@ -114,7 +114,7 @@ router.get("/register", (req, res) => {
         </form>
         ${getRegisterLinks()}
     `;
-  res.send(generateLayout("Registrierung", content));
+  res.send(generateLayout("Registrierung", content, req.path));
 });
 
 // --- Registrierungs-Daten verarbeiten (POST /register) ---
@@ -127,7 +127,8 @@ router.post("/register", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Error</h2><p>Alle Felder sind erforderlich.</p><p><a href='/register'>Zurück zur Registrierung</a></p>"
+          "<h2>Error</h2><p>Alle Felder sind erforderlich.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+          req.path
         )
       );
   }
@@ -138,7 +139,8 @@ router.post("/register", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Error</h2><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register'>Zurück zur Registrierung</a></p>"
+          "<h2>Error</h2><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+          req.path
         )
       );
   }
@@ -152,7 +154,8 @@ router.post("/register", async (req, res) => {
         .send(
           generateLayout(
             "Error",
-            "<h2>Error</h2><p>E-Mail oder Benutzername ist bereits vergeben.</p><p><a href='/register'>Zurück zur Registrierung</a></p>"
+            "<h2>Error</h2><p>E-Mail oder Benutzername ist bereits vergeben.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+            req.path
           )
         );
     }
@@ -176,7 +179,7 @@ router.post("/register", async (req, res) => {
             <p>Ihr Konto wurde erstellt. Sie können sich jetzt anmelden.</p>
             <p><a href="/login">Zum Login</a></p>
         `;
-    res.send(generateLayout("Erfolg", successContent));
+    res.send(generateLayout("Erfolg", successContent, req.path));
   } catch (err) {
     console.error("Registrierungsfehler:", err);
     res
@@ -184,7 +187,8 @@ router.post("/register", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Serverfehler</h2><p>Ein Fehler ist bei der Registrierung aufgetreten.</p>"
+          "<h2>Serverfehler</h2><p>Ein Fehler ist bei der Registrierung aufgetreten.</p>",
+          req.path
         )
       );
   }

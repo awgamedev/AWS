@@ -25,6 +25,7 @@
     "winston": "^3.18.3"
   },
   "devDependencies": {
+    "eslint-plugin-import": "^2.32.0",
     "nodemon": "^3.1.10"
   }
 }

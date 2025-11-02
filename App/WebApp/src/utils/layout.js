@@ -5,11 +5,12 @@ generateSidebar = require("./menu"); // Import the sidebar generator
 /**
  * Generates the full HTML structure for a page.
  * @param {string} title - The title for the HTML document.
+ * @param {string} currentPath - The current request path for active link highlighting.
  * @param {string} bodyContent - The HTML content to be placed inside the <body>.
  * @param {string} [styles=''] - Optional CSS styles specific to the page.
  * @returns {string} The complete HTML document string.
  */
-const generateLayout = (title, bodyContent, styles = "") => {
+const generateLayout = (title, bodyContent, currentPath, styles = "") => {
   return `
     <!DOCTYPE html>
     <html lang="de">
@@ -41,7 +42,7 @@ const generateLayout = (title, bodyContent, styles = "") => {
                 </button>
             </div>
 
-            ${generateSidebar()}
+            ${generateSidebar(currentPath)}
         </aside>
 
         <!-- 2. Hauptinhalt und Kopfzeile (Main Content Area) -->
