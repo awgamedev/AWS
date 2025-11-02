@@ -4,8 +4,13 @@ const generateLayout = require("./src/utils/layout"); // <--- IMPORT THE LAYOUT
 
 // --- Route: Home Page (GET /) ---
 router.get("/", (req, res) => {
+  const itemCount = 5;
+  const welcome = req.__("WELCOME_MESSAGE");
+  const items = req.__("ITEMS_FOUND", itemCount);
+
   const content = `
         <h1>Server is Running!</h1>
+        <h1>${welcome}</h1><p>${items}</p>
         <p>This is a successful response from your Node.js Express server.</p>
         <p>
             <a href="/message">Submit a Message</a> | 

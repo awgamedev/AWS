@@ -11,22 +11,26 @@ const winston = require("winston");
 const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
 const path = require("path");
+const i18n = require("i18n");
+
+i18n.configure({
+  locales: ["en", "de", "fr"], // supported languages
+  directory: __dirname + "/locales", //save translation files here
+  defaultLocale: "de",
+  cookie: "lang", // Optional: Save language preference in a cookie
+  queryParameter: "lang", // Optional: supports setting language via query parameter (e.g., ?lang=en)
+  syncFiles: true, // Creates missing translation files
+  autoReload: true, // Useful during development to reload translations without restarting the server
+});
 
 const logger = winston.createLogger({
   level: "info",
-  format: winston.format.json(), // ⬅️ DIES IST WICHTIG FÜR DIE VISUALISIERUNG
-  transports: [
-    // In der Produktion/im Container loggen Sie einfach auf die Konsole (stdout)
-    new winston.transports.Console(),
-  ],
+  format: winston.format.json(), // Needed for grafana/loki parsing
+  transports: [new winston.transports.Console()],
 });
 
 // Logging im Code verwenden
 logger.info("Die Anwendung wurde gestartet.");
-logger.warn("Achtung: Ein optionaler Parameter fehlt.");
-logger.error("Fehler beim Zugriff auf die Datenbank!", {
-  error: new Error("DB Connection failed"),
-});
 
 // Lade Umgebungsvariablen aus der .env-Datei
 dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
@@ -49,6 +53,9 @@ mongoose
 
 // Initialize the Express application
 const app = express();
+
+// Add i18n initialization middleware
+app.use(i18n.init);
 
 app.use((req, res, next) => {
   req.logger = logger;
