@@ -25,6 +25,8 @@ const getRegisterLinks = () => `
 // ------------------------------------------------------------------
 // --- Login-Seite (Überarbeitet mit Link zur Registrierung) (GET /login) ---
 router.get("/login", (req, res) => {
+  const redirectPath = req.query.redirect || ""; // Setze einen leeren String, falls nicht vorhanden
+
   // Falls Sie Fehler oder Nachrichten über Sessions speichern, können Sie diese hier anzeigen
   const message = req.query.error
     ? '<p style="color: red; font-weight: bold;">Falsche E-Mail oder Passwort.</p>'
@@ -34,6 +36,8 @@ router.get("/login", (req, res) => {
         <h2>Anmelden</h2>
         ${message}
         <form action="/login" method="POST">
+            <input type="hidden" name="redirect" value="${redirectPath}">
+
             <label for="email" style="display: block; margin-top: 15px; font-weight: bold;">E-Mail:</label>
             <input type="email" id="email" name="email" required 
                    style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
@@ -54,12 +58,31 @@ router.get("/login", (req, res) => {
 });
 
 // --- Login-Daten verarbeiten (POST /login) ---
+// router.post(
+//   "/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/",
+//     failureRedirect: "/login?error=true",
+//   })
+// );
+
 router.post(
-  "/login",
+  "/login", // 1. Passport versucht, den Benutzer zu authentifizieren
   passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login?error=true",
-  })
+    // Bei Fehlschlag immer zur Login-Seite mit Fehlermeldung zurückkehren
+    failureRedirect: "/login?error=true", // Füge failureFlash: true hinzu, wenn du Connect-Flash verwendest
+  }), // 2. Wenn Authentifizierung erfolgreich ist, wird DIESE Funktion ausgeführt
+  (req, res) => {
+    const encodedRedirectPath = req.body.redirect;
+    let redirectPath = "/"; // Standardwert
+    try {
+      redirectPath = decodeURIComponent(encodedRedirectPath);
+    } catch (e) {
+      console.error("Fehler beim Dekodieren der Redirect-URL:", e);
+    }
+
+    res.redirect(redirectPath);
+  }
 );
 
 // ------------------------------------------------------------------

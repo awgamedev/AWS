@@ -9,7 +9,8 @@ const ensureAuthenticated = (req, res, next) => {
     return next();
   }
 
-  return res.redirect("/login");
+  const redirectUrl = encodeURIComponent(req.originalUrl);
+  return res.redirect(`/login?redirect=${redirectUrl}`);
 };
 
 /**
