@@ -1,0 +1,37 @@
+/*
+ * Datei: public/css/styles.css
+ * ZUSÄTZLICHE REGEL FÜR FIXIERTE SPALTE
+ */
+
+/* Basis-Stile für die Pfeile im Tabellenkopf (aus vorheriger Antwort) */
+.sortable span {
+    margin-left: 0.5rem;
+    display: inline-block;
+}
+.sort-asc span::after {
+    content: "▲";
+    color: #4f46e5; 
+}
+.sort-desc span::after {
+    content: "▼";
+    color: #4f46e5; 
+}
+
+/* --- NEUE REGELN FÜR DIE FIXIERTE SPALTE --- */
+
+/* Fixiert die erste Spalte (mit der Klasse .sticky-col) beim horizontalen Scrollen */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    /* Tailwind-Klassen für Hintergrund und Border manuell setzen, 
+       damit die Zelle über andere scrollende Zellen gelegt wird */
+    background-color: white; /* Hintergrundfarbe der Zellen setzen */
+    z-index: 1; /* Sicherstellen, dass die Spalte über den scrollenden Inhalt liegt */
+    border-right: 1px solid #e5e7eb; /* Optional: Visuelle Trennung hinzufügen */
+}
+
+/* Spezielle Regel für den Tabellenkopf (TH), falls dieser einen anderen Hintergrund hat */
+thead .sticky-col {
+    background-color: #f9fafb; /* Hintergrundfarbe des Kopfes (Tailwind gray-50) */
+    z-index: 2; /* Höherer Z-Index, da der TH top-0 sticky ist */
+}
