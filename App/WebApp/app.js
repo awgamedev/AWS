@@ -44,7 +44,6 @@ const authRouter = require("./src/routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIE
 const langRouter = require("./src/routes/lang"); // Import language routes
 const messageRouter = require("./src/routes/message"); // Import message routes
 const userRouter = require("./src/routes/user"); // Import user routes
-const createUserRouter = require("./src/routes/createUser"); // Import create user routes
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -95,7 +94,6 @@ app.use("/", authRouter);
 app.use("/", langRouter);
 app.use("/", messageRouter);
 app.use("/", userRouter);
-app.use("/", createUserRouter);
 
 app.use(notFoundHandler);
 
