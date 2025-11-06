@@ -1,5 +1,3 @@
-// src/routes/user.js
-
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
@@ -24,10 +22,10 @@ const renderUserListContent = (items, reqPath) => {
     .map(
       (item) => `
         <tr data-id="${item._id}">
-            <td>${item.username}</td>
-            <td>${item.email}</td>
-            <td>${item.role}</td>
-            <td>
+            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.username}</td>
+            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.email}</td>
+            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.role}</td>
+            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider float-right">
                 <a href="/modify-user/${item._id}">Bearbeiten ✏️</a> |
                 <a href="/user-list/confirm-delete/${item._id}">Löschen 🗑️</a>
             </td>
@@ -42,7 +40,7 @@ const renderUserListContent = (items, reqPath) => {
             <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Nutzer-Liste 🧑‍💻 🚀</h2>
             
             <div class="mb-6 flex justify-end">
-                <a href="/modify-user" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                <a href="/create-user" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
                     ➕ Neuen Nutzer erstellen
                 </a>
             </div>
@@ -87,6 +85,7 @@ const renderModifyUserForm = (entityToModify = {}, isEditing, reqPath) => {
   const entityIdInput = isEditingLocal
     ? `<input type="hidden" name="id" value="${entityToModify._id}">`
     : "";
+  const formAction = isEditingLocal ? "/modify-user" : "/create-user";
 
   // Werte für das Formular
   const currentUsername = entityToModify.username || "";
@@ -111,7 +110,7 @@ const renderModifyUserForm = (entityToModify = {}, isEditing, reqPath) => {
         <div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-xl rounded-lg border border-gray-100">
             <h2 class="text-3xl font-extrabold mb-8 text-gray-900 text-center">${title}</h2>
             
-            <form action="/modify-user" method="POST" class="space-y-6">
+            <form action="${formAction}" method="POST" class="space-y-6">
                 ${entityIdInput}
                 
                 <div>
@@ -208,11 +207,6 @@ const renderConfirmDeleteUser = (entityToDelete, reqPath) => {
         </div>
     `;
 };
-
-// -------------------------------------------------------------------
-// ⚡ EXPLICITE ROUTEN FÜR USER (Kein createCrudRouter mehr!)
-// -------------------------------------------------------------------
-
 // 1. Liste anzeigen (GET /user-list)
 router.get("/user-list", ensureAuthenticated, async (req, res) => {
   let items;
@@ -229,141 +223,147 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
           req.path
         )
       );
-  }
+  } // Direkte Aufruf der spezifischen View-Funktion
 
-  // Direkte Aufruf der spezifischen View-Funktion
   const content = renderUserListContent(items, req.path);
   res.send(generateLayout("Nutzer-Liste 🧑‍💻", content, req.path));
 });
 
-// 2. BEARBEITEN/ERSTELLEN ANZEIGEN (GET /modify-user/:id? oder /modify-user)
-router.get("/modify-user/:id?", ensureAuthenticated, async (req, res) => {
-  const itemId = req.params.id;
-  const isEditing = !!itemId;
-  let entityToModify = {};
-
-  const title = isEditing
-    ? "Nutzer bearbeiten ✍️"
-    : "Neuen Nutzer erstellen 📝";
-
-  if (isEditing) {
-    try {
-      entityToModify = await User.findById(itemId);
-      if (!entityToModify) {
-        return res
-          .status(404)
-          .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
-      }
-    } catch (err) {
-      console.error("Fehler beim Abrufen der Nutzer-Daten:", err);
-      return res
-        .status(500)
-        .send(
-          generateLayout(
-            "Fehler",
-            "Fehler beim Laden der Nutzer-Details.",
-            req.path
-          )
-        );
-    }
-  }
-
-  // Direkte Aufruf der spezifischen View-Funktion
-  const content = renderModifyUserForm(
-    entityToModify.toObject ? entityToModify.toObject() : entityToModify,
-    isEditing,
-    req.path
-  );
+// 2a. FORMULAR ANZEIGEN: Neuen Nutzer erstellen (GET /create-user)
+// Diese Route zeigt immer das leere Erstellungsformular an.
+router.get("/create-user", ensureAuthenticated, (req, res) => {
+  const isEditing = false;
+  const title = "Neuen Nutzer erstellen 📝"; // entityToModify ist leer, isEditing ist false
+  const content = renderModifyUserForm({}, isEditing, req.path);
   res.send(generateLayout(title, content, req.path));
 });
 
-// 3. ENTITÄT ERSTELLEN/SPEICHERN (POST /modify-user)
-router.post("/modify-user", ensureAuthenticated, async (req, res) => {
-  const { id } = req.body;
-  const isEditing = !!id;
+// 3a. AKTION: Neuen Nutzer speichern (POST /create-user)
+// Diese Route verarbeitet nur das Speichern eines NEUEN Nutzers.
+router.post("/create-user", ensureAuthenticated, async (req, res) => {
   const data = req.body;
+  const { email, password } = data;
 
   try {
-    // --- 1. Bearbeiten eines bestehenden Elements ---
-    if (isEditing) {
-      let entity = await User.findById(id);
-      if (!entity) {
-        return res
-          .status(404)
-          .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
-      }
-
-      // 🔥 Entity-spezifischer Hook (direkt hier integriert)
-      const { email, password } = data;
-
-      // E-Mail-Eindeutigkeit prüfen
-      if (email !== entity.email) {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-          throw new Error(
-            "Diese E-Mail wird bereits von einem anderen Nutzer verwendet."
-          );
-        }
-      }
-
-      // Passwort-Hashing (nur wenn ein neues Passwort bereitgestellt wurde)
-      if (password) {
-        if (password.length < 6) {
-          throw new Error("Das Passwort muss mindestens 6 Zeichen lang sein.");
-        }
-        const salt = await bcrypt.genSalt(10);
-        data.password = await bcrypt.hash(password, salt);
-        entity.password = data.password; // Wichtig für Mongoose Update
-      } else if (!password && isEditing) {
-        // Passwortfeld ist im Formular leer, daher nicht hashen und nicht ändern
-        delete data.password; // Entferne es aus den zu speichernden Daten, um es nicht versehentlich zu überschreiben
-      }
-
-      // Daten aktualisieren
-      // Hier wird nur das aktualisiert, was nicht das Passwort ist, wenn es unverändert blieb,
-      // oder das neue Passwort, falls es verarbeitet wurde.
-      entity.username = data.username;
-      entity.email = data.email;
-      entity.role = data.role || "user";
-
-      await entity.save();
-      res.redirect("/user-list");
-
-      // --- 2. Erstellen eines neuen Elements ---
-    } else {
-      const { email, password } = data;
-
-      // Passwort-Prüfung und Hashing (direkt hier)
-      if (!password) {
-        throw new Error(
-          "Passwort ist beim Erstellen eines neuen Nutzers erforderlich."
-        );
-      }
-      if (password.length < 6) {
-        throw new Error("Das Passwort muss mindestens 6 Zeichen lang sein.");
-      }
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(password, salt);
-
-      // E-Mail-Eindeutigkeit prüfen
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        throw new Error("Ein Nutzer mit dieser E-Mail existiert bereits.");
-      }
-
-      const newUser = new User(data);
-      await newUser.save();
-      res.redirect("/user-list");
+    // Passwort-Prüfung und Hashing
+    if (!password) {
+      throw new Error(
+        "Passwort ist beim Erstellen eines neuen Nutzers erforderlich."
+      );
     }
+    if (password.length < 6) {
+      throw new Error("Das Passwort muss mindestens 6 Zeichen lang sein.");
+    }
+    const salt = await bcrypt.genSalt(10);
+    data.password = await bcrypt.hash(password, salt); // E-Mail-Eindeutigkeit prüfen
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new Error("Ein Nutzer mit dieser E-Mail existiert bereits.");
+    }
+
+    const newUser = new User(data);
+    await newUser.save();
+    res.redirect("/user-list");
   } catch (err) {
-    console.error("Fehler beim Speichern des Nutzers:", err);
-    // Fehlerbehandlung, falls kein generisches View-System vorhanden ist
+    console.error("Fehler beim Erstellen des Nutzers:", err);
     return res
       .status(500)
       .send(
         generateLayout(
           "Fehler",
-          err.message || `Fehler beim Speichern des Nutzers.`,
+          err.message || `Fehler beim Erstellen des Nutzers.`,
+          req.path
+        )
+      );
+  }
+});
+
+// 2b. FORMULAR ANZEIGEN: Bestehenden Nutzer bearbeiten (GET /modify-user/:id)
+// Diese Route benötigt IMMER eine :id und lädt die Daten.
+router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
+  const itemId = req.params.id;
+  const isEditing = true;
+  let entityToModify = {};
+
+  try {
+    entityToModify = await User.findById(itemId);
+    if (!entityToModify) {
+      return res
+        .status(404)
+        .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+    }
+  } catch (err) {
+    console.error("Fehler beim Abrufen der Nutzer-Daten:", err);
+    return res
+      .status(500)
+      .send(
+        generateLayout(
+          "Fehler",
+          "Fehler beim Laden der Nutzer-Details.",
+          req.path
+        )
+      );
+  } // Direkte Aufruf der spezifischen View-Funktion
+
+  const content = renderModifyUserForm(
+    entityToModify.toObject ? entityToModify.toObject() : entityToModify,
+    isEditing,
+    req.path
+  );
+  res.send(generateLayout("Nutzer bearbeiten ✍️", content, req.path));
+});
+
+// 3b. AKTION: Bestehenden Nutzer speichern (POST /modify-user)
+// Diese Route verarbeitet nur die Aktualisierung eines BESTEHENDEN Nutzers (mit id im body).
+router.post("/modify-user", ensureAuthenticated, async (req, res) => {
+  const { id } = req.body;
+  const data = req.body;
+
+  try {
+    let entity = await User.findById(id);
+    if (!entity) {
+      return res
+        .status(404)
+        .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+    } // 🔥 Entity-spezifischer Hook (direkt hier integriert)
+
+    const { email, password } = data; // E-Mail-Eindeutigkeit prüfen (nur wenn E-Mail geändert wurde)
+
+    if (email !== entity.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        throw new Error(
+          "Diese E-Mail wird bereits von einem anderen Nutzer verwendet."
+        );
+      }
+    } // Passwort-Hashing (nur wenn ein neues Passwort bereitgestellt wurde)
+
+    if (password) {
+      if (password.length < 6) {
+        throw new Error("Das Passwort muss mindestens 6 Zeichen lang sein.");
+      }
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(password, salt);
+      entity.password = data.password; // Wichtig für Mongoose Update
+    } else {
+      delete data.password; // Entferne es aus den zu speichernden Daten
+    } // Daten aktualisieren
+
+    entity.username = data.username;
+    entity.email = data.email;
+    entity.role = data.role || "user";
+
+    await entity.save();
+    res.redirect("/user-list");
+  } catch (err) {
+    console.error("Fehler beim Speichern des Nutzers:", err); // Fehlerbehandlung, falls kein generisches View-System vorhanden ist
+    return res
+      .status(500)
+      .send(
+        generateLayout(
+          "Fehler",
+          err.message || `Fehler beim Aktualisieren des Nutzers.`,
           req.path
         )
       );
@@ -371,6 +371,8 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
 });
 
 // 4. LÖSCHBESTÄTIGUNGSSEITE ANZEIGEN (GET /user-list/confirm-delete/:id)
+// ... (Die Routen 4 und 5 bleiben unverändert) ...
+
 router.get(
   "/user-list/confirm-delete/:id",
   ensureAuthenticated,
@@ -392,9 +394,8 @@ router.get(
         .send(
           generateLayout("Fehler", "Fehler beim Laden der Details.", req.path)
         );
-    }
+    } // Direkte Aufruf der spezifischen View-Funktion
 
-    // Direkte Aufruf der spezifischen View-Funktion
     const content = renderConfirmDeleteUser(
       entityToDelete.toObject(),
       req.path

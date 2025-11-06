@@ -1,66 +1,60 @@
-import { Model, Document, FilterQuery, UpdateQuery } from "mongoose";
-
-// Interface für grundlegende CRUD-Methoden
-export interface IBaseRepository<T extends Document> {
-  create(item: Omit<T, "_id" | "createdAt" | "updatedAt">): Promise<T>;
-  findById(id: string): Promise<T | null>;
-  findAll(query?: FilterQuery<T>): Promise<T[]>;
-  update(id: string, item: UpdateQuery<T>): Promise<T | null>;
-  delete(id: string): Promise<boolean>;
-}
-
-// Generische Basisklasse für alle Repositories
-export abstract class BaseRepository<T extends Document>
-  implements IBaseRepository<T>
-{
-  protected model: Model<T>;
-
-  constructor(model: Model<T>) {
+class BaseRepository {
+  /**
+   * @param {mongoose.Model} model - Das Mongoose-Model, mit dem dieses Repository arbeitet.
+   */
+  constructor(model) {
     this.model = model;
   }
 
   /**
    * Erstellt ein neues Dokument.
+   * @param {Object} item - Das Objekt mit den Daten für das neue Dokument.
+   * @returns {Promise<Object>} Das erstellte und in der DB gespeicherte Dokument.
    */
-  async create(item: any): Promise<T> {
+  async create(item) {
     const createdItem = new this.model(item);
     return await createdItem.save();
   }
 
   /**
    * Findet ein Dokument anhand seiner ID.
+   * @param {string} id - Die ID des Dokuments.
+   * @returns {Promise<Object | null>} Das gefundene Dokument oder null.
    */
-  async findById(id: string): Promise<T | null> {
+  async findById(id) {
     return await this.model.findById(id).exec();
   }
 
   /**
    * Findet alle Dokumente basierend auf einer optionalen Query.
+   * @param {Object} [query={}] - Ein Mongoose FilterQuery-Objekt.
+   * @returns {Promise<Array<Object>>} Eine Liste von Dokumenten.
    */
-  async findAll(query: FilterQuery<T> = {}): Promise<T[]> {
+  async findAll(query = {}) {
     return await this.model.find(query).exec();
   }
 
   /**
    * Aktualisiert ein Dokument anhand seiner ID.
+   * @param {string} id - Die ID des Dokuments.
+   * @param {Object} item - Ein Mongoose UpdateQuery-Objekt mit den zu aktualisierenden Feldern.
+   * @returns {Promise<Object | null>} Das aktualisierte Dokument oder null.
    */
-  async update(id: string, item: UpdateQuery<T>): Promise<T | null> {
+  async update(id, item) {
     // new: true gibt das aktualisierte Dokument zurück
     return await this.model.findByIdAndUpdate(id, item, { new: true }).exec();
   }
 
   /**
    * Löscht ein Dokument anhand seiner ID.
+   * @param {string} id - Die ID des Dokuments.
+   * @returns {Promise<boolean>} True, wenn ein Dokument gelöscht wurde, ansonsten False.
    */
-  async delete(id: string): Promise<boolean> {
-    const result = await this.model
-      .deleteOne({ _id: id } as FilterQuery<T>)
-      .exec();
+  async delete(id) {
+    const result = await this.model.deleteOne({ _id: id }).exec();
     return result.deletedCount === 1;
   }
 }
 
-// --- Beispiel für eine konkrete Implementierung ---
-
-// Angenommen, du hast ein User-Model (UserSchema und UserModel)
-
+// Export der Klasse, damit sie in anderen Dateien importiert werden kann.
+module.exports = BaseRepository;
