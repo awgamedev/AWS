@@ -26,7 +26,7 @@ router.get("/message", ensureAuthenticated, (req, res) => {
         `;
 
   // Use the layout function
-  res.send(generateLayout("Submit a Message", content, req.path));
+  res.send(generateLayout("Submit a Message", content, req.path, req.user));
 });
 
 // --- Route: Handle Form Submission (POST /message) ---
@@ -40,7 +40,8 @@ router.post("/message", async (req, res) => {
           generateLayout(
             "Error",
             "<h2>Error</h2><p>Username and message are required.</p><p><a href='/message'>Go Back</a></p>",
-            req.path
+            req.path,
+            req.user
           )
         );
     }
@@ -55,7 +56,7 @@ router.post("/message", async (req, res) => {
                 <a href="/messages">View All Messages</a>
             </p>
         `;
-    res.send(generateLayout("Success", successContent, req.path));
+    res.send(generateLayout("Success", successContent, req.path, req.user));
   } catch (error) {
     console.error("Error saving message:", error);
     res
@@ -64,7 +65,8 @@ router.post("/message", async (req, res) => {
         generateLayout(
           "Error",
           "<h2>Server Error</h2><p>An error occurred while saving the data.</p><p><a href='/message'>Go Back</a></p>",
-          req.path
+          req.path,
+          req.user
         )
       );
   }
@@ -106,7 +108,9 @@ router.get("/messages", async (req, res) => {
         `;
 
     // Use the layout function
-    res.send(generateLayout("All Stored Messages", content, req.path, styles));
+    res.send(
+      generateLayout("All Stored Messages", content, req.path, req.user, styles)
+    );
   } catch (error) {
     console.error("Error fetching messages:", error);
     res
@@ -115,7 +119,8 @@ router.get("/messages", async (req, res) => {
         generateLayout(
           "Error",
           "<h2>Server Error</h2><p>An error occurred while retrieving messages.</p><p><a href='/'>Go Home</a></p>",
-          req.path
+          req.path,
+          req.user
         )
       );
   }

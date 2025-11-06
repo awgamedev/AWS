@@ -4,6 +4,8 @@ const generateLayout = require("./src/utils/layout"); // <--- IMPORT THE LAYOUT
 
 // --- Route: Home Page (GET /) ---
 router.get("/", (req, res) => {
+  const user = req.user || null;
+
   const itemCount = 5;
 
   const welcome = req.__("WELCOME_MESSAGE");
@@ -27,7 +29,9 @@ router.get("/", (req, res) => {
         /* Specific styles for the home card */
         .container { text-align: center; }
     `;
-  res.send(generateLayout("Node.js Simple App", content, styles));
+  res.send(
+    generateLayout("Node.js Simple App", content, "/", req.user, styles)
+  );
 });
 
 // --- A simple API route (GET /api/status) ---

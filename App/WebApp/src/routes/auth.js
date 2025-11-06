@@ -67,7 +67,7 @@ router.get("/login", (req, res) => {
         </div>
     `;
 
-  res.send(generateLayout("Login", content, req.path));
+  res.send(generateLayout("Login", content, req.path, req.user));
 });
 
 // --- Login-Daten verarbeiten (POST /login) ---
@@ -137,7 +137,7 @@ router.get("/register", (req, res) => {
             ${getAuthLinks(false)}
         </div>
     `;
-  res.send(generateLayout("Registrierung", content, req.path));
+  res.send(generateLayout("Registrierung", content, req.path, req.user));
 });
 
 // --- Registrierungs-Daten verarbeiten (POST /register) ---
@@ -152,7 +152,8 @@ router.post("/register", async (req, res) => {
         generateLayout(
           "Error",
           `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Alle Felder sind erforderlich.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
-          req.path
+          req.path,
+          req.user
         )
       );
   }
@@ -165,7 +166,8 @@ router.post("/register", async (req, res) => {
         generateLayout(
           "Error",
           `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
-          req.path
+          req.path,
+          req.user
         )
       );
   }
@@ -180,7 +182,8 @@ router.post("/register", async (req, res) => {
           generateLayout(
             "Error",
             `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>E-Mail oder Benutzername ist bereits vergeben.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
-            req.path
+            req.path,
+            req.user
           )
         );
     }
@@ -208,7 +211,7 @@ router.post("/register", async (req, res) => {
                 </a>
             </div>
         `;
-    res.send(generateLayout("Erfolg", successContent, req.path));
+    res.send(generateLayout("Erfolg", successContent, req.path, req.user));
   } catch (err) {
     console.error("Registrierungsfehler:", err);
     res

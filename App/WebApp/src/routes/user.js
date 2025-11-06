@@ -217,13 +217,14 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
         generateLayout(
           "Fehler",
           "Fehler beim Laden der Nutzer-Liste.",
-          req.path
+          req.path,
+          req.user
         )
       );
   } // Direkte Aufruf der spezifischen View-Funktion
 
   const content = renderUserListContent(items, req.path);
-  res.send(generateLayout("Nutzer-Liste 🧑‍💻", content, req.path));
+  res.send(generateLayout("Nutzer-Liste 🧑‍💻", content, req.path, req.user));
 });
 
 // 2a. FORMULAR ANZEIGEN: Neuen Nutzer erstellen (GET /create-user)
@@ -232,7 +233,7 @@ router.get("/create-user", ensureAuthenticated, (req, res) => {
   const isEditing = false;
   const title = "Neuen Nutzer erstellen 📝"; // entityToModify ist leer, isEditing ist false
   const content = renderModifyUserForm({}, isEditing, req.path);
-  res.send(generateLayout(title, content, req.path));
+  res.send(generateLayout(title, content, req.path, req.user));
 });
 
 // 3a. AKTION: Neuen Nutzer speichern (POST /create-user)
@@ -270,7 +271,8 @@ router.post("/create-user", ensureAuthenticated, async (req, res) => {
         generateLayout(
           "Fehler",
           err.message || `Fehler beim Erstellen des Nutzers.`,
-          req.path
+          req.path,
+          req.user
         )
       );
   }
@@ -288,7 +290,9 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
     if (!entityToModify) {
       return res
         .status(404)
-        .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+        .send(
+          generateLayout("Fehler", "Nutzer nicht gefunden.", req.path, req.user)
+        );
     }
   } catch (err) {
     console.error("Fehler beim Abrufen der Nutzer-Daten:", err);
@@ -298,7 +302,8 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
         generateLayout(
           "Fehler",
           "Fehler beim Laden der Nutzer-Details.",
-          req.path
+          req.path,
+          req.user
         )
       );
   } // Direkte Aufruf der spezifischen View-Funktion
@@ -308,7 +313,7 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
     isEditing,
     req.path
   );
-  res.send(generateLayout("Nutzer bearbeiten ✍️", content, req.path));
+  res.send(generateLayout("Nutzer bearbeiten ✍️", content, req.path, req.user));
 });
 
 // 3b. AKTION: Bestehenden Nutzer speichern (POST /modify-user)
@@ -322,7 +327,9 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
     if (!entity) {
       return res
         .status(404)
-        .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+        .send(
+          generateLayout("Fehler", "Nutzer nicht gefunden.", req.path, req.user)
+        );
     } // 🔥 Entity-spezifischer Hook (direkt hier integriert)
 
     const { email, password } = data; // E-Mail-Eindeutigkeit prüfen (nur wenn E-Mail geändert wurde)
@@ -361,7 +368,8 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
         generateLayout(
           "Fehler",
           err.message || `Fehler beim Aktualisieren des Nutzers.`,
-          req.path
+          req.path,
+          req.user
         )
       );
   }
@@ -382,14 +390,26 @@ router.get(
       if (!entityToDelete) {
         return res
           .status(404)
-          .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+          .send(
+            generateLayout(
+              "Fehler",
+              "Nutzer nicht gefunden.",
+              req.path,
+              req.user
+            )
+          );
       }
     } catch (err) {
       console.error("Fehler beim Abrufen der Nutzer-Daten für Löschung:", err);
       return res
         .status(500)
         .send(
-          generateLayout("Fehler", "Fehler beim Laden der Details.", req.path)
+          generateLayout(
+            "Fehler",
+            "Fehler beim Laden der Details.",
+            req.path,
+            req.user
+          )
         );
     } // Direkte Aufruf der spezifischen View-Funktion
 
@@ -397,7 +417,7 @@ router.get(
       entityToDelete.toObject(),
       req.path
     );
-    res.send(generateLayout("Löschen bestätigen", content, req.path));
+    res.send(generateLayout("Löschen bestätigen", content, req.path, req.user));
   }
 );
 
@@ -411,14 +431,21 @@ router.post("/user-list/delete/:id", ensureAuthenticated, async (req, res) => {
     } else {
       res
         .status(404)
-        .send(generateLayout("Fehler", "Nutzer nicht gefunden.", req.path));
+        .send(
+          generateLayout("Fehler", "Nutzer nicht gefunden.", req.path, req.user)
+        );
     }
   } catch (err) {
     console.error("Fehler beim Löschen des Nutzers:", err);
     return res
       .status(500)
       .send(
-        generateLayout("Fehler", "Fehler beim Löschen des Nutzers.", req.path)
+        generateLayout(
+          "Fehler",
+          "Fehler beim Löschen des Nutzers.",
+          req.path,
+          req.user
+        )
       );
   }
 });
