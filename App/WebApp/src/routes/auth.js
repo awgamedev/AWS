@@ -213,14 +213,14 @@ router.post("/register", async (req, res) => {
 
     // 4. Erfolgsmeldung (ähnlich der Bearbeiten/Erstellen-Erfolgsseite)
     const successContent = `
-            <div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-green-200 text-center">
-                <h2 class="text-3xl font-extrabold text-green-700 mb-4">🎉 Registrierung erfolgreich!</h2>
-                <p class="text-lg text-gray-700 mb-6">Ihr Konto wurde erstellt. Sie können sich jetzt anmelden.</p>
-                <a href="/login" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                    Zum Login →
-                </a>
-            </div>
-        `;
+      <div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-green-200 text-center">
+          <h2 class="text-3xl font-extrabold text-green-700 mb-4">🎉 Registrierung erfolgreich!</h2>
+          <p class="text-lg text-gray-700 mb-6">Ihr Konto wurde erstellt. Sie können sich jetzt anmelden.</p>
+          <a href="/login" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+              Zum Login →
+          </a>
+      </div>
+    `;
     res.send(generateLayout("Erfolg", successContent, req.path, req.user));
   } catch (err) {
     console.error("Registrierungsfehler:", err);
