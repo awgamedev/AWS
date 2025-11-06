@@ -91,6 +91,12 @@ router.post(
   }
 );
 
+router.post("/logout", (req, res) => {
+  req.logout(() => {
+    res.redirect("/login");
+  });
+});
+
 // ------------------------------------------------------------------
 // --- Registrierungs-Formular (GET /register) ---
 router.get("/register", (req, res) => {
