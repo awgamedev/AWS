@@ -13,6 +13,7 @@ const { notFoundHandler } = require("./src/middleware/notFound");
 const path = require("path");
 const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
+const favicon = require("serve-favicon");
 
 i18n.configure({
   locales: ["en", "de", "fr"], // supported languages
@@ -55,6 +56,8 @@ mongoose
 
 // Initialize the Express application
 const app = express();
+
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
 
