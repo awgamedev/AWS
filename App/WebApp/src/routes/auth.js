@@ -152,16 +152,20 @@ router.post("/register", async (req, res) => {
 
   // Überprüfung der Pflichtfelder (könnte auch besser mit Flash Messages gelöst werden)
   if (!username || !email || !password || !confirmPassword) {
-    return res
-      .status(400)
-      .send(
-        generateLayout(
-          "Error",
-          `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Alle Felder sind erforderlich.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
-          req.path,
-          req.user
-        )
-      );
+    return res.status(400).send(
+      generateLayout(
+        "Error",
+        `<h2>Fehler</h2>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <p>Alle Felder sind erforderlich.</p>
+            <p>
+            <a href='/register' class="underline">Zurück zur Registrierung</a>
+            </p>
+          </div>`,
+        req.path,
+        req.user
+      )
+    );
   }
 
   // Passwort-Check
