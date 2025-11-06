@@ -37,3 +37,6 @@ build
 npm-debug.log
 .env
 .DS_Store
+
+# Exclude library files
+lib/

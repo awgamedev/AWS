@@ -21,13 +21,13 @@ const generateLayout = (title, bodyContent, currentPath, styles = "") => {
         <!-- Tailwind CSS laden -->
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="/css/layout.css">
+        <link rel="stylesheet" href="/lib/fontawesome/css/all.min.css">
 
         <style>
             ${styles}
         </style>
     </head>
     <body class="bg-gray-50 flex flex-col min-h-screen">
-
         <!-- 1. Seitenleiste (Sidebar) -->
         <aside id="sidebar" class="sidebar-width bg-gray-900 text-white flex-shrink-0 z-40 transition-all duration-300 shadow-xl border-r border-gray-800">
             <!-- Sidebar-Kopfzeile/Logo -->
@@ -93,7 +93,7 @@ const generateLayout = (title, bodyContent, currentPath, styles = "") => {
         <!-- Overlay für Mobile, um die Seitenleiste zu schließen -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 z-40 hidden transition-opacity duration-300 md:hidden" onclick="toggleSidebar(false)"></div>
 
-
+        <script src="/lib/fontawesome/js/all.min.css"></script>
         <script src="/js/layout.js"></script>
     </body>
     </html>
