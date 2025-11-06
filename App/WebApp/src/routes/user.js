@@ -6,28 +6,28 @@ const bcrypt = require("bcryptjs");
 const generateLayout = require("../utils/layout");
 const { ensureAuthenticated } = require("../middleware/auth");
 
-// -------------------------------------------------------------------
-// 🛑 HINWEIS: Diese Funktionen ersetzen die generischen CRUD-Funktionen
-// Die Implementierung von renderList, renderModifyForm, etc. muss nun hier
-// oder in neuen, spezifischen userView.js Dateien erfolgen.
-// -------------------------------------------------------------------
-
-/**
- * Generiert den HTML-Inhalt für die Nutzerliste.
- * MUSS ERSETZT werden, wenn Sie die generische View nicht mehr verwenden.
- */
 const renderUserListContent = (items, reqPath) => {
   // Beispielhafte, statische Rückgabe, die die Daten anzeigt (ersetzt renderList)
   let tableBodyHtml = items
     .map(
       (item) => `
         <tr data-id="${item._id}">
-            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.username}</td>
-            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.email}</td>
-            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider">${item.role}</td>
-            <td class="px-6 py-3 text-left text-xs font-medium text-black-500 tracking-wider float-right">
-                <a href="/modify-user/${item._id}">Bearbeiten ✏️</a> |
-                <a href="/user-list/confirm-delete/${item._id}">Löschen 🗑️</a>
+            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900">${item.username}</td>
+            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900">${item.email}</td>
+            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900">${item.role}</td>
+            <td class="px-6 py-3 text-right">
+                <div class="flex justify-end gap-2">
+                    <a href="/modify-user/${item._id}" 
+                       class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                        <span>✏️</span>
+                        <span class="ml-1">Bearbeiten</span>
+                    </a>
+                    <a href="/user-list/confirm-delete/${item._id}"
+                       class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition-colors">
+                        <span>🗑️</span>
+                        <span class="ml-1">Löschen</span>
+                    </a>
+                </div>
             </td>
         </tr>
     `
