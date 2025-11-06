@@ -6,24 +6,22 @@ const router = express.Router();
 const passport = require("passport");
 const generateLayout = require("../utils/layout");
 const User = require("../models/User"); // used to register new users
-const bcrypt = require("bcryptjs"); // # used for password hashing
+const bcrypt = require("bcryptjs"); // used for password hashing
 
-// --- Funktion zum Hinzufügen von Links und Styling ---
-const getAuthLinks = () => `
-    <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9em;">
-        <a href="/">Zur Startseite</a>
-        <a href="/register">Hier kannst du dich registrieren</a>
-    </div>
-`;
-const getRegisterLinks = () => `
-    <div style="margin-top: 20px; display: flex; justify-content: space-between; font-size: 0.9em;">
-        <a href="/">Zur Startseite</a>
-        <a href="/login">Hier geht es zum Login</a>
+// --- Funktion zum Hinzufügen von Links (angepasst an modernes Layout) ---
+const getAuthLinks = (isLogin) => `
+    <div class="mt-6 flex justify-between text-sm">
+        ${
+          isLogin
+            ? `<a href="/register" class="text-indigo-600 hover:text-indigo-500">→ Hier registrieren</a>`
+            : `<a href="/login" class="text-indigo-600 hover:text-indigo-500">← Zum Login</a>`
+        }
+        <a href="/" class="text-gray-600 hover:text-gray-500">Zur Startseite</a>
     </div>
 `;
 
 // ------------------------------------------------------------------
-// --- Login-Seite (Überarbeitet mit Link zur Registrierung) (GET /login) ---
+// --- Login-Seite (GET /login) ---
 router.get("/login", (req, res) => {
   const logger = req.logger;
 
@@ -31,55 +29,59 @@ router.get("/login", (req, res) => {
 
   logger.info(`Login-Seite aufgerufen. Redirect-Pfad: ${redirectPath}`);
 
-  // Falls Sie Fehler oder Nachrichten über Sessions speichern, können Sie diese hier anzeigen
+  // Fehlermeldung im modernen Stil
   const message = req.query.error
-    ? '<p style="color: red; font-weight: bold;">Falsche E-Mail oder Passwort.</p>'
+    ? '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p class="font-bold">Fehler:</p><p>Falsche E-Mail oder Passwort.</p></div>'
     : "";
 
   const content = `
-        <h2>Anmelden</h2>
-        ${message}
-        <form action="/login" method="POST">
-            <input type="hidden" name="redirect" value="${redirectPath}">
+        <div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-gray-100">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">Anmelden 🔑</h2>
+            ${message}
+            <form action="/login" method="POST" class="space-y-4">
+                <input type="hidden" name="redirect" value="${redirectPath}">
 
-            <label for="email" style="display: block; margin-top: 15px; font-weight: bold;">E-Mail:</label>
-            <input type="email" id="email" name="email" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="password" style="display: block; margin-top: 15px; font-weight: bold;">Passwort:</label>
-            <input type="password" id="password" name="password" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <button type="submit" 
-                    style="background-color: #00796b; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1em;">
-                Login
-            </button>
-        </form>
-        ${getAuthLinks()}
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">E-Mail</label>
+                    <input type="email" id="email" name="email" required 
+                           value="${req.query.email || ""}"
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                           placeholder="ihre@email.de">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Passwort</label>
+                    <input type="password" id="password" name="password" required 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                           placeholder="Ihr Passwort">
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                        Login
+                    </button>
+                </div>
+            </form>
+            ${getAuthLinks(true)}
+        </div>
     `;
 
   res.send(generateLayout("Login", content, req.path));
 });
 
 // --- Login-Daten verarbeiten (POST /login) ---
-// router.post(
-//   "/login",
-//   passport.authenticate("local", {
-//     successRedirect: "/",
-//     failureRedirect: "/login?error=true",
-//   })
-// );
-
 router.post(
-  "/login", // 1. Passport versucht, den Benutzer zu authentifizieren
+  "/login",
   passport.authenticate("local", {
     // Bei Fehlschlag immer zur Login-Seite mit Fehlermeldung zurückkehren
-    failureRedirect: "/login?error=true", // Füge failureFlash: true hinzu, wenn du Connect-Flash verwendest
-  }), // 2. Wenn Authentifizierung erfolgreich ist, wird DIESE Funktion ausgeführt
+    failureRedirect: "/login?error=true", // Optional: E-Mail beibehalten? Siehe unten
+  }),
   (req, res) => {
     const encodedRedirectPath = req.body.redirect;
     let redirectPath = "/"; // Standardwert
     try {
+      // Hier wird der redirect-Wert aus dem POST-Body verwendet, der aus dem Hidden-Field kommt
       redirectPath = decodeURIComponent(encodedRedirectPath);
     } catch (e) {
       console.error("Fehler beim Dekodieren der Redirect-URL:", e);
@@ -93,30 +95,47 @@ router.post(
 // --- Registrierungs-Formular (GET /register) ---
 router.get("/register", (req, res) => {
   const content = `
-        <h2>Neues Konto erstellen</h2>
-        <form action="/register" method="POST">
-            <label for="username" style="display: block; margin-top: 15px; font-weight: bold;">Benutzername:</label>
-            <input type="text" id="username" name="username" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="email" style="display: block; margin-top: 15px; font-weight: bold;">E-Mail:</label>
-            <input type="email" id="email" name="email" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="password" style="display: block; margin-top: 15px; font-weight: bold;">Passwort:</label>
-            <input type="password" id="password" name="password" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="confirmPassword" style="display: block; margin-top: 15px; font-weight: bold;">Passwort bestätigen:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required 
-                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+        <div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-gray-100">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">Neues Konto erstellen ✍️</h2>
+            <form action="/register" method="POST" class="space-y-4">
+                
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Benutzername</label>
+                    <input type="text" id="username" name="username" required 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                           placeholder="Ihr Wunsch-Benutzername">
+                </div>
 
-            <button type="submit" 
-                    style="background-color: #f57c00; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 1em;">
-                Registrieren
-            </button>
-        </form>
-        ${getRegisterLinks()}
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">E-Mail</label>
+                    <input type="email" id="email" name="email" required 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                           placeholder="neue@adresse.de">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Passwort</label>
+                    <input type="password" id="password" name="password" required 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                           placeholder="Mindestens 6 Zeichen">
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Passwort bestätigen</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                           placeholder="Passwort wiederholen">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" 
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                        Registrieren
+                    </button>
+                </div>
+            </form>
+            ${getAuthLinks(false)}
+        </div>
     `;
   res.send(generateLayout("Registrierung", content, req.path));
 });
@@ -125,25 +144,27 @@ router.get("/register", (req, res) => {
 router.post("/register", async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
+  // Überprüfung der Pflichtfelder (könnte auch besser mit Flash Messages gelöst werden)
   if (!username || !email || !password || !confirmPassword) {
     return res
       .status(400)
       .send(
         generateLayout(
           "Error",
-          "<h2>Error</h2><p>Alle Felder sind erforderlich.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+          `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Alle Felder sind erforderlich.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
           req.path
         )
       );
   }
 
+  // Passwort-Check
   if (password !== confirmPassword) {
     return res
       .status(400)
       .send(
         generateLayout(
           "Error",
-          "<h2>Error</h2><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+          `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Die Passwörter stimmen nicht überein.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
           req.path
         )
       );
@@ -158,7 +179,7 @@ router.post("/register", async (req, res) => {
         .send(
           generateLayout(
             "Error",
-            "<h2>Error</h2><p>E-Mail oder Benutzername ist bereits vergeben.</p><p><a href='/register'>Zurück zur Registrierung</a></p>",
+            `<h2>Fehler</h2><div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>E-Mail oder Benutzername ist bereits vergeben.</p><p><a href='/register' class="underline">Zurück zur Registrierung</a></p></div>`,
             req.path
           )
         );
@@ -177,11 +198,15 @@ router.post("/register", async (req, res) => {
     });
     await user.save();
 
-    // 4. Erfolgsmeldung und Weiterleitung
+    // 4. Erfolgsmeldung (ähnlich der Bearbeiten/Erstellen-Erfolgsseite)
     const successContent = `
-            <h2>🎉 Registrierung erfolgreich!</h2>
-            <p>Ihr Konto wurde erstellt. Sie können sich jetzt anmelden.</p>
-            <p><a href="/login">Zum Login</a></p>
+            <div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-green-200 text-center">
+                <h2 class="text-3xl font-extrabold text-green-700 mb-4">🎉 Registrierung erfolgreich!</h2>
+                <p class="text-lg text-gray-700 mb-6">Ihr Konto wurde erstellt. Sie können sich jetzt anmelden.</p>
+                <a href="/login" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                    Zum Login →
+                </a>
+            </div>
         `;
     res.send(generateLayout("Erfolg", successContent, req.path));
   } catch (err) {
@@ -191,7 +216,7 @@ router.post("/register", async (req, res) => {
       .send(
         generateLayout(
           "Error",
-          "<h2>Serverfehler</h2><p>Ein Fehler ist bei der Registrierung aufgetreten.</p>",
+          `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Ein Serverfehler ist bei der Registrierung aufgetreten.</p></div>`,
           req.path
         )
       );
