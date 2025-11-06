@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 // Importiere Hilfsfunktionen (diese sollten in Ihrer Umgebung existieren)
 const generateLayout = require("../utils/layout");
 const { ensureAuthenticated } = require("../middleware/auth");
+const { genThItems } = require("../utils/table-components/tableItems");
 
 const renderUserListContent = (items, reqPath) => {
   // Beispielhafte, statische Rückgabe, die die Daten anzeigt (ersetzt renderList)
@@ -37,9 +38,8 @@ const renderUserListContent = (items, reqPath) => {
   return `
         <link rel="stylesheet" href="/css/table.css">
         <div class="p-4 sm:p-6 lg:p-8">
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Nutzer-Liste 🧑‍💻 🚀</h2>
-            
-            <div class="mb-6 flex justify-end">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-extrabold text-gray-900">Nutzer-Liste 🧑‍💻 🚀</h2>
                 <a href="/create-user" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
                     ➕ Neuen Nutzer erstellen
                 </a>
@@ -53,10 +53,7 @@ const renderUserListContent = (items, reqPath) => {
                 <table id="entityTable" class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nutzername</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-Mail</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rolle</th>
-                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Aktionen</span></th>
+                            ${genThItems(["Nutzername", "E-Mail", "Rolle", ""])}
                         </tr>
                     </thead>
                     <tbody id="entityTableBody" class="bg-white divide-y divide-gray-200">
