@@ -57,6 +57,11 @@ mongoose
 // Initialize the Express application
 const app = express();
 
+// Konfiguration der Templating Engine
+app.set("view engine", "ejs");
+// Sagt Express, wo die Template-Dateien zu finden sind
+app.set("views", path.join(__dirname, "views"));
+
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
