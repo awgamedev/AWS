@@ -3,7 +3,7 @@
  * @param {string} currentPath - The current request path for active link highlighting.
  * @returns {string} The HTML string for the sidebar navigation.
  */
-const generateSidebar = (currentPath) => {
+const generateMenuEntries = (currentPath) => {
   // Definiere die Klassen für den aktiven Zustand
   const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
   const INACTIVE_CLASSES = "text-gray-300";
@@ -59,4 +59,4 @@ const generateSidebar = (currentPath) => {
     `;
 };
 
-module.exports = generateSidebar;
+module.exports = generateMenuEntries;
