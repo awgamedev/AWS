@@ -76,7 +76,7 @@ const generateLayout = (
             <!-- Tailwind CSS laden -->
             <script src="https://cdn.tailwindcss.com"></script>
             <link rel="stylesheet" href="/css/layout.css">
-            <link rel="stylesheet" href="/lib/fontawesome/css/all.min.css">
+            <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
             <style>
                 ${styles}
@@ -171,7 +171,7 @@ const generateLayout = (
             <!-- Overlay für Mobile, um die Seitenleiste zu schließen -->
             <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 z-40 hidden transition-opacity duration-300 md:hidden" onclick="toggleSidebar(false)"></div>
 
-            <script src="/lib/fontawesome/js/all.min.css"></script>
+            <script src="/lib/font-awesome/js/all.min.css"></script>
             <script src="/js/layout.js"></script>
             <script src="/js/layoutHead.js"></script>
         </body>

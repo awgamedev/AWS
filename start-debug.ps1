@@ -59,6 +59,9 @@ if (-not (Test-DockerReady)) {
     }
 }
 
+# Ensure bower dependencies are installed (e.g. jquery, font-awesome, bootstrap)
+& bower install
+
 # Run docker compose up --build in the current folder (will stream logs)
 Write-Host "Starting: docker compose up --build"
 & docker 'compose' 'up' '--build' '-d'
