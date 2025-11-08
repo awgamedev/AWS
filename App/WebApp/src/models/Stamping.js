@@ -12,6 +12,11 @@ const stampingSchema = new mongoose.Schema({
     enum: ["in", "out"],
     required: true,
   },
+  stampingReason: {
+    type: String,
+    enum: ["milkingCows", "other"],
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now,
