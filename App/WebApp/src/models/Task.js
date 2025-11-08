@@ -5,7 +5,7 @@ const taskSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
   taskName: {
     type: String,
@@ -21,6 +21,11 @@ const taskSchema = new mongoose.Schema({
     type: String,
     enum: ["pending", "in-progress", "completed"],
     default: "pending",
+  },
+  taskPriority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
   },
   startDate: {
     type: Date,

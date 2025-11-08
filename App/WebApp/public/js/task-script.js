@@ -41,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(form);
     const taskData = Object.fromEntries(formData.entries());
 
+    if (taskData.userId == "") {
+      taskData.userId = null;
+    }
+
     try {
       const response = await fetch("/api/tasks", {
         method: "POST",
@@ -81,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteButton = document.getElementById("delete-task-btn"); // HINZUGEFÜGT: Button zum Löschen
   const editForm = document.getElementById("edit-task-form");
   const editMessageDiv = document.getElementById("edit-task-form-message"); // Funktion zum Schließen/Öffnen des Bearbeitungs-Modals
+  const openTasksButton = document.getElementById("unassigned-tasks-btn");
 
   const openEditModal = (taskData) => {
     // Fülle das Formular mit den Aufgaben-Daten
@@ -146,6 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
       "mb-4 text-sm font-medium text-center text-yellow-600 block";
     const formData = new FormData(editForm);
     const taskData = Object.fromEntries(formData.entries());
+
+    if (taskData.userId === "") {
+      taskData.userId = null;
+    }
 
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
@@ -223,6 +232,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (deleteButton) {
     deleteButton.addEventListener("click", () => {
       // Der Klick wird im deleteButton Listener oben abgefangen
+    });
+  }
+
+  if (openTasksButton) {
+    openTasksButton.addEventListener("click", () => {
+      window.location.href = "/task-backlog";
     });
   }
 });

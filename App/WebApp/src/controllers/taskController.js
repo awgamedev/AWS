@@ -10,7 +10,7 @@ exports.createTask = async (req, res) => {
   const createdBy = req.user.username || "Admin"; // Nimmt an, dass req.user.username existiert
   const modifiedBy = createdBy;
 
-  if (!userId || !taskName || !startDate) {
+  if (!taskName || !startDate) {
     return res.status(400).json({
       msg: "Bitte geben Sie einen Mitarbeiter, einen Aufgabennamen und ein Startdatum an.",
     });

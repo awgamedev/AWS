@@ -5,13 +5,13 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: true, // Stellen Sie sicher, dass der Benutzername eindeutig ist
+      unique: true,
       trim: true,
     },
     email: {
       type: String,
       required: true,
-      unique: true, // Stellen Sie sicher, dass die E-Mail-Adresse eindeutig ist
+      unique: true,
       lowercase: true,
       trim: true,
     },

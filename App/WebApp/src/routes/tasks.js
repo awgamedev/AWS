@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Task = require("../models/Task"); // Dein Task-Model
+const Task = require("../models/Task");
 const User = require("../models/User"); // Annahme: Dein User-Model
 const generateLayout = require("../utils/layout"); // Deine Layout-Funktion
 const { ensureAuthenticated } = require("../middleware/auth"); // Deine Authentifizierungs-Middleware
@@ -49,7 +49,7 @@ const generateTaskModal = (users) => {
                     
                     <div class="mb-4">
                         <label for="userId" class="block text-sm font-medium text-gray-700">Mitarbeiter zuweisen *</label>
-                        <select id="userId" name="userId" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                             <option value="">-- Wähle Mitarbeiter --</option>
                             ${userOptions}
                         </select>
@@ -353,12 +353,19 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
         <h1 class="text-3xl font-bold text-gray-900 mb-2">🗓️ Aufgabenboard</h1>
         <p class="text-lg text-gray-600 mb-6">Wochenansicht: ${weekStartFormat} - ${weekEndFormat}</p>
 
-        <button id="open-task-modal" class="mb-6 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Aufgabe erstellen
-        </button>
+        <div class="flex space-x-4 mb-6">
+            <button id="open-task-modal" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Aufgabe erstellen
+            </button>
+
+            <button id="unassigned-tasks-btn" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
+                Nicht zugewiesene Aufgaben
+            </button>
+        </div>
+
         <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
-            </div>
+        </div>
 
         ${generateTaskModal(users)} 
         ${generateEditTaskModal(users)}
