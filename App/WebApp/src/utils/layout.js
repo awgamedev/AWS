@@ -17,6 +17,7 @@ const getJavascriptImports = () => {
         <script src="/lib/font-awesome/js/all.min.css"></script>
         <script src="/js/layout.js"></script>
         <script src="/js/layoutHead.js"></script>
+        <script src="/js/components/modal-script.js"></script>
     `;
 };
 
