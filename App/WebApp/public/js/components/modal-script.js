@@ -2,14 +2,9 @@
 
 // Example function to show the modal
 function createAndShowModal(title, content) {
-  // 1. Create a new instance of the modal
   const newModal = new Modal(title, content);
-
-  // 2. Open the modal
   newModal.open();
-
-  // Optional: Keep a reference if you need to manually close it later
-  // return newModal;
+  return newModal;
 }
 
 // Event listener for a button to trigger a new modal

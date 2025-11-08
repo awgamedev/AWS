@@ -10,10 +10,52 @@ const session = require("express-session"); // NEU: Session-Middleware importier
 const winston = require("winston");
 const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
+const fs = require("fs");
 const path = require("path");
 const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
 const favicon = require("serve-favicon");
+
+const routesDir = path.join(__dirname, "src", "routes");
+const routerFiles = []; // Speichert die vollständigen Pfade zu den Router-Dateien
+
+/**
+ * Durchsucht ein Verzeichnis rekursiv nach .js-Dateien (Routern)
+ * @param {string} directory - Das aktuelle Verzeichnis, das durchsucht wird
+ */
+function findRouterFiles(directory) {
+  try {
+    const files = fs.readdirSync(directory);
+
+    files.forEach((file) => {
+      const fullPath = path.join(directory, file);
+      const stat = fs.statSync(fullPath);
+
+      if (stat.isDirectory()) {
+        // Wenn es ein Ordner ist, rufe die Funktion rekursiv auf
+        findRouterFiles(fullPath);
+      } else if (file.endsWith(".js") && file !== "index.js") {
+        // Wenn es eine .js-Datei (und nicht 'index.js') ist, füge sie hinzu
+        routerFiles.push(fullPath);
+      }
+    });
+  } catch (error) {
+    logger.error(
+      `🚨 Fehler beim Lesen des Routen-Verzeichnisses ${directory}:`,
+      error.message
+    );
+  }
+}
+
+findRouterFiles(routesDir);
+
+if (routerFiles.length > 0) {
+  logger.info(
+    `✅ Gefundene ${routerFiles.length} Router-Dateien (inkl. Unterordner).`
+  );
+} else {
+  logger.warn("⚠️ Keine Router-Dateien in src/routes gefunden.");
+}
 
 i18n.configure({
   locales: ["en", "de", "fr"], // supported languages
@@ -41,13 +83,13 @@ dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
 
 const mainRouter = require("./index"); // Import the main router
-const authRouter = require("./src/routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 const langRouter = require("./src/routes/lang"); // Import language routes
-const userRouter = require("./src/routes/user"); // Import user routes
-const stampingRouter = require("./src/routes/stamping"); // Import stamping routes
-const taskRouter = require("./src/routes/task/tasks"); // Import task routes
-const stampingOverviewRouter = require("./src/routes/stamping-overview/stamping-overview");
-const allTaskRouter = require("./src/routes/task/all-tasks");
+routerFiles.forEach((file) => {
+  const router = require(file);
+  // Assume all dynamic routes should be mounted at the root path '/'
+  app.use("/", router);
+  logger.info(`   - Mounted router: ${path.basename(file)}`);
+});
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
