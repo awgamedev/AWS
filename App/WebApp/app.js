@@ -16,8 +16,38 @@ const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
 const favicon = require("serve-favicon");
 
+// --- Router Auto-Discovery Konfiguration ---
 const routesDir = path.join(__dirname, "src", "routes");
 const routerFiles = []; // Speichert die vollständigen Pfade zu den Router-Dateien
+
+// --- Logger Konfiguration ---
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(), // Needed for grafana/loki parsing
+  transports: [new winston.transports.Console()],
+});
+
+// Logging im Code verwenden
+logger.info("Die Anwendung wurde gestartet.");
+
+// --- i18n Konfiguration ---
+i18n.configure({
+  locales: ["en", "de", "fr"], // supported languages
+  directory: __dirname + "/locales", //save translation files here
+  defaultLocale: "de",
+  cookie: "lang", // Optional: Save language preference in a cookie
+  queryParameter: "lang", // Optional: supports setting language via query parameter (e.g., ?lang=en)
+  syncFiles: true, // Creates missing translation files
+  autoReload: true, // Useful during development to reload translations without restarting the server
+});
+
+// Lade Umgebungsvariablen aus der .env-Datei (MUSS ALS EINES DER ERSTEN PASSIEREN)
+dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
+
+// Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
+require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration
+
+// --- Dynamisches Router-Laden Logik (Nach dotenv!) ---
 
 /**
  * Durchsucht ein Verzeichnis rekursiv nach .js-Dateien (Routern)
@@ -40,10 +70,13 @@ function findRouterFiles(directory) {
       }
     });
   } catch (error) {
-    logger.error(
-      `🚨 Fehler beim Lesen des Routen-Verzeichnisses ${directory}:`,
-      error.message
-    );
+    // Dies fängt Fehler ab, falls das Verzeichnis nicht existiert oder nicht lesbar ist
+    if (error.code !== "ENOENT") {
+      logger.error(
+        `🚨 Fehler beim Lesen des Routen-Verzeichnisses ${directory}:`,
+        error.message
+      );
+    }
   }
 }
 
@@ -51,45 +84,17 @@ findRouterFiles(routesDir);
 
 if (routerFiles.length > 0) {
   logger.info(
-    `✅ Gefundene ${routerFiles.length} Router-Dateien (inkl. Unterordner).`
+    `✅ Gefundene ${routerFiles.length} Router-Dateien (inkl. Unterordner) für dynamisches Laden.`
   );
 } else {
   logger.warn("⚠️ Keine Router-Dateien in src/routes gefunden.");
 }
 
-i18n.configure({
-  locales: ["en", "de", "fr"], // supported languages
-  directory: __dirname + "/locales", //save translation files here
-  defaultLocale: "de",
-  cookie: "lang", // Optional: Save language preference in a cookie
-  queryParameter: "lang", // Optional: supports setting language via query parameter (e.g., ?lang=en)
-  syncFiles: true, // Creates missing translation files
-  autoReload: true, // Useful during development to reload translations without restarting the server
-});
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(), // Needed for grafana/loki parsing
-  transports: [new winston.transports.Console()],
-});
-
-// Logging im Code verwenden
-logger.info("Die Anwendung wurde gestartet.");
-
-// Lade Umgebungsvariablen aus der .env-Datei
-dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
-
-// Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
-require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration (Diese Datei müssen Sie noch erstellen!)
-
+// --- Manuelle Imports (Für Router, die nicht im dynamischen Pfad sind oder speziell behandelt werden) ---
 const mainRouter = require("./index"); // Import the main router
-const langRouter = require("./src/routes/lang"); // Import language routes
-routerFiles.forEach((file) => {
-  const router = require(file);
-  // Assume all dynamic routes should be mounted at the root path '/'
-  app.use("/", router);
-  logger.info(`   - Mounted router: ${path.basename(file)}`);
-});
+// 'auth' und 'lang' werden oft manuell importiert, um die Reihenfolge zu sichern.
+const authRouter = require("./src/routes/auth");
+const langRouter = require("./src/routes/lang");
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -136,15 +141,22 @@ app.use(passport.initialize());
 app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passport
 
 // --- Routes ---
-// Use the imported router for all paths (e.g., / and /api/status)
+// 1. Manuell importierte Router
 app.use("/", mainRouter);
 app.use("/", authRouter);
 app.use("/", langRouter);
-app.use("/", userRouter);
-app.use("/", stampingRouter);
-app.use("/", taskRouter);
-app.use("/", stampingOverviewRouter);
-app.use("/", allTaskRouter);
+
+// 2. Dynamisch geladene Router (inkl. Unterordner)
+routerFiles.forEach((file) => {
+  try {
+    const router = require(file);
+    // Da Sie ursprünglich alle auf "/" gemountet hatten, behalten wir das bei.
+    app.use("/", router);
+
+    const relativePath = path.relative(routesDir, file);
+    logger.info(`   - Mounted dynamically: /${relativePath}`);
+  } catch {}
+});
 
 app.use(notFoundHandler);
 
