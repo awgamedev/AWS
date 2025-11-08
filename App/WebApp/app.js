@@ -43,12 +43,11 @@ require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfig
 const mainRouter = require("./index"); // Import the main router
 const authRouter = require("./src/routes/auth"); // <-- 1. LOGIN ROUTER IMPORTIEREN
 const langRouter = require("./src/routes/lang"); // Import language routes
-const messageRouter = require("./src/routes/message"); // Import message routes
 const userRouter = require("./src/routes/user"); // Import user routes
 const stampingRouter = require("./src/routes/stamping"); // Import stamping routes
-const taskRouter = require("./src/routes/tasks"); // Import task routes
+const taskRouter = require("./src/routes/task/tasks"); // Import task routes
 const stampingOverviewRouter = require("./src/routes/stamping-overview/stamping-overview");
-const unassignedTaskRouter = require("./src/routes/unassigned-tasks");
+const allTaskRouter = require("./src/routes/task/all-tasks");
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -99,12 +98,11 @@ app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passp
 app.use("/", mainRouter);
 app.use("/", authRouter);
 app.use("/", langRouter);
-app.use("/", messageRouter);
 app.use("/", userRouter);
 app.use("/", stampingRouter);
 app.use("/", taskRouter);
 app.use("/", stampingOverviewRouter);
-app.use("/", unassignedTaskRouter);
+app.use("/", allTaskRouter);
 
 app.use(notFoundHandler);
 

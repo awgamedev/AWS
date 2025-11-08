@@ -5,7 +5,14 @@ const Task = require("../models/Task"); // Achte auf den korrekten Pfad
 // 1. POST: Eine neue Aufgabe erstellen
 exports.createTask = async (req, res) => {
   // Annahme: Die Daten kommen aus dem Frontend-Formular.
-  const { userId, taskName, taskDescription, startDate, endDate } = req.body;
+  const {
+    userId,
+    taskName,
+    taskPriority,
+    taskDescription,
+    startDate,
+    endDate,
+  } = req.body;
 
   const createdBy = req.user.username || "Admin"; // Nimmt an, dass req.user.username existiert
   const modifiedBy = createdBy;
@@ -21,6 +28,7 @@ exports.createTask = async (req, res) => {
       userId,
       taskName,
       taskDescription: taskDescription || "",
+      taskPriority,
       taskStatus: "pending",
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : undefined,
@@ -50,8 +58,15 @@ exports.createTask = async (req, res) => {
 // 2. PUT: Eine bestehende Aufgabe aktualisieren
 exports.updateTask = async (req, res) => {
   const taskId = req.params.id;
-  const { userId, taskName, taskDescription, taskStatus, startDate, endDate } =
-    req.body;
+  const {
+    userId,
+    taskName,
+    taskPriority,
+    taskDescription,
+    taskStatus,
+    startDate,
+    endDate,
+  } = req.body;
 
   const modifiedBy = req.user.username || "Admin";
 
@@ -66,6 +81,7 @@ exports.updateTask = async (req, res) => {
       userId,
       taskName,
       taskDescription,
+      taskPriority,
       taskStatus,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : undefined,

@@ -1,61 +1,80 @@
 const express = require("express");
 const router = express.Router();
-const Task = require("../models/Task"); // Importiere dein Task-Model
-const User = require("../models/User"); // Nimm an, dass ein User-Model existiert
-const generateLayout = require("../utils/layout");
-const { ensureAuthenticated } = require("../middleware/auth");
-
-// Hilfsfunktion zur Zuweisung von Prioritätsfarben für Tailwind
-const getPriorityColor = (priority) => {
-  switch (priority) {
-    case "high":
-      return "bg-red-500 text-white";
-    case "medium":
-      return "bg-yellow-500 text-gray-800";
-    case "low":
-      return "bg-green-500 text-white";
-    default:
-      return "bg-gray-300 text-gray-800";
-  }
-};
+const Task = require("../../models/Task"); // Importiere dein Task-Model
+const User = require("../../models/User"); // Nimm an, dass ein User-Model existiert
+const generateLayout = require("../../utils/layout");
+const { ensureAuthenticated } = require("../../middleware/auth");
+const { getPriorityColor } = require("./task-utils");
 
 // 📋 GET Route: Task Backlog anzeigen (/task-backlog)
 // Listet nicht zugewiesene Tasks, sortiert nach Priorität, auf.
 router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
-  let backlogTasks = [];
+  let allTasks = [];
   let users = [];
+  let userMap = [];
 
   try {
     // Logik für die Sortierung nach Priorität
     const priorityOrder = { high: 1, medium: 2, low: 3 };
 
     // 1. Nicht zugewiesene Tasks abrufen (userId: null oder undefined)
-    backlogTasks = await Task.find({ userId: { $in: [null, undefined] } })
+    allTasks = await Task.find({})
       .lean() // Gibt reine JS-Objekte zurück, was schneller ist
       .exec();
 
     // 2. Sortieren im Code nach der definierten Reihenfolge: High, Medium, Low
-    backlogTasks.sort((a, b) => {
+    allTasks.sort((a, b) => {
+      // 1. Sortierung: userId = null kommt zuerst
+      // Wenn a.userId null ist, aber b.userId nicht, kommt a vor b (-1)
+      if (a.userId === null && b.userId !== null) {
+        return -1;
+      }
+      // Wenn b.userId null ist, aber a.userId nicht, kommt b vor a (1)
+      if (b.userId === null && a.userId !== null) {
+        return 1;
+      }
+
+      // Wenn beide userId null sind oder beide nicht null sind,
+      // kommt die nächste Sortierebene zum Tragen.
+
+      // 2. Sortierung: Nach userId, falls beide vorhanden sind (z.B. aufsteigend)
+      // Dies sortiert Aufgaben innerhalb desselben userId oder hält die Reihenfolge der Null-Werte
+      if (a.userId !== null && b.userId !== null) {
+        const userIdComparison = String(a.userId).localeCompare(
+          String(b.userId)
+        );
+        if (userIdComparison !== 0) {
+          return userIdComparison;
+        }
+      }
+
+      // 3. Sortierung: Nach Priorität (wenn userId-Werte gleich oder beide null sind)
       return priorityOrder[a.taskPriority] - priorityOrder[b.taskPriority];
     });
 
     // 3. Alle Benutzer abrufen, um sie im Modal zur Auswahl anzubieten
     // Passe dies an dein tatsächliches User-Model an (z.B. User.find({}).select('id name')).
-    users = await User.find({}).select("_id name").lean().exec();
+    users = await User.find({}).select("_id username").lean().exec();
+    userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = user.username;
+      return map;
+    }, {});
   } catch (error) {
     console.error("Fehler beim Abrufen des Task Backlogs:", error.message);
     // Setze eine leere Liste im Fehlerfall
-    backlogTasks = [];
+    allTasks = [];
     users = [];
   }
 
   // --- HTML-Content für die Task-Liste ---
   const taskListHtml =
-    backlogTasks.length > 0
-      ? backlogTasks
+    allTasks.length > 0
+      ? allTasks
           .map((task) => {
             const priorityClass = getPriorityColor(task.taskPriority);
             const dateStr = task.startDate.toLocaleDateString("de-DE");
+            const userId = task.userId?.toString() || "";
+            task.assignedUsername = userMap[userId] || "Nicht zugewiesen";
 
             // Verwende data-Attribute, um Task-Details für JavaScript zu speichern
             return `
@@ -72,6 +91,9 @@ router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
                         }</p>
                         <p class="text-sm text-gray-500 mt-1">${
                           task.taskDescription || "Keine Beschreibung"
+                        }</p>
+                        <p class="text-sm text-gray-500 mt-1">${
+                          task.assignedUsername
                         }</p>
                     </div>
                     
@@ -94,15 +116,16 @@ router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
   // --- HTML-Content für das Benutzer-Dropdown im Modal ---
   const userOptionsHtml = users
     .map(
-      (user) => `<option value="${user._id}">${user.name || user._id}</option>`
+      (user) =>
+        `<option value="${user._id}">${user.username || user._id}</option>`
     )
     .join("");
 
   const content = `
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">🛠️ Task Backlog (Nicht zugewiesen)</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Alle Aufgaben</h1>
 
         <div class="bg-white p-6 rounded-xl shadow-2xl">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Offene Tasks (Sortiert nach Priorität)</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Offene Tasks</h2>
             
             <ul class="divide-y divide-gray-100">
                 ${taskListHtml}
@@ -143,93 +166,7 @@ router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
             </div>
         </div>
 
-        <script>
-            const modal = document.getElementById('assign-modal');
-            const taskIdInput = document.getElementById('modal-task-id');
-            const taskNameSpan = document.getElementById('modal-task-name');
-            const userSelect = document.getElementById('user-select');
-            const form = document.getElementById('assign-form');
-            const messageDiv = document.getElementById('modal-message');
-            const assignBtn = document.getElementById('assign-btn');
-
-            function openAssignModal(taskId, taskName) {
-                taskIdInput.value = taskId;
-                taskNameSpan.textContent = taskName;
-                userSelect.value = ""; // Auswahl zurücksetzen
-                messageDiv.textContent = "";
-                messageDiv.classList.add('hidden');
-                assignBtn.disabled = false;
-                assignBtn.textContent = 'Task zuweisen';
-                modal.classList.remove('hidden');
-                modal.classList.add('flex'); // Zeigt das Modal an
-            }
-
-            function closeAssignModal() {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-            
-            // Schließe das Modal, wenn außerhalb geklickt wird
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeAssignModal();
-                }
-            });
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const taskId = taskIdInput.value;
-                const userId = userSelect.value;
-
-                if (!userId) {
-                    alert('Bitte wähle einen Mitarbeiter aus.');
-                    return;
-                }
-
-                messageDiv.classList.remove('hidden', 'text-green-600', 'text-red-600');
-                messageDiv.classList.add('text-blue-600');
-                messageDiv.textContent = 'Zuweisung wird verarbeitet...';
-                assignBtn.disabled = true;
-                assignBtn.textContent = 'Wird zugewiesen...';
-
-                try {
-                    const response = await fetch('/task-backlog/assign', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ taskId, userId }),
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        messageDiv.classList.replace('text-blue-600', 'text-green-600');
-                        messageDiv.textContent = data.msg || 'Task erfolgreich zugewiesen!';
-                        
-                        // Modal nach kurzer Verzögerung schließen und Seite neu laden
-                        setTimeout(() => {
-                            closeAssignModal();
-                            window.location.reload(); 
-                        }, 1500); 
-                    } else {
-                        messageDiv.classList.replace('text-blue-600', 'text-red-600');
-                        messageDiv.textContent = data.msg || 'Fehler bei der Zuweisung.';
-                        assignBtn.disabled = false;
-                        assignBtn.textContent = 'Erneut versuchen';
-                    }
-
-                } catch (error) {
-                    console.error('Fetch Fehler:', error);
-                    messageDiv.classList.replace('text-blue-600', 'text-red-600');
-                    messageDiv.textContent = 'Ein Netzwerkfehler ist aufgetreten.';
-                    assignBtn.disabled = false;
-                    assignBtn.textContent = 'Erneut versuchen';
-                }
-            });
-
-        </script>
+        <script src="/js/all-task-script.js"></script>
     `;
 
   // Sende das generierte Layout zurück
@@ -252,10 +189,10 @@ router.post("/task-backlog/assign", ensureAuthenticated, async (req, res) => {
       {
         userId: userId,
         modifiedAt: Date.now(),
-        modifiedBy: req.user.name || req.user.id, // Nehme an, req.user hat 'name' oder 'id'
-        taskStatus: "pending", // Setze den Status bei Zuweisung auf 'pending'
+        modifiedBy: req.user.username || req.user.id,
+        taskStatus: "pending",
       },
-      { new: true } // Gibt das aktualisierte Dokument zurück
+      { new: true }
     );
 
     if (!updatedTask) {
