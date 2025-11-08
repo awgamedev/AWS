@@ -47,7 +47,7 @@ const messageRouter = require("./src/routes/message"); // Import message routes
 const userRouter = require("./src/routes/user"); // Import user routes
 const stampingRouter = require("./src/routes/stamping"); // Import stamping routes
 const taskRouter = require("./src/routes/tasks"); // Import task routes
-const stampingOverviewRouter = require("./src/routes/stamping-overview");
+const stampingOverviewRouter = require("./src/routes/stamping-overview/stamping-overview");
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
