@@ -17,6 +17,65 @@ const getStartOfWeek = (date) => {
   return d;
 };
 
+const generateTaskModal = (users) => {
+  // Optionen für das Mitarbeiter-Dropdown
+  const userOptions = users
+    .map((user) => `<option value="${user._id}">${user.username}</option>`)
+    .join("");
+
+  return `
+        <div id="task-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center transition-opacity duration-300 ease-out">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg m-4 transform transition-transform duration-300 ease-out scale-95 opacity-0" id="task-modal-content">
+                <div class="flex justify-between items-center mb-4 border-b pb-3">
+                    <h3 class="text-xl font-semibold text-gray-800">Neue Aufgabe zuweisen</h3>
+                    <button id="close-task-modal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <form id="create-task-form">
+                    <div class="mb-4">
+                        <label for="taskName" class="block text-sm font-medium text-gray-700">Aufgabenname *</label>
+                        <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="userId" class="block text-sm font-medium text-gray-700">Mitarbeiter zuweisen *</label>
+                        <select id="userId" name="userId" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                            <option value="">-- Wähle Mitarbeiter --</option>
+                            ${userOptions}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="taskDescription" class="block text-sm font-medium text-gray-700">Beschreibung</label>
+                        <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-700">Startdatum *</label>
+                            <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="endDate" class="block text-sm font-medium text-gray-700">Fälligkeitsdatum (Optional)</label>
+                            <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                            Aufgabe speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        `;
+};
+
 // 📅 GET Route: Aufgabenboard anzeigen (/tasks)
 router.get("/tasks", ensureAuthenticated, async (req, res) => {
   let users = [];
@@ -39,7 +98,7 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
   try {
     // 1. Alle Mitarbeiter abrufen (oder nur die relevanten, je nach Anforderung)
     // ANNAHME: Das User-Model existiert und hat einen 'name'-Feld.
-    users = await User.find({}).select("id name").lean();
+    users = await User.find({}).select("_id username").lean(); // Wichtig: username abrufen
 
     // 2. Alle Aufgaben für die aktuelle Woche abrufen
     const tasks = await Task.find({
@@ -124,7 +183,7 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
 
       return `
             <tr class="hover:bg-gray-50">
-                <td class="p-3 border border-gray-200 font-semibold sticky left-0 bg-white shadow-sm w-40">${user.name}</td>
+                <td class="p-3 border border-gray-200 font-semibold sticky left-0 bg-white shadow-sm w-40">${user.username}</td>
                 ${dayCells}
             </tr>
         `;
@@ -147,6 +206,98 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
   const content = `
         <h1 class="text-3xl font-bold text-gray-900 mb-2">🗓️ Aufgabenboard</h1>
         <p class="text-lg text-gray-600 mb-6">Wochenansicht: ${weekStartFormat} - ${weekEndFormat}</p>
+
+        <button id="open-task-modal" class="mb-6 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Aufgabe erstellen
+        </button>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+            </div>
+
+        ${generateTaskModal(users)} 
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('task-modal');
+                const modalContent = document.getElementById('task-modal-content');
+                const openButton = document.getElementById('open-task-modal');
+                const closeButton = document.getElementById('close-task-modal');
+                const form = document.getElementById('create-task-form');
+                const messageDiv = document.getElementById('task-form-message');
+
+                // 1. Modal öffnen/schließen Logik
+                const openModal = () => {
+                    modal.classList.remove('hidden');
+                    // Füge Klassen für die Animation hinzu
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        modalContent.classList.remove('opacity-0', 'scale-95');
+                        modalContent.classList.add('opacity-100', 'scale-100');
+                    }, 10); // Kleine Verzögerung für Übergang
+                };
+
+                const closeModal = () => {
+                    // Füge Klassen für die Animation hinzu
+                    modal.classList.add('opacity-0');
+                    modalContent.classList.add('opacity-0', 'scale-95');
+                    modalContent.classList.remove('opacity-100', 'scale-100');
+                    // Verstecke es nach der Animation
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                };
+
+                openButton.addEventListener('click', openModal);
+                closeButton.addEventListener('click', closeModal);
+                // Schließen bei Klick außerhalb des Modals
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+
+                // 2. Formular-Einreichung Logik
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    messageDiv.textContent = 'Aufgabe wird gespeichert...';
+                    messageDiv.className = 'mb-4 text-sm font-medium text-center text-yellow-600 block';
+                    
+                    const formData = new FormData(form);
+                    const taskData = Object.fromEntries(formData.entries());
+
+                    try {
+                        const response = await fetch('/api/tasks', { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(taskData),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            messageDiv.textContent = data.msg || 'Aufgabe erfolgreich gespeichert!';
+                            messageDiv.className = 'mb-4 text-sm font-medium text-center text-green-600 block';
+                            
+                            // Formular zurücksetzen und Board neu laden, um die neue Aufgabe anzuzeigen
+                            form.reset();
+                            setTimeout(() => {
+                                closeModal();
+                                window.location.reload(); 
+                            }, 1000);
+                            
+                        } else {
+                            // Fehler vom Server
+                            messageDiv.textContent = data.msg || 'Fehler beim Speichern der Aufgabe.';
+                            messageDiv.className = 'mb-4 text-sm font-medium text-center text-red-600 block';
+                        }
+
+                    } catch (error) {
+                        console.error('Fetch Fehler:', error);
+                        messageDiv.textContent = 'Ein Netzwerkfehler ist aufgetreten.';
+                        messageDiv.className = 'mb-4 text-sm font-medium text-center text-red-600 block';
+                    }
+                });
+            });
+        </script>
 
         <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
             <table class="min-w-full divide-y divide-gray-200">
@@ -179,6 +330,53 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
 
   // Sende das generierte Layout zurück
   res.send(generateLayout("Aufgabenboard", content, req.path, req.user));
+});
+
+router.post("/api/tasks", ensureAuthenticated, async (req, res) => {
+  // Annahme: Die Daten kommen aus dem Frontend-Formular.
+  const { userId, taskName, taskDescription, startDate, endDate } = req.body;
+
+  // Standard-Felder, die automatisch gesetzt werden
+  const createdBy = req.user.username || "Admin"; // Nimmt an, dass req.user.username existiert
+  const modifiedBy = createdBy;
+
+  // Einfache Validierung (kann nach Bedarf erweitert werden)
+  if (!userId || !taskName || !startDate) {
+    return res.status(400).json({
+      msg: "Bitte geben Sie einen Mitarbeiter, einen Aufgabennamen und ein Startdatum an.",
+    });
+  }
+
+  try {
+    const newTask = new Task({
+      userId,
+      taskName,
+      taskDescription: taskDescription || "", // Optionales Feld
+      taskStatus: "pending", // Standardwert
+      startDate: new Date(startDate),
+      endDate: endDate ? new Date(endDate) : undefined, // Optionales Enddatum
+      createdBy,
+      modifiedBy,
+    });
+
+    const savedTask = await newTask.save();
+
+    res.status(201).json({
+      msg: "Aufgabe erfolgreich erstellt und zugewiesen.",
+      task: savedTask,
+    });
+  } catch (err) {
+    console.error("Fehler beim Erstellen der Aufgabe:", err.message);
+    // MongoDB Validierungsfehler abfangen
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        msg: `Validierungsfehler: ${Object.values(err.errors)
+          .map((e) => e.message)
+          .join(", ")}`,
+      });
+    }
+    res.status(500).json({ msg: "Serverfehler beim Speichern der Aufgabe." });
+  }
 });
 
 module.exports = router;
