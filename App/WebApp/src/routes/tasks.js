@@ -4,6 +4,7 @@ const Task = require("../models/Task"); // Dein Task-Model
 const User = require("../models/User"); // Annahme: Dein User-Model
 const generateLayout = require("../utils/layout"); // Deine Layout-Funktion
 const { ensureAuthenticated } = require("../middleware/auth"); // Deine Authentifizierungs-Middleware
+const taskController = require("../controllers/taskController"); // NEU: Controller importieren
 
 // Hilfsfunktion: Gibt das Datum des Montags (Start der Woche) zurück
 const getStartOfWeek = (date) => {
@@ -390,107 +391,12 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
   res.send(generateLayout("Aufgabenboard", content, req.path, req.user));
 });
 
-router.post("/api/tasks", ensureAuthenticated, async (req, res) => {
-  // Annahme: Die Daten kommen aus dem Frontend-Formular.
-  const { userId, taskName, taskDescription, startDate, endDate } = req.body;
+// POST Route: Eine neue Aufgabe erstellen
+// Pfad: POST /api/tasks
+router.post("/api/tasks", ensureAuthenticated, taskController.createTask);
 
-  // Standard-Felder, die automatisch gesetzt werden
-  const createdBy = req.user.username || "Admin"; // Nimmt an, dass req.user.username existiert
-  const modifiedBy = createdBy;
-
-  // Einfache Validierung (kann nach Bedarf erweitert werden)
-  if (!userId || !taskName || !startDate) {
-    return res.status(400).json({
-      msg: "Bitte geben Sie einen Mitarbeiter, einen Aufgabennamen und ein Startdatum an.",
-    });
-  }
-
-  try {
-    const newTask = new Task({
-      userId,
-      taskName,
-      taskDescription: taskDescription || "", // Optionales Feld
-      taskStatus: "pending", // Standardwert
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : undefined, // Optionales Enddatum
-      createdBy,
-      modifiedBy,
-    });
-
-    const savedTask = await newTask.save();
-
-    res.status(201).json({
-      msg: "Aufgabe erfolgreich erstellt und zugewiesen.",
-      task: savedTask,
-    });
-  } catch (err) {
-    console.error("Fehler beim Erstellen der Aufgabe:", err.message);
-    // MongoDB Validierungsfehler abfangen
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
-        msg: `Validierungsfehler: ${Object.values(err.errors)
-          .map((e) => e.message)
-          .join(", ")}`,
-      });
-    }
-    res.status(500).json({ msg: "Serverfehler beim Speichern der Aufgabe." });
-  }
-});
-
-router.put("/api/tasks/:id", ensureAuthenticated, async (req, res) => {
-  const taskId = req.params.id;
-  const { userId, taskName, taskDescription, taskStatus, startDate, endDate } =
-    req.body;
-
-  // Standard-Feld, das automatisch gesetzt wird
-  const modifiedBy = req.user.username || "Admin"; // Nimmt den Usernamen des Bearbeiters
-
-  // Basis-Validierung
-  if (!taskName || !startDate || !taskStatus) {
-    return res.status(400).json({
-      msg: "Bitte geben Sie Aufgabennamen, Startdatum und Status an.",
-    });
-  }
-
-  try {
-    const updateFields = {
-      userId,
-      taskName,
-      taskDescription,
-      taskStatus,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : undefined,
-      modifiedBy,
-      modifiedAt: new Date(), // Setze das Änderungsdatum
-    };
-
-    const updatedTask = await Task.findByIdAndUpdate(
-      taskId,
-      { $set: updateFields },
-      { new: true, runValidators: true } // 'new: true' gibt das aktualisierte Dokument zurück; 'runValidators: true' führt das Schema-Validierung aus
-    );
-
-    if (!updatedTask) {
-      return res.status(404).json({ msg: "Aufgabe nicht gefunden." });
-    }
-
-    res.status(200).json({
-      msg: "Aufgabe erfolgreich aktualisiert.",
-      task: updatedTask,
-    });
-  } catch (err) {
-    console.error("Fehler beim Aktualisieren der Aufgabe:", err.message);
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
-        msg: `Validierungsfehler: ${Object.values(err.errors)
-          .map((e) => e.message)
-          .join(", ")}`,
-      });
-    }
-    res
-      .status(500)
-      .json({ msg: "Serverfehler beim Aktualisieren der Aufgabe." });
-  }
-});
+// PUT Route: Eine bestehende Aufgabe aktualisieren
+// Pfad: PUT /api/tasks/:id
+router.put("/api/tasks/:id", ensureAuthenticated, taskController.updateTask);
 
 module.exports = router;
