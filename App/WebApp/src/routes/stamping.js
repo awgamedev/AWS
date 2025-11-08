@@ -34,41 +34,93 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
   // --- HTML-Content basierend auf dem aktuellen Status ---
 
   // Dynamische Hervorhebung und Button-Texte
-  const statusColor =
-    currentStatus === "in"
-      ? "border-green-600 bg-green-100 text-green-800"
-      : "border-red-600 bg-red-100 text-red-800";
   const statusText =
     currentStatus === "in"
       ? "Eingestempelt (Arbeitszeit läuft)"
       : "Ausgestempelt (Pause/Feierabend)";
 
-  // Die ID des Benutzers für die POST-Anfragen (wird im Frontend gebraucht)
-  const userIdDisplay = req.user.id;
+  // Funktion zur formatierung der Zeit, jetzt kompakt und nur Zeit
+  const formatTime = (stamping) => {
+    if (!stamping) return "";
+    return stamping.date.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Funktion zur formatierung des Datums
+  const formatDate = (stamping) => {
+    if (!stamping) return "";
+    return stamping.date.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   const stampingListHtml = await (async () => {
     try {
       const userId = req.user.id;
+      // Holen Sie alle Stempelungen und sortieren Sie sie aufsteigend nach Datum,
       const stampings = await Stamping.find({ userId })
-        .sort({ date: -1 })
-        .limit(10)
+        .sort({ date: 1 }) // Wichtig: Aufsteigend sortieren
         .exec();
-      return stampings
-        .map((stamp) => {
-          const timeStr = stamp.date.toLocaleString("de-DE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-          const typeStr =
-            stamp.stampingType === "in" ? "Eingestempelt" : "Ausgestempelt";
-          const typeColor =
-            stamp.stampingType === "in" ? "text-green-600" : "text-red-600";
-          return `<li class="py-3 flex justify-between items-center">
-                    <span class="${typeColor} font-medium">${typeStr}</span>
-                    <span class="text-gray-500 text-sm">${timeStr}</span>
+
+      let currentIn = null;
+      const pairs = [];
+
+      // Paar-Bildungs-Logik (wie zuvor)
+      for (const stamp of stampings) {
+        if (stamp.stampingType === "in") {
+          if (currentIn) {
+            pairs.push({ come: currentIn, go: null });
+          }
+          currentIn = stamp;
+        } else if (stamp.stampingType === "out") {
+          if (currentIn) {
+            pairs.push({ come: currentIn, go: stamp });
+            currentIn = null;
+          }
+        }
+      }
+
+      if (currentIn) {
+        pairs.push({ come: currentIn, go: null });
+      }
+
+      // Sortiere die Paare für die Anzeige absteigend (die neuesten Paare zuerst)
+      pairs.reverse();
+
+      return pairs
+        .map((pair) => {
+          const dateStr = formatDate(pair.come); // Datum basiert auf Kommen-Zeitpunkt
+          const comeTime = formatTime(pair.come);
+          const goTime = formatTime(pair.go);
+
+          // Kompakte Darstellung der Zeiten
+          const timeDisplay = pair.go
+            ? `${comeTime} - ${goTime}`
+            : `${comeTime} - **OFFEN**`;
+
+          // Farbe und Text für Status
+          const statusText = pair.go ? "Abgeschlossen" : "Aktiv";
+          const statusColor = pair.go
+            ? "text-gray-500 bg-gray-100"
+            : "text-white bg-blue-600";
+          const statusPadding = pair.go ? "px-2 py-0.5" : "px-3 py-1";
+          const statusRing = pair.go ? "border-gray-300" : "border-blue-600";
+
+          return `<li class="py-4 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-sm text-gray-700 font-medium mr-4">${dateStr}</span>
+                        <span class="inline-flex items-center rounded-full ${statusColor} ${statusPadding} text-xs font-semibold border ${statusRing}">
+                            ${statusText}
+                        </span>
+                    </div>
+                    
+                    <div class="text-lg font-mono tracking-wider text-gray-900">
+                        ${timeDisplay}
+                    </div>
                 </li>`;
         })
         .join("");
@@ -153,16 +205,18 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
                 </button>
             </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Deine letzten Stempelungen (Max. 10)</h2>
-            <ul class="divide-y divide-gray-200">
-            ${
-              stampingListHtml.length > 0
-                ? stampingListHtml
-                : '<li class="py-3 text-gray-500">Noch keine Stempelungen vorhanden.</li>'
-            }
-            </ul>
-        </div>            
+        <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Deine Schichten</h2>
+            <div class="border-t border-gray-200">
+                <ul class="divide-y divide-gray-200">
+                ${
+                  stampingListHtml.length > 0
+                    ? stampingListHtml
+                    : '<li class="py-4 text-gray-500">Noch keine Stempel-Paare vorhanden.</li>'
+                }
+                </ul>
+            </div>
+        </div>        
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
