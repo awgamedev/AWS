@@ -42,6 +42,13 @@ const generateMenuEntries = (currentPath) => {
                 <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungen</span>
             </a>
 
+            <a href="/stamping-overview" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl ${getClasses(
+              "/stamping-overview"
+            )} transition duration-150">
+                <span class="fa-solid fa-utensils"></span>
+                <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungsübersicht</span>
+            </a>
+
             <a href="/tasks" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl ${getClasses(
               "/tasks"
             )} transition duration-150">
