@@ -12,11 +12,13 @@ const stampingSchema = new mongoose.Schema({
     enum: ["in", "out"],
     required: true,
   },
-  // stampingReason: {
-  //   type: String,
-  //   enum: ["milkingCows", "other"],
-  //   required: true,
-  // },
+  stampingReason: {
+    type: String,
+    // Feste, vorgegebene Auswahlmöglichkeiten für den Grund
+    enum: ["Kühe melken", "Feldarbeit", "Büroarbeit"],
+    // Wir machen es nicht required: true, da es bei "out" nicht benötigt wird.
+    // Die Logik, wann es benötigt wird, behandeln wir im POST-Handler.
+  },
   date: {
     type: Date,
     default: Date.now,

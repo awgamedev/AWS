@@ -40,6 +40,7 @@ const processStampings = (stampings) => {
       const workDurationHours = workDurationMs / (1000 * 60 * 60);
 
       dailyWork[dateKey].pairs.push({
+        stampingReason: current.stampingReason,
         in: timeIn.toLocaleTimeString("de-DE", {
           hour: "2-digit",
           minute: "2-digit",
@@ -109,10 +110,11 @@ const generateEmployeeHtml = (userData, monthName) => {
           ? "text-red-500 font-bold"
           : "text-gray-700";
         return `<p class="text-sm">
-                  <span class="font-semibold">${pair.in}</span> - 
-                  <span class="${timeClass}">${pair.out}</span>
-                  <span class="text-xs text-gray-500">${durationDisplay}</span>
-                </p>`;
+                <span class="font-semibold">${pair.in}</span> - 
+                <span class="${timeClass}">${pair.out}</span>
+                <span>${pair.stampingReason}</span> 
+                <span class="text-xs text-gray-500">${durationDisplay}</span>
+            </p>`;
       })
       .join("");
 

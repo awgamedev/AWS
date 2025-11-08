@@ -4,6 +4,9 @@ const Stamping = require("../models/Stamping"); // Dein Stamping-Model
 const generateLayout = require("../utils/layout"); // Deine Layout-Funktion
 const { ensureAuthenticated } = require("../middleware/auth"); // Deine Authentifizierungs-Middleware
 
+// NEU: Array der erlaubten Stempelungsgründe (muss im POST-Handler für die Validierung zugänglich sein)
+const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
+
 // ⏳ GET Route: Stempel-Interface anzeigen (/stamping-interface)
 // Zeigt den aktuellen Status an und bietet die Stempel-Buttons.
 router.get("/stamping", ensureAuthenticated, async (req, res) => {
@@ -96,6 +99,8 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
           const dateStr = formatDate(pair.come); // Datum basiert auf Kommen-Zeitpunkt
           const comeTime = formatTime(pair.come);
           const goTime = formatTime(pair.go);
+          // NEU: Grund aus dem "in"-Stempelungseintrag abrufen
+          const reason = pair.come.stampingReason || "N/A";
 
           // Kompakte Darstellung der Zeiten
           const timeDisplay = pair.go
@@ -111,15 +116,19 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
           const statusRing = pair.go ? "border-gray-300" : "border-blue-600";
 
           return `<li class="py-4 border-b border-gray-100 flex justify-between items-center">
-                    <div class="flex-shrink-0">
-                        <span class="text-sm text-gray-700 font-medium mr-4">${dateStr}</span>
-                        <span class="inline-flex items-center rounded-full ${statusColor} ${statusPadding} text-xs font-semibold border ${statusRing}">
-                            ${statusText}
-                        </span>
-                    </div>
-                    
-                    <div class="text-lg font-mono tracking-wider text-gray-900">
-                        ${timeDisplay}
+                    <div class="flex flex-col flex-grow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-shrink-0">
+                                <span class="text-sm text-gray-700 font-medium mr-4">${dateStr}</span>
+                                <span class="inline-flex items-center rounded-full ${statusColor} ${statusPadding} text-xs font-semibold border ${statusRing}">
+                                    ${statusText}
+                                </span>
+                            </div>
+                            <div class="text-lg font-mono tracking-wider text-gray-900">
+                                ${timeDisplay}
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Grund: ${reason}</p>
                     </div>
                 </li>`;
         })
@@ -129,6 +138,11 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
       return '<li class="py-3 text-gray-500">Fehler beim Laden der Stempelungen.</li>';
     }
   })();
+
+  // NEU: HTML für das Dropdown-Menü-Optionen
+  const reasonOptions = ALLOWED_REASONS.map(
+    (reason) => `<option value="${reason}">${reason}</option>`
+  ).join("");
 
   const content = `
         <h1 class="text-3xl font-bold text-gray-900 mb-6">Zeiterfassung Mitarbeiter</h1>
@@ -173,6 +187,20 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
             <p id="stamping-message" class="mb-4 font-medium text-sm text-gray-600">Bereit zum ${
               currentStatus === "in" ? "Ausstempeln" : "Einstempeln"
             }.</p>
+            
+            <div id="reason-selection" class="mb-4 ${
+              currentStatus === "in" ? "hidden" : ""
+            }">
+                <label for="stamping-reason" class="block text-sm font-medium text-gray-700 mb-1">
+                    Grund auswählen (für Einstempelung):
+                </label>
+                <select id="stamping-reason" name="stamping-reason"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                    <option value="">-- Bitte wählen --</option>
+                    ${reasonOptions}
+                </select>
+                <p id="reason-error" class="text-sm text-red-500 mt-1 hidden">Bitte wähle einen Grund aus.</p>
+            </div>
             
             <div class="flex space-x-4">
                 
@@ -222,6 +250,17 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
             document.addEventListener('DOMContentLoaded', () => {
                 const stampButtons = document.querySelectorAll('#stamp-in-btn, #stamp-out-btn');
                 const messageDiv = document.getElementById('stamping-message');
+                // NEU: Elemente für den Grund
+                const reasonSelect = document.getElementById('stamping-reason');
+                const reasonError = document.getElementById('reason-error');
+                const reasonSelectionDiv = document.getElementById('reason-selection');
+                
+                // NEU: Sichtbarkeit des Dropdowns bei Statuswechsel
+                if ('${currentStatus}' === 'out') {
+                    reasonSelectionDiv.classList.remove('hidden');
+                } else {
+                    reasonSelectionDiv.classList.add('hidden');
+                }
 
                 stampButtons.forEach(button => {
                     button.addEventListener('click', async (event) => {
@@ -230,6 +269,21 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
                         // Ignoriere Klick, wenn der Button deaktiviert ist (Visuelle Validierung)
                         if(event.currentTarget.disabled) return;
 
+                        // NEU: Validierung des Grundes beim Einstempeln
+                        let stampingReason = null;
+                        if (stampingType === 'in') {
+                            stampingReason = reasonSelect.value;
+                            if (!stampingReason) {
+                                reasonError.classList.remove('hidden');
+                                messageDiv.textContent = 'Bitte wähle einen Grund für das Einstempeln aus.';
+                                messageDiv.classList.remove('text-green-600', 'text-red-600', 'text-yellow-600');
+                                messageDiv.classList.add('text-red-600');
+                                return; // Abbruch, wenn kein Grund ausgewählt ist
+                            }
+                            reasonError.classList.add('hidden'); // Fehler verbergen
+                        }
+
+                        // Ladezustand anzeigen
                         messageDiv.textContent = 'Verarbeite Stempelvorgang...';
                         messageDiv.classList.remove('text-green-600', 'text-red-600', 'text-gray-600');
                         messageDiv.classList.add('text-yellow-600');
@@ -240,7 +294,8 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ stampingType }),
+                                // NEU: stampingReason senden
+                                body: JSON.stringify({ stampingType, stampingReason }),
                             });
 
                             const data = await response.json();
@@ -252,7 +307,7 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
                                 messageDiv.classList.remove('text-yellow-600');
                                 messageDiv.classList.add('text-green-600');
                                 // Seite neu laden, um Status-Anzeige zu aktualisieren
-                                setTimeout(() => window.location.reload(), 1000); 
+                                setTimeout(() => window.location.reload(), 1000);  
                             } else {
                                 messageDiv.classList.remove('text-yellow-600');
                                 messageDiv.classList.add('text-red-600');
@@ -279,13 +334,23 @@ router.get("/stamping", ensureAuthenticated, async (req, res) => {
 router.post("/stamp", ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user.id; // Nimmt an, dass die User-ID hier gespeichert ist
-    const { stampingType } = req.body; // Erwartet: "in" oder "out"
+    // NEU: stampingReason aus dem Body extrahieren
+    const { stampingType, stampingReason } = req.body; // Erwartet: "in" oder "out"
 
     // 1. Validiere den Stempeltyp
     if (!stampingType || !["in", "out"].includes(stampingType)) {
       return res
         .status(400)
         .json({ msg: "Ungültiger Stempeltyp. Erlaubt sind 'in' oder 'out'." });
+    }
+
+    // NEU: 1b. Validiere den Grund, falls es ein "in"-Stempel ist
+    if (stampingType === "in") {
+      if (!stampingReason || !ALLOWED_REASONS.includes(stampingReason)) {
+        return res
+          .status(400)
+          .json({ msg: "Bitte wähle einen gültigen Stempelungsgrund aus." });
+      }
     }
 
     // 2. Finde den letzten Stempelvorgang des Benutzers für die Konsistenzprüfung
@@ -318,6 +383,8 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
     const newStamping = new Stamping({
       userId,
       stampingType,
+      // Füge den Grund nur beim Einstempeln hinzu.
+      stampingReason: stampingType === "in" ? stampingReason : undefined,
       date: new Date(),
     });
 
@@ -327,6 +394,8 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
     res.status(201).json({
       msg: `Erfolgreich ${
         stampingType === "in" ? "eingestempelt" : "ausgestempelt"
+      } ${
+        stampingType === "in" ? `(Grund: ${stampingEntry.stampingReason})` : ""
       } um ${stampingEntry.date.toLocaleTimeString()}.`,
       stamping: stampingEntry,
     });
