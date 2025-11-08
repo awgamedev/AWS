@@ -322,6 +322,8 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
   const { id } = req.body;
   const data = req.body;
 
+  const logger = req.logger;
+
   try {
     let entity = await User.findById(id);
     if (!entity) {
@@ -361,13 +363,13 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
     await entity.save();
     res.redirect("/user-list");
   } catch (err) {
-    console.error("Fehler beim Speichern des Nutzers:", err); // Fehlerbehandlung, falls kein generisches View-System vorhanden ist
+    logger.error("There was an error updating user:", err);
     return res
       .status(500)
       .send(
         generateLayout(
           "Fehler",
-          err.message || `Fehler beim Aktualisieren des Nutzers.`,
+          err.message || `Error updating user.`,
           req.path,
           req.user
         )
@@ -392,7 +394,7 @@ router.get(
           .status(404)
           .send(
             generateLayout(
-              "Fehler",
+              "Error",
               "Nutzer nicht gefunden.",
               req.path,
               req.user
