@@ -17,6 +17,13 @@ const getStartOfWeek = (date) => {
   return d;
 };
 
+// Hilfsfunktion: Fügt Tage zu einem Datum hinzu
+const addDays = (date, days) => {
+  const newDate = new Date(date);
+  newDate.setDate(date.getDate() + days);
+  return newDate;
+};
+
 const generateTaskModal = (users) => {
   // Optionen für das Mitarbeiter-Dropdown
   const userOptions = users
@@ -76,6 +83,83 @@ const generateTaskModal = (users) => {
         `;
 };
 
+const generateEditTaskModal = (users) => {
+  // Optionen für das Mitarbeiter-Dropdown
+  const userOptions = users
+    .map((user) => `<option value="${user._id}">${user.username}</option>`)
+    .join("");
+
+  // Optionen für den Status
+  const statusOptions = [
+    { value: "pending", label: "Ausstehend" },
+    { value: "in-progress", label: "In Bearbeitung" },
+    { value: "completed", label: "Abgeschlossen" },
+  ];
+  const statusOptionsHtml = statusOptions
+    .map((s) => `<option value="${s.value}">${s.label}</option>`)
+    .join("");
+
+  return `
+    <div id="edit-task-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center transition-opacity duration-300 ease-out">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg m-4 transform transition-transform duration-300 ease-out scale-95 opacity-0" id="edit-task-modal-content">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-xl font-semibold text-gray-800">Aufgabe bearbeiten</h3>
+                <button id="close-edit-task-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-taskId" name="taskId">
+                
+                <div class="mb-4">
+                    <label for="edit-taskName" class="block text-sm font-medium text-gray-700">Aufgabenname *</label>
+                    <input type="text" id="edit-taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit-taskStatus" class="block text-sm font-medium text-gray-700">Status *</label>
+                    <select id="edit-taskStatus" name="taskStatus" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        ${statusOptionsHtml}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit-userId" class="block text-sm font-medium text-gray-700">Mitarbeiter zuweisen *</label>
+                    <select id="edit-userId" name="userId" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        ${userOptions}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit-taskDescription" class="block text-sm font-medium text-gray-700">Beschreibung</label>
+                    <textarea id="edit-taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="edit-startDate" class="block text-sm font-medium text-gray-700">Startdatum *</label>
+                        <input type="date" id="edit-startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="edit-endDate" class="block text-sm font-medium text-gray-700">Fälligkeitsdatum (Optional)</label>
+                        <input type="date" id="edit-endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <div id="edit-task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
+
+                <div class="flex justify-between">
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                        Änderungen speichern
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    `;
+};
+
 // 📅 GET Route: Aufgabenboard anzeigen (/tasks)
 router.get("/tasks", ensureAuthenticated, async (req, res) => {
   let users = [];
@@ -92,39 +176,77 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
 
   // Ermittle den Start der aktuellen Woche (Montag)
   const startOfWeek = getStartOfWeek(new Date());
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 7); // Ende der Woche (nächster Montag)
+  const endOfDisplayedWeek = addDays(startOfWeek, 7); // Nächster Montag, 00:00 Uhr
+
+  // Wir brauchen das Enddatum der angezeigten Woche (Sonntag 23:59:59)
+  const endOfWeekDisplay = addDays(startOfWeek, 6);
+  endOfWeekDisplay.setHours(23, 59, 59, 999);
 
   try {
-    // 1. Alle Mitarbeiter abrufen (oder nur die relevanten, je nach Anforderung)
-    // ANNAHME: Das User-Model existiert und hat einen 'name'-Feld.
-    users = await User.find({}).select("_id username").lean(); // Wichtig: username abrufen
+    // 1. Alle Mitarbeiter abrufen
+    users = await User.find({}).select("_id username").lean();
 
-    // 2. Alle Aufgaben für die aktuelle Woche abrufen
+    // 2. Alle Aufgaben abrufen, die diese Woche überschneiden:
+    // Die Aufgabe beginnt VOR dem Ende der Woche ODER
+    // Die Aufgabe endet (oder hat kein Ende) NACH dem Start der Woche.
     const tasks = await Task.find({
-      // Aufgaben, deren Startdatum in dieser Woche liegt
-      startDate: { $gte: startOfWeek, $lt: endOfWeek },
+      $or: [
+        // Aufgabe beginnt in oder vor dieser Woche UND endet in oder nach dieser Woche (oder hat kein Ende)
+        { startDate: { $lt: endOfDisplayedWeek } },
+        // Aufgabe hat kein Enddatum UND beginnt in oder vor dieser Woche
+        { endDate: null, startDate: { $lt: endOfDisplayedWeek } },
+      ],
+      // UND Aufgabe endet NICHT vor dem Beginn der Woche (Wenn endDate existiert)
+      $or: [
+        { endDate: { $gte: startOfWeek } },
+        { endDate: null }, // Aufgaben ohne Enddatum sind "ongoing" und sollten angezeigt werden
+      ],
     })
-      .select("userId taskName taskStatus startDate")
+      .select("userId taskName taskStatus startDate endDate taskDescription")
       .lean();
 
-    // 3. Aufgaben den Tagen und Mitarbeitern zuordnen
+    // 3. NEUE LOGIK: Aufgaben den Tagen und Mitarbeitern zuordnen, die sie überschneiden
     tasks.forEach((task) => {
-      // Finde den Wochentags-Index (0=So, 1=Mo, ..., 6=Sa). Wir wollen 0=Mo, ..., 6=So.
-      let taskDate = new Date(task.startDate);
-      // Korrigierter Index: (Wochentag - 1 + 7) % 7 --> Mo=0, ... So=6
-      const dayIndex = (taskDate.getDay() - 1 + 7) % 7;
-      const dayName = daysOfWeek[dayIndex];
       const userId = task.userId.toString();
 
-      if (!tasksByDayAndUser[userId]) {
-        tasksByDayAndUser[userId] = {};
-      }
-      if (!tasksByDayAndUser[userId][dayName]) {
-        tasksByDayAndUser[userId][dayName] = [];
-      }
+      // Setze das tatsächliche Startdatum der Schleife auf den Montag der angezeigten Woche (oder Startdatum der Aufgabe, je nachdem was später ist)
+      const loopStartDate = new Date(
+        Math.max(startOfWeek.getTime(), task.startDate.getTime())
+      );
+      loopStartDate.setHours(0, 0, 0, 0); // Stelle sicher, dass die Zeit Mitternacht ist
 
-      tasksByDayAndUser[userId][dayName].push(task);
+      // Das Schleifen-Ende ist der Sonntag 23:59:59 dieser Woche (oder das Enddatum der Aufgabe, je nachdem was früher ist)
+      const taskEndDate = task.endDate
+        ? new Date(task.endDate)
+        : endOfWeekDisplay;
+
+      // Stelle sicher, dass das Enddatum maximal das Ende des Sonntags ist
+      const loopEndDate = new Date(
+        Math.min(endOfWeekDisplay.getTime(), taskEndDate.getTime())
+      );
+
+      let currentDate = loopStartDate;
+
+      // Iteriere von loopStartDate bis loopEndDate
+      while (currentDate.getTime() <= loopEndDate.getTime()) {
+        // Korrigierter Index: (Wochentag - 1 + 7) % 7 --> Mo=0, ... So=6
+        const dayIndex = (currentDate.getDay() - 1 + 7) % 7;
+        const dayName = daysOfWeek[dayIndex];
+
+        if (!tasksByDayAndUser[userId]) {
+          tasksByDayAndUser[userId] = {};
+        }
+        if (!tasksByDayAndUser[userId][dayName]) {
+          tasksByDayAndUser[userId][dayName] = [];
+        }
+
+        // Füge die Aufgabe dem jeweiligen Tag hinzu
+        tasksByDayAndUser[userId][dayName].push(task);
+
+        // Gehe zum nächsten Tag
+        currentDate = addDays(currentDate, 1);
+        currentDate.setHours(0, 0, 0, 0); // Setze die Zeit für den nächsten Tag zurück, um Fehler zu vermeiden
+      }
     });
   } catch (error) {
     console.error("Fehler beim Abrufen des Aufgabenboards:", error.message);
@@ -146,28 +268,45 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
           const taskListHtml = dayTasks
             .map((task) => {
               let statusColor;
+              let statusIcon;
               switch (task.taskStatus) {
                 case "completed":
-                  statusColor = "bg-green-100 text-green-800 border-green-400";
+                  statusColor =
+                    "bg-green-100 text-green-800 border-green-400 hover:bg-green-200";
                   break;
                 case "in-progress":
                   statusColor =
-                    "bg-yellow-100 text-yellow-800 border-yellow-400";
+                    "bg-yellow-100 text-yellow-800 border-yellow-400 hover:bg-yellow-200";
                   break;
                 case "pending":
                 default:
-                  statusColor = "bg-red-100 text-red-800 border-red-400";
+                  statusColor =
+                    "bg-red-100 text-red-800 border-red-400 hover:bg-red-200";
                   break;
               }
 
+              // Füge data-Attribute hinzu, um die Aufgabe im JS leicht identifizieren zu können
               return `
-                    <div class="px-2 py-1 rounded-lg text-xs font-medium border my-1 ${statusColor}" title="${
-                task.taskDescription || "Keine Beschreibung"
-              }">
-                        ${task.taskName} 
-                        <span class="ml-1 text-gray-500 text-xs italic">(${
+                    <div 
+                        class="task-item px-2 py-1 rounded-lg text-xs font-medium border my-1 cursor-pointer transition duration-100 ${statusColor}" 
+                        data-task-id="${task._id}"
+                        data-user-id="${task.userId}"
+                        data-task-name="${task.taskName}"
+                        data-task-desc="${task.taskDescription || ""}"
+                        data-task-status="${task.taskStatus}"
+                        data-start-date="${task.startDate
+                          .toISOString()
+                          .substring(0, 10)}"
+                        data-end-date="${
+                          task.endDate
+                            ? task.endDate.toISOString().substring(0, 10)
+                            : ""
+                        }"
+                        title="Status: ${
                           task.taskStatus
-                        })</span>
+                        } - Klick zum Bearbeiten"
+                    >
+                        ${task.taskName} 
                     </div>
                 `;
             })
@@ -215,89 +354,8 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
             </div>
 
         ${generateTaskModal(users)} 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const modal = document.getElementById('task-modal');
-                const modalContent = document.getElementById('task-modal-content');
-                const openButton = document.getElementById('open-task-modal');
-                const closeButton = document.getElementById('close-task-modal');
-                const form = document.getElementById('create-task-form');
-                const messageDiv = document.getElementById('task-form-message');
-
-                // 1. Modal öffnen/schließen Logik
-                const openModal = () => {
-                    modal.classList.remove('hidden');
-                    // Füge Klassen für die Animation hinzu
-                    setTimeout(() => {
-                        modal.classList.remove('opacity-0');
-                        modalContent.classList.remove('opacity-0', 'scale-95');
-                        modalContent.classList.add('opacity-100', 'scale-100');
-                    }, 10); // Kleine Verzögerung für Übergang
-                };
-
-                const closeModal = () => {
-                    // Füge Klassen für die Animation hinzu
-                    modal.classList.add('opacity-0');
-                    modalContent.classList.add('opacity-0', 'scale-95');
-                    modalContent.classList.remove('opacity-100', 'scale-100');
-                    // Verstecke es nach der Animation
-                    setTimeout(() => modal.classList.add('hidden'), 300);
-                };
-
-                openButton.addEventListener('click', openModal);
-                closeButton.addEventListener('click', closeModal);
-                // Schließen bei Klick außerhalb des Modals
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        closeModal();
-                    }
-                });
-
-                // 2. Formular-Einreichung Logik
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    messageDiv.textContent = 'Aufgabe wird gespeichert...';
-                    messageDiv.className = 'mb-4 text-sm font-medium text-center text-yellow-600 block';
-                    
-                    const formData = new FormData(form);
-                    const taskData = Object.fromEntries(formData.entries());
-
-                    try {
-                        const response = await fetch('/api/tasks', { 
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(taskData),
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            messageDiv.textContent = data.msg || 'Aufgabe erfolgreich gespeichert!';
-                            messageDiv.className = 'mb-4 text-sm font-medium text-center text-green-600 block';
-                            
-                            // Formular zurücksetzen und Board neu laden, um die neue Aufgabe anzuzeigen
-                            form.reset();
-                            setTimeout(() => {
-                                closeModal();
-                                window.location.reload(); 
-                            }, 1000);
-                            
-                        } else {
-                            // Fehler vom Server
-                            messageDiv.textContent = data.msg || 'Fehler beim Speichern der Aufgabe.';
-                            messageDiv.className = 'mb-4 text-sm font-medium text-center text-red-600 block';
-                        }
-
-                    } catch (error) {
-                        console.error('Fetch Fehler:', error);
-                        messageDiv.textContent = 'Ein Netzwerkfehler ist aufgetreten.';
-                        messageDiv.className = 'mb-4 text-sm font-medium text-center text-red-600 block';
-                    }
-                });
-            });
-        </script>
+        ${generateEditTaskModal(users)}
+        <script src="/js/task-script.js"></script>
 
         <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
             <table class="min-w-full divide-y divide-gray-200">
@@ -376,6 +434,62 @@ router.post("/api/tasks", ensureAuthenticated, async (req, res) => {
       });
     }
     res.status(500).json({ msg: "Serverfehler beim Speichern der Aufgabe." });
+  }
+});
+
+router.put("/api/tasks/:id", ensureAuthenticated, async (req, res) => {
+  const taskId = req.params.id;
+  const { userId, taskName, taskDescription, taskStatus, startDate, endDate } =
+    req.body;
+
+  // Standard-Feld, das automatisch gesetzt wird
+  const modifiedBy = req.user.username || "Admin"; // Nimmt den Usernamen des Bearbeiters
+
+  // Basis-Validierung
+  if (!taskName || !startDate || !taskStatus) {
+    return res.status(400).json({
+      msg: "Bitte geben Sie Aufgabennamen, Startdatum und Status an.",
+    });
+  }
+
+  try {
+    const updateFields = {
+      userId,
+      taskName,
+      taskDescription,
+      taskStatus,
+      startDate: new Date(startDate),
+      endDate: endDate ? new Date(endDate) : undefined,
+      modifiedBy,
+      modifiedAt: new Date(), // Setze das Änderungsdatum
+    };
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { $set: updateFields },
+      { new: true, runValidators: true } // 'new: true' gibt das aktualisierte Dokument zurück; 'runValidators: true' führt das Schema-Validierung aus
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({ msg: "Aufgabe nicht gefunden." });
+    }
+
+    res.status(200).json({
+      msg: "Aufgabe erfolgreich aktualisiert.",
+      task: updatedTask,
+    });
+  } catch (err) {
+    console.error("Fehler beim Aktualisieren der Aufgabe:", err.message);
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        msg: `Validierungsfehler: ${Object.values(err.errors)
+          .map((e) => e.message)
+          .join(", ")}`,
+      });
+    }
+    res
+      .status(500)
+      .json({ msg: "Serverfehler beim Aktualisieren der Aufgabe." });
   }
 });
 
