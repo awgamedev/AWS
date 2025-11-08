@@ -186,6 +186,10 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
   try {
     // 1. Alle Mitarbeiter abrufen
     users = await User.find({}).select("_id username").lean();
+    const userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = user.username;
+      return map;
+    }, {});
 
     // 2. Alle Aufgaben abrufen, die diese Woche überschneiden:
     // Die Aufgabe beginnt VOR dem Ende der Woche ODER
@@ -209,6 +213,7 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
     // 3. NEUE LOGIK: Aufgaben den Tagen und Mitarbeitern zuordnen, die sie überschneiden
     tasks.forEach((task) => {
       const userId = task.userId.toString();
+      task.assignedUsername = userMap[userId] || "Unbekannt";
 
       // Setze das tatsächliche Startdatum der Schleife auf den Montag der angezeigten Woche (oder Startdatum der Aufgabe, je nachdem was später ist)
       const loopStartDate = new Date(
@@ -270,6 +275,7 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
             .map((task) => {
               let statusColor;
               let statusIcon;
+
               switch (task.taskStatus) {
                 case "completed":
                   statusColor =
@@ -307,7 +313,7 @@ router.get("/tasks", ensureAuthenticated, async (req, res) => {
                           task.taskStatus
                         } - Klick zum Bearbeiten"
                     >
-                        ${task.taskName} 
+                        ${task.taskName} (${task.assignedUsername})
                     </div>
                 `;
             })
