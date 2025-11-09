@@ -48,8 +48,6 @@ dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 // Importiere Ihre Passport-Konfiguration (muss nach dotenv.config() erfolgen)
 require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration
 
-// --- Dynamisches Router-Laden Logik (Nach dotenv!) ---
-
 /**
  * Durchsucht ein Verzeichnis rekursiv nach .js-Dateien (Routern)
  * @param {string} directory - Das aktuelle Verzeichnis, das durchsucht wird
@@ -105,6 +103,10 @@ mongoose
 // Initialize the Express application
 const app = express();
 
+// --- NEU: EJS View Engine Konfiguration ---
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "src", "views"));
+
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
@@ -138,6 +140,23 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passport
 
+// --- NEUE MIDDLEWARE FÜR EJS GLOBALE VARIABLEN ---
+// Diese Middleware macht allgemeine Variablen für alle EJS-Templates verfügbar (res.locals)
+app.use((req, res, next) => {
+  // Stellt den aktuellen Pfad für das Menü-Highlighting bereit (wird im menu.ejs benötigt)
+  res.locals.currentPath = req.path;
+
+  // Stellt allgemeine Layout-Variablen bereit, falls sie nicht von der Route überschrieben werden
+  res.locals.title = res.locals.title || "Applikations-Dashboard";
+  res.locals.userName = req.user ? req.user.username : "Gast";
+  res.locals.userInitials = res.locals.userName.substring(0, 2).toUpperCase();
+  res.locals.isLoggedIn = !!req.user;
+  res.locals.styles = res.locals.styles || ""; // Stellt sicher, dass 'styles' immer definiert ist
+
+  next();
+});
+// ---------------------------------------------------
+
 app.use(devAutoLogin);
 
 // --- Routes ---
@@ -152,7 +171,7 @@ routerFiles.forEach((file) => {
     app.use("/", router);
 
     const relativePath = path.relative(routesDir, file);
-    logger.info(`   - Mounted dynamically: /${relativePath}`);
+    logger.info(` 	 - Mounted dynamically: /${relativePath}`);
   } catch {}
 });
 

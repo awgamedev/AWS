@@ -1,0 +1,54 @@
+<%
+// Definiere die Klassen für den aktiven Zustand (muss hier wiederholt werden, da es eine separate Datei ist)
+const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
+const INACTIVE_CLASSES = "text-gray-300";
+
+// Hilfsfunktion, um die richtigen Klassen in EJS zu bestimmen
+const getClasses = (href) => {
+    // Überprüfe, ob der aktuelle Pfad exakt mit dem Link übereinstimmt,
+    // ODER (für das Dashboard), ob der Link '/' ist und der Pfad '/' oder leer ist.
+    const isRoot = href === "/" && (currentPath === "/" || currentPath === "");
+    const isActive = currentPath === href || isRoot;
+
+    return isActive
+        ? `${ACTIVE_CLASSES} hover:bg-gray-800`
+        : `${INACTIVE_CLASSES} hover:bg-gray-800`;
+};
+%>
+<nav class="p-4 space-y-1">
+    <!-- Dashboard -->
+    <a href="/" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/') %> transition duration-150">
+        <span class="fas fa-home"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Dashboard</span>
+    </a>
+    
+    <!-- Stempelungen -->
+    <a href="/stamping" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping') %> transition duration-150">
+        <span class="fa-solid fa-utensils"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungen</span>
+    </a>
+
+    <!-- Stempelungsübersicht -->
+    <a href="/stamping-overview" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping-overview') %> transition duration-150">
+        <span class="fa-solid fa-utensils"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungsübersicht</span>
+    </a>
+
+    <!-- Aufgaben -->
+    <a href="/tasks" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/tasks') %> transition duration-150">
+        <span class="fa-solid fa-list-check"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Aufgaben</span>
+    </a>
+    
+    <!-- Nutzer -->
+    <a href="/user-list" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/user-list') %> transition duration-150">
+        <span class="fas fa-user"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Nutzer</span>
+    </a>
+    
+    <!-- Einstellungen -->
+    <a href="/settings" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/settings') %> transition duration-150"> 	
+        <span class="fas fa-gear"></span>
+        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Einstellungen</span>
+    </a>
+</nav>

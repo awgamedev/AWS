@@ -1,4 +1,6 @@
 {
-    "WELCOME_MESSAGE": "Welcome to our app!",
-    "ITEMS_FOUND": "Found %s items."
+	"WELCOME_MESSAGE": "Welcome to our app!",
+	"ITEMS_FOUND": "Found %s items.",
+	"APP_DASHBOARD_TITLE": "APP_DASHBOARD_TITLE",
+	"404_NOT_FOUND_TITLE": "404_NOT_FOUND_TITLE"
 }

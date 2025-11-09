@@ -1,10 +1,10 @@
-const generateLayout = require("../utils/layout");
+// const generateLayout = require("../utils/layout"); // NICHT MEHR BENÖTIGT
 
 /**
  * 404-Middleware (Catch-All-Handler).
  * Diese Funktion wird aufgerufen, wenn keine andere Express-Route
  * für den angeforderten Pfad gefunden wurde.
- * @param {object} req - Express Request Objekt (beinhaltet req.url)
+ * @param {object} req - Express Request Objekt
  * @param {object} res - Express Response Objekt
  * @param {function} next - Nächste Middleware-Funktion (wird hier nicht aufgerufen)
  */
@@ -12,52 +12,17 @@ const notFoundHandler = (req, res, next) => {
   // 1. Setzt den HTTP-Statuscode auf 404 (Not Found)
   res.status(404);
 
-  var style = `
-    .not-found-container {
-        text-align: center;
-        margin-top: 50px;
-    }
-    .not-found-container h1 {
-        font-size: 6em;
-        margin-bottom: 0;
-        color: #ff6f61;
-    }
-    .not-found-container h2 {
-        font-size: 2em;
-        margin-top: 0;
-        color: #333;
-    }
-    .not-found-container p {
-        font-size: 1.2em;
-        color: #666;
-    }
-    .not-found-container a {
-        color: #00796b;
-        text-decoration: none;
-    }
-    .not-found-container a:hover {
-        text-decoration: underline;
-    }
-  `;
-
-  const content = `
-    <div class="not-found-container">
-        <h1>404</h1>
-        <h2>Seite nicht gefunden</h2>
-        <p>Die angeforderte URL: <b>${req.originalUrl}</b> konnte nicht gefunden werden.</p>
-        <p><a href="/">Zurück zur Startseite</a></p>
-    </div>
-`;
-
-  const htmlResponse = generateLayout(
-    "Submit a Message",
-    content,
-    req.path,
-    style
-  );
-
-  // 3. Sendet die Antwort
-  res.send(htmlResponse);
+  // 2. Rendert das EJS-Template "404". Express sucht dies in views/404.ejs
+  // Wir übergeben nur die benötigten spezifischen Daten.
+  res.render("404", {
+    // Variable für den Seitentitel (wird im layout.ejs verwendet)
+    title: req.__("404_NOT_FOUND_TITLE") || "404 - Seite nicht gefunden",
+    // Variable, um die angeforderte URL im Template anzuzeigen (views/404.ejs)
+    originalUrl: req.originalUrl,
+    // Die Styles für die 404-Seite sind jetzt im 404.ejs Template selbst eingebettet.
+    // Wir brauchen hier keine separate Style-Variable, da das EJS-Template
+    // den Inhalt und die Darstellung direkt liefert.
+  });
 };
 
 module.exports = { notFoundHandler };
