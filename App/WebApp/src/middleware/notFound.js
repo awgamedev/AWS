@@ -16,7 +16,7 @@ const notFoundHandler = (req, res, next) => {
   // Wir übergeben nur die benötigten spezifischen Daten.
   res.render("404", {
     // Variable für den Seitentitel (wird im layout.ejs verwendet)
-    title: req.__("404_NOT_FOUND_TITLE") || "404 - Seite nicht gefunden",
+    title: req.__("404_NOT_FOUND_TITLE"),
     // Variable, um die angeforderte URL im Template anzuzeigen (views/404.ejs)
     originalUrl: req.originalUrl,
     // Die Styles für die 404-Seite sind jetzt im 404.ejs Template selbst eingebettet.

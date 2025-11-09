@@ -1,0 +1,67 @@
+<%
+// Lokale Variablen wie im JavaScript-Helfer definieren
+const isEditingLocal = isEditing || !!entityToModify._id;
+const titleText = isEditingLocal ? ( __('EDIT_USER_TITLE') ) : ( __('CREATE_USER_TITLE') || 'Neuen Nutzer erstellen 📝' );
+const submitText = isEditingLocal ? ( __('SAVE_CHANGES_BUTTON')) : ( __('SAVE_USER_BUTTON') || '💾 Nutzer speichern' );
+const formAction = isEditingLocal ? "/modify-user" : "/create-user";
+const currentUsername = entityToModify.username || "";
+const currentEmail = entityToModify.email || "";
+const currentRole = entityToModify.role || "user";
+
+const roles = [
+    { value: "user", label: "User" },
+    { value: "admin", label: "Admin" },
+    { value: "moderator", label: "Moderator" },
+];
+%>
+
+<div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-xl rounded-lg border border-gray-100">
+    <h2 class="text-3xl font-extrabold mb-8 text-gray-900 text-center"><%= titleText %></h2>
+    
+    <form action="<%= formAction %>" method="POST" class="space-y-6">
+        <% if (isEditingLocal) { %>
+            <input type="hidden" name="id" value="<%= entityToModify._id %>">
+        <% } %>
+        
+        <div>
+            <label for="username" class="block text-sm font-medium text-gray-700"><%= __('USERNAME_LABEL') %></label>
+            <input type="text" id="username" name="username" required value="<%= currentUsername %>"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                    placeholder="<%= __('USERNAME_PLACEHOLDER') %>">
+        </div>
+
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700"><%= __('EMAIL_LABEL') %></label>
+            <input type="email" id="email" name="email" required value="<%= currentEmail %>"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                    placeholder="<%= __('EMAIL_PLACEHOLDER') %>">
+        </div>
+
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700"><%= __('PASSWORD_LABEL') %></label>
+            <input type="password" id="password" name="password" 
+                    <%= !isEditingLocal ? "required" : "" %>
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                    placeholder="<%= isEditingLocal ? (__('PASSWORD_EDIT_PLACEHOLDER')) : (__('PASSWORD_CREATE_PLACEHOLDER')) %>">
+        </div>
+
+        <div>
+            <label for="role" class="block text-sm font-medium text-gray-700"><%= __('ROLE_LABEL') %></label>
+            <select id="role" name="role"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                <% roles.forEach(role => { %>
+                    <option value="<%= role.value %>" <%= currentRole === role.value ? "selected" : "" %>><%= role.label %></option>
+                <% }); %>
+            </select>
+        </div>
+        
+        <div class="pt-4">
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                <%= submitText %>
+            </button>
+            <a href="/user-list" class="mt-3 block w-full text-center py-2 px-4 text-sm font-medium text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-150 ease-in-out">
+                <%= __('CANCEL_BUTTON') %>
+            </a>
+        </div>
+    </form>
+</div>

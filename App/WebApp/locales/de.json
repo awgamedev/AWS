@@ -1,6 +1,25 @@
 {
 	"WELCOME_MESSAGE": "Willkommen bei unserer App!",
 	"ITEMS_FOUND": "Es wurden %s Elemente gefunden.",
-	"APP_DASHBOARD_TITLE": "APP_DASHBOARD_TITLE",
-	"404_NOT_FOUND_TITLE": "404_NOT_FOUND_TITLE"
+	"APP_DASHBOARD_TITLE": "Dashboard",
+	"404_NOT_FOUND_TITLE": "404 - Seite nicht gefunden",
+	"USER_LIST_PAGE_TITLE": "Nutzer",
+	"USER_LIST_TITLE": "Nutzer-Liste",
+	"CREATE_NEW_BUTTON": "Neuen Eintrag erstellen",
+	"SEARCH_PLACEHOLDER": "Suche nach...",
+	"EDIT_BUTTON": "Bearbeiten",
+	"DELETE_BUTTON": "Löschen",
+	"EDIT_USER_PAGE_TITLE": "Nutzer bearbeiten",
+	"ERROR_TITLE": "Fehler",
+	"EDIT_USER_TITLE": "Nutzer bearbeiten",
+	"SAVE_CHANGES_BUTTON": "Änderungen speichern",
+	"USERNAME_LABEL": "Nutzername",
+	"USERNAME_PLACEHOLDER": "Nutzername eingeben",
+	"EMAIL_LABEL": "E-Mail",
+	"EMAIL_PLACEHOLDER": "max.mustermann@firma.de",
+	"PASSWORD_LABEL": "Passwort",
+	"PASSWORD_EDIT_PLACEHOLDER": "Leer lassen, um Passwort nicht zu ändern",
+	"ROLE_LABEL": "Rolle",
+	"PASSWORD_CREATE_PLACEHOLDER": "Mindestens 6 Zeichen",
+	"CANCEL_BUTTON": "Abbrechen"
 }

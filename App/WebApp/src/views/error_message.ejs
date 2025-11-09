@@ -1,0 +1,14 @@
+<div class="max-w-xl mx-auto mt-10 p-6 bg-red-50 border border-red-300 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold text-red-800 mb-4"><%= __('ERROR_OCCURRED') || 'Ein Fehler ist aufgetreten' %></h2>
+    <p class="text-red-700 whitespace-pre-wrap"><%= message %></p>
+    <% if (typeof req !== 'undefined' && req.path) { %>
+        <p class="mt-4 text-sm text-red-600">
+            <%= __('REQUESTED_PATH') || 'Pfad:' %> <%= req.path %>
+        </p>
+    <% } %>
+    <div class="mt-6 text-center">
+        <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150">
+            <%= __('GO_HOME') || 'Zur Startseite' %>
+        </a>
+    </div>
+</div>

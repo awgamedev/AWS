@@ -1,0 +1,47 @@
+<%
+const titleText = __('CONFIRM_DELETE_TITLE') || "Wirklich Nutzer löschen? ⚠️";
+const confirmQuestion = __('CONFIRM_DELETE_QUESTION') || 'Sind Sie sicher, dass Sie diesen Nutzer **dauerhaft** löschen möchten? Diese Aktion kann **nicht** rückgängig gemacht werden.';
+const detailsHeader = __('USER_DETAILS_HEADER') || 'Nutzer-Details';
+const deleteButton = __('YES_DELETE_BUTTON') || '🗑️ Ja, endgültig löschen';
+const cancelButton = __('CANCEL_BUTTON') || 'Abbrechen';
+
+// Hilfsfunktion zum Kapitalisieren des ersten Buchstabens
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+%>
+
+<div class="max-w-xl mx-auto mt-10 p-8 bg-white shadow-2xl rounded-lg border border-red-200">
+    <h2 class="text-3xl font-extrabold text-red-700 mb-6 text-center"><%= titleText %></h2>
+    
+    <p class="text-lg text-gray-700 mb-6 text-center">
+        <%- confirmQuestion %>
+    </p>
+
+    <div class="border border-gray-200 p-4 rounded-md mb-8 bg-gray-50">
+        <h3 class="text-xl font-bold mb-2 text-gray-800"><%= detailsHeader %></h3>
+        <% 
+        // Generieren der Details, wie in der Originalfunktion, aber ohne sensible Daten
+        Object.keys(entityToDelete)
+            .filter(key => key !== 'password' && key !== '__v' && key !== '_id' && entityToDelete[key] !== undefined)
+            .forEach(key => { 
+        %>
+            <p class="text-sm text-gray-600">
+                <strong><%= capitalize(key) %>:</strong> <%= entityToDelete[key] %>
+            </p>
+        <% }); %>
+        <p class="text-sm text-gray-600">
+             <strong>ID:</strong> <%= entityToDelete._id %>
+        </p>
+    </div>
+
+    <div class="flex justify-between space-x-4">
+        <form action="/user-list/delete/<%= entityToDelete._id %>" method="POST" class="w-1/2">
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                <%= deleteButton %>
+            </button>
+        </form>
+
+        <a href="/user-list" class="w-1/2 flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+            <%= cancelButton %>
+        </a>
+    </div>
+</div>

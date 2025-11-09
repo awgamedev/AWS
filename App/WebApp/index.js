@@ -5,13 +5,7 @@ const router = express.Router();
 router.get("/", (req, res, next) => {
   // Daten, die für das Template (views/index.ejs) benötigt werden
   const itemCount = 5;
-  const title = req.__("APP_DASHBOARD_TITLE") || "Dashboard"; // Titel für die Seite
-
-  // Spezifische Styles, die in den <style>-Block im Layout eingefügt werden sollen
-  const specificStyles = `
-		/* Specific styles for the home card */
-		.container { text-align: center; }
-	`;
+  const title = req.__("APP_DASHBOARD_TITLE"); // Titel für die Seite
 
   // 1. Zuerst den Inhalt der inneren View (index.ejs) als String rendern.
   // Wir müssen die benötigten lokalen Variablen explizit übergeben.
@@ -33,7 +27,6 @@ router.get("/", (req, res, next) => {
     // 2. Jetzt das Hauptlayout (layout.ejs) rendern und den Inhalt als bodyContent übergeben
     res.render("layout", {
       title: title,
-      styles: specificStyles,
       bodyContent: contentHtml, // Der gerenderte Inhalt der index.ejs
       // Alle anderen Variablen (userName, isLoggedIn, currentPath für das Menü, etc.)
       // sind bereits über res.locals (in app.js gesetzt) verfügbar.
