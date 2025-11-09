@@ -10,6 +10,7 @@ const session = require("express-session"); // NEU: Session-Middleware importier
 const winston = require("winston");
 const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
+const { devAutoLogin } = require("./src/middleware/devAutoLogin"); // Importieren
 const fs = require("fs");
 const path = require("path");
 const i18n = require("i18n");
@@ -92,9 +93,6 @@ if (routerFiles.length > 0) {
 
 // --- Manuelle Imports (Für Router, die nicht im dynamischen Pfad sind oder speziell behandelt werden) ---
 const mainRouter = require("./index"); // Import the main router
-// 'auth' und 'lang' werden oft manuell importiert, um die Reihenfolge zu sichern.
-const authRouter = require("./src/routes/auth");
-const langRouter = require("./src/routes/lang");
 
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -140,11 +138,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passport
 
+app.use(devAutoLogin);
+
 // --- Routes ---
 // 1. Manuell importierte Router
 app.use("/", mainRouter);
-app.use("/", authRouter);
-app.use("/", langRouter);
 
 // 2. Dynamisch geladene Router (inkl. Unterordner)
 routerFiles.forEach((file) => {
