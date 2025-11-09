@@ -6,8 +6,6 @@ const { ensureAuthenticated } = require("../middleware/auth");
 const taskController = require("../controllers/taskController");
 const { genThItems } = require("../utils/table-components/tableItems"); // Import beibehalten
 
-// --- HILFSFUNKTIONEN ZUM EJS-RENDERING (Von user.js kopiert/zentralisiert) ---
-
 /**
  * Rendert das Hauptlayout mit dem zuvor gerenderten Content-String.
  */
