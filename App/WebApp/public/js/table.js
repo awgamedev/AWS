@@ -31,8 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- 2. Sortierfunktion ---
-
   // Fügt Sortier-Event-Listener zu allen Spaltenköpfen hinzu
   headers.forEach((header) => {
     header.addEventListener("click", () => {

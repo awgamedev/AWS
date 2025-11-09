@@ -175,7 +175,7 @@ routerFiles.forEach((file) => {
     const relativePath = path.relative(routesDir, file);
     logger.info(` 	 - Mounted dynamically: /${relativePath}`);
   } catch (ex) {
-    logger.error(`Could not mount route for file ${file}: `, ex);
+    logger.error(`Could not mount route for file ${file}: `);
   }
 });
 

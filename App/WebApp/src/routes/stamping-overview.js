@@ -226,7 +226,7 @@ router.get(
       req,
       res,
       "stamping_overview_admin",
-      `Admin Übersicht ${monthNameDisplay}`,
+      `Monatsübersicht Stempelungen`,
       {
         overviewData: sortedUserOverviewData,
         totalMonthlyHours: round(totalMonthlyHours, 2), // Gesamtsumme auch runden

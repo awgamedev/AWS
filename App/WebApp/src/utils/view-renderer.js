@@ -31,12 +31,9 @@ const renderView = (
 ) => {
   res.status(statusCode);
 
-  // Annahme: req.__ für i18n und genThItems sind globale Locals oder müssen hier importiert/definiert werden
   const viewLocals = {
     ...innerLocals,
-    // Optional: req.__ und genThItems nur hinzufügen, wenn sie existieren
     __: req.__ || ((key) => key),
-    // Füge hier weitere benötigte Helferfunktionen hinzu (z.B. getPriorityColor, falls nicht in EJS gelöst)
   };
 
   // 1. Innere View als String rendern
