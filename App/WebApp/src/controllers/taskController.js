@@ -117,3 +117,25 @@ exports.updateTask = async (req, res) => {
       .json({ msg: "Serverfehler beim Aktualisieren der Aufgabe." });
   }
 };
+
+exports.deleteTask = async (req, res) => {
+  const taskId = req.params.id;
+
+  try {
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+
+    if (!deletedTask) {
+      return res.status(404).json({ msg: "Aufgabe nicht gefunden." });
+    }
+
+    // Erfolgreiche Löschanfrage, die keinen Inhalt zurückgibt
+    res.status(204).send();
+  } catch (err) {
+    console.error("Fehler beim Löschen der Aufgabe:", err.message);
+    // Behandelt ungültige MongoDB-ID-Formate
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ msg: "Ungültiges Aufgabenformat." });
+    }
+    res.status(500).json({ msg: "Serverfehler beim Löschen der Aufgabe." });
+  }
+};

@@ -107,6 +107,8 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 
+app.locals.rmWhitespace = true;
+
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
@@ -172,7 +174,9 @@ routerFiles.forEach((file) => {
 
     const relativePath = path.relative(routesDir, file);
     logger.info(` 	 - Mounted dynamically: /${relativePath}`);
-  } catch {}
+  } catch (ex) {
+    logger.error(`Could not mount route for file ${file}: `);
+  }
 });
 
 app.use(notFoundHandler);
