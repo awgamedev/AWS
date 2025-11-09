@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
     
-    <div class="bg-white p-2 rounded-xl shadow-lg border-l-4 <%= currentStatus === "in" ? "border-green-600" : "border-red-600" %>">
+    <div class="bg-white p-3 rounded-xl shadow-lg border-l-4 <%= currentStatus === "in" ? "border-green-600" : "border-red-600" %>">
         <div class="flex items-center">
             <div class="flex-shrink-0 p-3 rounded-full <%= currentStatus === "in" ? "bg-green-100" : "bg-red-100" %>">
                 <% if (currentStatus === "in") { %>
@@ -56,20 +56,18 @@
         <button 
             id="stamp-in-btn"
             data-type="in"
-            class="px-1 py-1 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md <%= currentStatus === "in" ? "opacity-50 cursor-not-allowed" : "" %>"
+            class="p-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md <%= currentStatus === "in" ? "opacity-50 cursor-not-allowed" : "" %>"
             <%= currentStatus === "in" ? "disabled" : "" %>
         >
-            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             <%= __("STAMP_IN_BUTTON") %>
         </button>
         
         <button 
             id="stamp-out-btn"
             data-type="out"
-            class="px-1 py-1 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md <%= currentStatus === "out" ? "opacity-50 cursor-not-allowed" : "" %>"
+            class="p-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md <%= currentStatus === "out" ? "opacity-50 cursor-not-allowed" : "" %>"
             <%= currentStatus === "out" ? "disabled" : "" %>
         >
-            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
             <%= __("STAMP_OUT_BUTTON") %>
         </button>
     </div>
@@ -78,7 +76,7 @@
 <div class="mt-3 bg-white p-4 rounded-xl shadow-lg">
     <h2 class="text-xl font-semibold text-gray-800 mb-4"><%= __("YOUR_SHIFTS") %></h2>
     <div class="border-t border-gray-200" style="overflow-y: auto; height: 30vh;">
-        <ul class="divide-y divide-gray-200">
+        <ul class="divide-y divide-gray-200 px-2">
             <% if (stampingPairs && stampingPairs.length > 0) { %>
                 <% stampingPairs.forEach(function(pair) { 
                     const dateStr = formatDate(pair.come); 
