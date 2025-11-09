@@ -4,74 +4,7 @@ const Task = require("../models/Task");
 const User = require("../models/User");
 const { ensureAuthenticated } = require("../middleware/auth");
 const taskController = require("../controllers/taskController");
-const { genThItems } = require("../utils/table-components/tableItems"); // Import beibehalten
-
-/**
- * Rendert das Hauptlayout mit dem zuvor gerenderten Content-String.
- */
-const renderWithLayout = (req, res, title, contentHtml, styles = "") => {
-  // res.render() für das Layout, welches den contentHtml als bodyContent enthält
-  res.render("layout", {
-    title: title,
-    styles: styles,
-    bodyContent: contentHtml,
-  });
-};
-
-/**
- * Rendert eine innere EJS-View und bettet sie in das Hauptlayout ein.
- * @param {object} req - Express Request Objekt
- * @param {object} res - Express Response Objekt
- * @param {string} viewName - Name der EJS-View (z.B. 'user_list', 'user_form')
- * @param {string} title - Seitentitel
- * @param {object} innerLocals - Variablen für die innere View
- * @param {string} specificStyles - Spezifische CSS-Styles (optional)
- * @param {number} statusCode - HTTP-Statuscode (optional)
- */
-const renderView = (
-  req,
-  res,
-  viewName,
-  title,
-  innerLocals = {},
-  specificStyles = "",
-  statusCode = 200
-) => {
-  res.status(statusCode);
-
-  // Füge Standard-Locals hinzu, die in den Views benötigt werden (i18n, genThItems)
-  const viewLocals = {
-    ...innerLocals,
-    __: req.__,
-    genThItems: genThItems,
-  };
-
-  // 1. Innere View als String rendern
-  req.app.render(viewName, viewLocals, (err, contentHtml) => {
-    if (err) {
-      req.logger.error(`Error rendering view ${viewName}:`, err);
-      // Fallback: Einfaches Rendering der Fehlerseite
-      const fallbackContent = `<div class="text-red-500 p-8"><h1>${
-        req.__("ERROR_TITLE") || "Fehler"
-      }</h1><p>${
-        req.__("RENDER_ERROR") ||
-        "Ein interner Rendering-Fehler ist aufgetreten."
-      }</p></div>`;
-      return renderWithLayout(
-        req,
-        res,
-        req.__("ERROR_TITLE") || "Fehler",
-        fallbackContent,
-        ""
-      );
-    }
-
-    // 2. Layout mit dem gerenderten Content rendern
-    renderWithLayout(req, res, title, contentHtml, specificStyles);
-  });
-};
-
-// --- HILFSFUNKTIONEN (Zusammengeführt von task-utils.js) ---
+const { renderView } = require("../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
 
 // Hilfsfunktion: Fügt Tage zu einem Datum hinzu
 const addDays = (date, days) => {
