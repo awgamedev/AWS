@@ -1,0 +1,194 @@
+<h1 class="text-3xl font-bold text-gray-900 mb-6"><%= __("STAMPING_TITLE") %></h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    
+    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 <%= currentStatus === "in" ? "border-green-600" : "border-red-600" %>">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 p-3 rounded-full <%= currentStatus === "in" ? "bg-green-100" : "bg-red-100" %>">
+                <% if (currentStatus === "in") { %>
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.504A9 9 0 0012 1h.01a9 9 0 003.78 17.614l-2.022 2.023a1 1 0 01-1.414 0l-2.022-2.023A9 9 0 0012 12M12 12v.01"></path></svg>
+                <% } else { %>
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <% } %>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500"><%= __("CURRENT_STATUS") %></p>
+                <p class="text-3xl font-bold text-gray-900">
+                    <%= currentStatus === "in" ? (__("STATUS_IN")) : (__("STATUS_OUT")) %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-gray-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500"><%= __("LAST_STAMPING") %></p>
+                <p class="text-3xl font-bold text-gray-900"><%= lastStampingTime %></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4"><%= __("CHOOSE_ACTION") || "" %></h2>
+    <p id="stamping-message" class="mb-4 font-medium text-sm text-gray-600">
+        <%= __("READY_TO") %> <%= currentStatus === "in" ? (__("STAMP_OUT")) : (__("STAMP_IN")) %>.
+    </p>
+    
+    <div id="reason-selection" class="mb-4 <%= currentStatus === "in" ? "hidden" : "" %>">
+        <label for="stamping-reason" class="block text-sm font-medium text-gray-700 mb-1">
+            <%= __("REASON_SELECT") %>
+        </label>
+        <select id="stamping-reason" name="stamping-reason"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+            <option value=""><%= __("SELECT_DEFAULT") %></option>
+            <% ALLOWED_REASONS.forEach(function(reason) { %>
+                <option value="<%= reason %>"><%= reason %></option>
+            <% }); %>
+        </select>
+        <p id="reason-error" class="text-sm text-red-500 mt-1 hidden"><%= __("REASON_REQUIRED") %></p>
+    </div>
+    
+    <div class="flex space-x-4">
+        
+        <button 
+            id="stamp-in-btn"
+            data-type="in"
+            class="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-md <%= currentStatus === "in" ? "opacity-50 cursor-not-allowed" : "" %>"
+            <%= currentStatus === "in" ? "disabled" : "" %>
+        >
+            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <%= __("STAMP_IN_BUTTON") %>
+        </button>
+        
+        <button 
+            id="stamp-out-btn"
+            data-type="out"
+            class="px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md <%= currentStatus === "out" ? "opacity-50 cursor-not-allowed" : "" %>"
+            <%= currentStatus === "out" ? "disabled" : "" %>
+        >
+            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+            <%= __("STAMP_OUT_BUTTON") %>
+        </button>
+    </div>
+</div>
+
+<div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4"><%= __("YOUR_SHIFTS") %></h2>
+    <div class="border-t border-gray-200">
+        <ul class="divide-y divide-gray-200">
+            <% if (stampingPairs && stampingPairs.length > 0) { %>
+                <% stampingPairs.forEach(function(pair) { 
+                    const dateStr = formatDate(pair.come); 
+                    const comeTime = formatTime(pair.come);
+                    // Sicherstellen, dass die Funktion existiert und aufgerufen wird
+                    const goTime = pair.go ? formatTime(pair.go) : ""; 
+                    const reason = pair.come.stampingReason || (__("NA_SHORT") || "N/A");
+
+                    const timeDisplay = pair.go ? `${comeTime} - ${goTime}` : `${comeTime} - <strong>${__("OPEN_SHIFT")}</strong>`;
+                    
+                    const statusText = pair.go ? (__("STATUS_CLOSED")) : (__("STATUS_ACTIVE"));
+                    const statusColor = pair.go ? "text-gray-500 bg-gray-100" : "text-white bg-blue-600";
+                    const statusPadding = pair.go ? "px-2 py-0.5" : "px-3 py-1";
+                    const statusRing = pair.go ? "border-gray-300" : "border-blue-600";
+                %>
+                <li class="py-4 border-b border-gray-100 flex justify-between items-center">
+                    <div class="flex flex-col flex-grow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-shrink-0">
+                                <span class="text-sm text-gray-700 font-medium mr-4"><%= dateStr %></span>
+                                <span class="inline-flex items-center rounded-full <%= statusColor %> <%= statusPadding %> text-xs font-semibold border <%= statusRing %>">
+                                    <%= statusText %>
+                                </span>
+                            </div>
+                            <div class="text-lg font-mono tracking-wider text-gray-900">
+                                <%- timeDisplay %> 
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1"><%= __("REASON") %>: <%= reason %></p>
+                    </div>
+                </li>
+                <% }); %>
+            <% } else { %>
+                <li class="py-4 text-gray-500"><%= __("NO_STAMPINGS") || "Noch keine Stempel-Paare vorhanden." %></li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const stampButtons = document.querySelectorAll('#stamp-in-btn, #stamp-out-btn');
+        const messageDiv = document.getElementById('stamping-message');
+        const reasonSelect = document.getElementById('stamping-reason');
+        const reasonError = document.getElementById('reason-error');
+        const reasonSelectionDiv = document.getElementById('reason-selection');
+        
+        // Sichtbarkeit des Dropdowns bei Statuswechsel initialisieren (wiederholt von EJS-Klasse, falls JS später lädt)
+        if ('<%= currentStatus %>' === 'out') {
+            reasonSelectionDiv.classList.remove('hidden');
+        } else {
+            reasonSelectionDiv.classList.add('hidden');
+        }
+
+        stampButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const stampingType = event.currentTarget.getAttribute('data-type');
+                
+                if(event.currentTarget.disabled) return;
+
+                // Validierung des Grundes beim Einstempeln
+                let stampingReason = null;
+                if (stampingType === 'in') {
+                    stampingReason = reasonSelect.value;
+                    if (!stampingReason) {
+                        reasonError.classList.remove('hidden');
+                        messageDiv.textContent = 'Bitte wähle einen Grund für das Einstempeln aus.'; // Hardcoded, da i18n nicht in JS übertragen wird
+                        messageDiv.classList.remove('text-green-600', 'text-red-600', 'text-yellow-600');
+                        messageDiv.classList.add('text-red-600');
+                        return; 
+                    }
+                    reasonError.classList.add('hidden');
+                }
+
+                // Ladezustand anzeigen
+                messageDiv.textContent = 'Verarbeite Stempelvorgang...';
+                messageDiv.classList.remove('text-green-600', 'text-red-600', 'text-gray-600');
+                messageDiv.classList.add('text-yellow-600');
+                
+                try {
+                    const response = await fetch('/stamp', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ stampingType, stampingReason }),
+                    });
+
+                    const data = await response.json();
+
+                    messageDiv.textContent = data.msg || 'Aktion erfolgreich.';
+                    
+                    if (response.ok) {
+                        messageDiv.classList.remove('text-yellow-600', 'text-red-600');
+                        messageDiv.classList.add('text-green-600');
+                        setTimeout(() => window.location.reload(), 1000);  
+                    } else {
+                        messageDiv.classList.remove('text-yellow-600', 'text-green-600');
+                        messageDiv.classList.add('text-red-600');
+                    }
+
+                } catch (error) {
+                    messageDiv.textContent = 'Ein Netzwerkfehler ist aufgetreten.';
+                    messageDiv.classList.remove('text-yellow-600', 'text-green-600');
+                    messageDiv.classList.add('text-red-600');
+                    console.error('Fetch Fehler:', error);
+                }
+            });
+        });
+    });
+</script>
