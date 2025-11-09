@@ -171,10 +171,9 @@ const generateEditTaskModal = (users, __) => {
     `;
 };
 %>
-<h1 class="text-3xl font-bold text-gray-900 mb-2">🗓️ <%= __("TASK_BOARD_TITLE") %></h1>
-<p class="text-lg text-gray-600 mb-6"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
+<p class="text-lg text-gray-600 mb-2"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
 
-<div class="flex space-x-4 mb-6">
+<div class="flex space-x-4 mb-2">
     <button id="open-task-modal" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <%= __("CREATE_TASK_BUTTON") %>
@@ -203,7 +202,7 @@ const generateEditTaskModal = (users, __) => {
                             const userId = user._id.toString();
                             const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
                         %>
-                            <td class="p-2 border border-gray-200 align-top h-32">
+                            <td class="p-2 border border-gray-200 align-top h-2">
                                 <% dayTasks.forEach(task => { const statusColor = getPriorityColor(task.taskPriority); %>
                                     <div 
                                         class="task-item px-2 py-1 rounded-lg text-xs font-medium border my-1 cursor-pointer transition duration-100 <%= statusColor %>" 
