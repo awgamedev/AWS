@@ -1,0 +1,93 @@
+<h1 class="text-3xl font-bold text-gray-900 mb-6">🗓️ Admin: Monatsübersicht Stempelungen</h1>
+
+<div class="bg-white p-4 rounded-xl shadow-lg mb-6 flex space-x-4 items-center">
+    <span class="text-lg font-semibold text-gray-700">Zeitraum wählen:</span>
+    <select id="month-select" class="p-2 border border-gray-300 rounded-lg">
+        <% monthOptions.forEach(option => { %>
+            <option value="<%= option.value %>" <%= option.isSelected ? 'selected' : '' %>>
+                <%= option.name %>
+            </option>
+        <% }); %>
+    </select>
+    <select id="year-select" class="p-2 border border-gray-300 rounded-lg">
+        <% yearOptions.forEach(option => { %>
+            <option value="<%= option.value %>" <%= option.isSelected ? 'selected' : '' %>>
+                <%= option.value %>
+            </option>
+        <% }); %>
+    </select>
+</div>
+
+<div class="bg-blue-600 p-6 rounded-xl shadow-2xl mb-8 text-white">
+    <h2 class="text-xl font-medium mb-2">Gesamte Arbeitsstunden aller Mitarbeiter im <%= monthName %></h2>
+    <p class="text-5xl font-extrabold"><%= totalMonthlyHours %> Stunden</p>
+</div>
+
+<div id="employee-overview" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <% if (overviewData.length === 0) { %>
+        <div class="bg-white p-6 rounded-xl shadow-lg text-gray-500 col-span-full">Keine Mitarbeiter oder Stempeldaten für diesen Monat gefunden.</div>
+    <% } else { %>
+        <% overviewData.forEach(userData => { %>
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-6 border-t-4 border-blue-500">
+                <div class="flex justify-between items-center mb-4 border-b pb-3">
+                    <h3 class="text-2xl font-bold text-gray-800"><%= userData.username %></h3>
+                    <span class="text-3xl font-extrabold text-blue-600"><%= userData.totalHours %> h</span>
+                </div>
+
+                <h4 class="text-lg font-semibold text-gray-700 mb-3">Tägliche Aufzeichnungen im <%= monthName %></h4>
+                
+                <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50">
+                    <%
+                        const sortedDays = Object.keys(userData.dailyWork).sort();
+                        if (sortedDays.length === 0) {
+                    %>
+                        <div class="p-4 text-gray-500 text-center">Keine Stempelungen im gewählten Monat gefunden.</div>
+                    <% } else { %>
+                        <% sortedDays.forEach(day => { %>
+                            <% const dayData = userData.dailyWork[day]; %>
+                            <div class="p-3 border-b border-gray-100 flex justify-between items-start hover:bg-gray-50 transition duration-100">
+                                <div>
+                                    <span class="font-bold text-gray-900"><%= formatDate(day) %></span>
+                                </div>
+                                <div class="text-right space-y-1">
+                                    <% dayData.pairs.forEach(pair => { %>
+                                        <%
+                                            const durationDisplay = pair.unclosed ? "" : ` (${pair.duration}h)`;
+                                            const timeClass = pair.unclosed ? "text-red-500 font-bold" : "text-gray-700";
+                                        %>
+                                        <p class="text-sm">
+                                            <span class="font-semibold"><%= pair.in %></span> - 
+                                            <span class="<%= timeClass %>"><%= pair.out %></span>
+                                            <span><%= pair.stampingReason || '' %></span> 
+                                            <span class="text-xs text-gray-500"><%= durationDisplay %></span>
+                                        </p>
+                                    <% }); %>
+                                    <p class="text-xs font-medium <%= dayData.totalTimeHours > 0 ? 'text-blue-600' : 'text-gray-400' %> mt-1">
+                                        Gesamt: <%= dayData.totalTimeHours %> h
+                                    </p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+            <% }); %>
+    <% } %>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const monthSelect = document.getElementById('month-select');
+        const yearSelect = document.getElementById('year-select');
+        
+        const navigateToSelectedMonth = () => {
+            const selectedMonth = monthSelect.value;
+            const selectedYear = yearSelect.value;
+            // Seite mit den neuen Query-Parametern neu laden
+            window.location.href = `/stamping-overview?month=${selectedMonth}&year=${selectedYear}`;
+        };
+
+        monthSelect.addEventListener('change', navigateToSelectedMonth);
+        yearSelect.addEventListener('change', navigateToSelectedMonth);
+    });
+</script>
