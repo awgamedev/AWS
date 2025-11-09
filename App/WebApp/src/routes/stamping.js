@@ -2,75 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Stamping = require("../models/Stamping"); // Dein Stamping-Model
 const { ensureAuthenticated } = require("../middleware/auth"); // Deine Authentifizierungs-Middleware
-const bcrypt = require("bcryptjs"); // Beibehalten, falls es im Original-User-File benötigt wird
+const { renderView } = require("../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
-
-// --- HILFSFUNKTIONEN ZUM EJS-RENDERING (Übernommen von user.js zur Konsistenz) ---
-
-/**
- * Rendert das Hauptlayout mit dem zuvor gerenderten Content-String.
- * HINWEIS: Diese Funktion sollte idealerweise zentral in einem Utility-File liegen.
- */
-const renderWithLayout = (req, res, title, contentHtml, styles = "") => {
-  // res.render() für das Layout, welches den contentHtml als bodyContent enthält
-  // Annahme: Ihr EJS-Setup nutzt 'layout' als Haupt-Template
-  res.render("layout", {
-    title: title,
-    styles: styles,
-    bodyContent: contentHtml,
-    // Annahme: req.user wird auch im Layout benötigt
-    user: req.user,
-    path: req.path,
-  });
-};
-
-/**
- * Rendert eine innere EJS-View und bettet sie in das Hauptlayout ein.
- * HINWEIS: Diese Funktion sollte idealerweise zentral in einem Utility-File liegen.
- */
-const renderView = (
-  req,
-  res,
-  viewName,
-  title,
-  innerLocals = {},
-  specificStyles = "",
-  statusCode = 200
-) => {
-  res.status(statusCode);
-
-  // Füge Standard-Locals hinzu, die in den Views benötigt werden (i18n, genThItems)
-  const viewLocals = {
-    ...innerLocals,
-    // Annahme: req.__ ist Ihre i18n-Funktion
-    __: req.__ ? req.__.bind(req) : (key) => key,
-    // Fügen Sie hier weitere Globale Locals hinzu, falls benötigt (z.B. genThItems)
-  };
-
-  // 1. Innere View als String rendern
-  req.app.render(viewName, viewLocals, (err, contentHtml) => {
-    if (err) {
-      console.error(`Error rendering view ${viewName}:`, err);
-      // Fallback: Einfaches Rendering der Fehlerseite
-      const errorTitle = req.__ ? req.__("ERROR_TITLE") : "Fehler";
-      const fallbackMsg = req.__
-        ? req.__("RENDER_ERROR")
-        : "Ein interner Rendering-Fehler ist aufgetreten.";
-      const fallbackContent = `<div class="text-red-500 p-8"><h1>${errorTitle}</h1><p>${fallbackMsg}</p></div>`;
-
-      return renderWithLayout(req, res, errorTitle, fallbackContent, "");
-    }
-
-    // 2. Layout mit dem gerenderten Content rendern
-    renderWithLayout(req, res, title, contentHtml, specificStyles);
-  });
-};
-
-/**
- * Hilfsfunktionen für die Datenverarbeitung
- */
 
 // Funktion zur Formatierung der Zeit
 const formatTime = (stamping) => {
