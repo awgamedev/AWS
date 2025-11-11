@@ -1,0 +1,76 @@
+<%
+// Notwendige Hilfsfunktion in die Modal-Datei verschieben
+const generateTaskOptions = (users, priorityList, __) => {
+  // Optionen für das Mitarbeiter-Dropdown
+  const userOptions = users
+    .map((user) => `<option value="${user._id}">${user.username}</option>`)
+    .join("");
+
+  // Optionen für die Priorität
+  const priorityOptions = priorityList
+    .map((priority) => `<option value="${priority}">${__("PRIORITY_" + priority.toUpperCase()) || priority}</option>`)
+    .join("");
+
+  return { userOptions, priorityOptions };
+};
+
+// Generierung des Modal-HTML
+const { userOptions, priorityOptions } = generateTaskOptions(users, ["low", "medium", "high"], __);
+%>
+
+<div id="task-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center transition-opacity duration-300 ease-out">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg m-4 transform transition-transform duration-300 ease-out scale-95 opacity-0" id="task-modal-content">
+        <div class="flex justify-between items-center mb-4 border-b pb-3">
+            <h3 class="text-xl font-semibold text-gray-800"><%= __("CREATE_NEW_TASK") %></h3>
+            <button id="close-task-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <form id="create-task-form">
+            <div class="mb-4">
+                <label for="userId" class="block text-sm font-medium text-gray-700"><%= __("ASSIGN_USER") %></label>
+                <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <option value=""><%= __("SELECT_DEFAULT") %></option>
+                    <%- userOptions %>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="taskPriority" class="block text-sm font-medium text-gray-700"><%= __("PRIORITY_LABEL") %> *</label>
+                <select id="taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <%- priorityOptions %>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="taskName" class="block text-sm font-medium text-gray-700"><%= __("TASK_NAME_LABEL") %> *</label>
+                <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="taskDescription" class="block text-sm font-medium text-gray-700"><%= __("DESCRIPTION_LABEL") %></label>
+                <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700"><%= __("START_DATE_LABEL") %> *</label>
+                    <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700"><%= __("END_DATE_LABEL") %></label>
+                    <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                    <%= __("SAVE_TASK_BUTTON") %>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

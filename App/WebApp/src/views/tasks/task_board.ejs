@@ -1,237 +1,74 @@
 <%
-// Lokale Hilfsfunktionen (z.B. für die Farbgebung)
 const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "high": return "bg-red-100 text-red-800 border-red-400 hover:bg-red-200";
-      case "medium": return "bg-yellow-100 text-yellow-800 border-yellow-400 hover:bg-yellow-200";
-      case "low": return "bg-green-100 text-green-800 border-green-400 hover:bg-green-200";
-      default: return "bg-gray-300 text-gray-800 border-gray-300 hover:bg-gray-400";
-    }
-};
-
-// Generierung des Modal-HTML (aus task-utils.js hierher verschoben)
-const generateTaskModal = (users, __) => {
-  // Optionen für das Mitarbeiter-Dropdown
-  const userOptions = users
-    .map((user) => `<option value="${user._id}">${user.username}</option>`)
-    .join("");
-
-  const priorityOptions = ["low", "medium", "high"]
-    .map((priority) => `<option value="${priority}">${__("PRIORITY_" + priority.toUpperCase()) || priority}</option>`)
-    .join("");
-
-  return `
-        <div id="task-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center transition-opacity duration-300 ease-out">
-            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg m-4 transform transition-transform duration-300 ease-out scale-95 opacity-0" id="task-modal-content">
-                <div class="flex justify-between items-center mb-4 border-b pb-3">
-                    <h3 class="text-xl font-semibold text-gray-800">${__("CREATE_NEW_TASK")}</h3>
-                    <button id="close-task-modal" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-                
-                <form id="create-task-form">
-                    <div class="mb-4">
-                        <label for="userId" class="block text-sm font-medium text-gray-700">${__("ASSIGN_USER")}</label>
-                        <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                            <option value="">${__("SELECT_DEFAULT")}</option>
-                            ${userOptions}
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="taskPriority" class="block text-sm font-medium text-gray-700">${__("PRIORITY_LABEL")} *</label>
-                        <select id="taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                            ${priorityOptions}
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="taskName" class="block text-sm font-medium text-gray-700">${__("TASK_NAME_LABEL")} *</label>
-                        <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="taskDescription" class="block text-sm font-medium text-gray-700">${__("DESCRIPTION_LABEL")}</label>
-                        <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <label for="startDate" class="block text-sm font-medium text-gray-700">${__("START_DATE_LABEL")} *</label>
-                            <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label for="endDate" class="block text-sm font-medium text-gray-700">${__("END_DATE_LABEL")}</label>
-                            <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                    </div>
-                    
-                    <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
-
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-                            ${__("SAVE_TASK_BUTTON")}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        `;
-};
-
-const generateEditTaskModal = (users, __) => {
-  // Optionen für das Mitarbeiter-Dropdown
-  const userOptions = users
-    .map((user) => `<option value="${user._id}">${user.username}</option>`)
-    .join("");
-
-  const priorityOptions = ["low", "medium", "high"]
-    .map((priority) => `<option value="${priority}">${__("PRIORITY_" + priority.toUpperCase()) || priority}</option>`)
-    .join("");
-
-  // Optionen für den Status
-  const statusOptions = [
-    { value: "pending", label: __("STATUS_PENDING") },
-    { value: "in-progress", label: __("STATUS_IN_PROGRESS") },
-    { value: "completed", label: __("STATUS_COMPLETED") },
-  ];
-  const statusOptionsHtml = statusOptions
-    .map((s) => `<option value="${s.value}">${s.label}</option>`)
-    .join("");
-
-  return `
-    <div id="edit-task-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 z-50 flex items-center justify-center transition-opacity duration-300 ease-out">
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg m-4 transform transition-transform duration-300 ease-out scale-95 opacity-0" id="edit-task-modal-content">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-xl font-semibold text-gray-800">${__("EDIT_TASK_TITLE")}</h3>
-                <button id="close-edit-task-modal" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <form id="edit-task-form">
-                <input type="hidden" id="edit-taskId" name="taskId">
-
-                <div class="mb-4">
-                    <label for="edit-taskStatus" class="block text-sm font-medium text-gray-700">${__("STATUS_LABEL")} *</label>
-                    <select id="edit-taskStatus" name="taskStatus" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        ${statusOptionsHtml}
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="edit-userId" class="block text-sm font-medium text-gray-700">${__("ASSIGN_USER")} *</label>
-                    <select id="edit-userId" name="userId" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        ${userOptions}
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="edit-taskPriority" class="block text-sm font-medium text-gray-700">${__("PRIORITY_LABEL")} *</label>
-                    <select id="edit-taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        ${priorityOptions}
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="edit-taskName" class="block text-sm font-medium text-gray-700">${__("TASK_NAME_LABEL")} *</label>
-                    <input type="text" id="edit-taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-
-                <div class="mb-4">
-                    <label for="edit-taskDescription" class="block text-sm font-medium text-gray-700">${__("DESCRIPTION_LABEL")}</label>
-                    <textarea id="edit-taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label for="edit-startDate" class="block text-sm font-medium text-gray-700">${__("START_DATE_LABEL")} *</label>
-                        <input type="date" id="edit-startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label for="edit-endDate" class="block text-sm font-medium text-gray-700">${__("END_DATE_LABEL")}</label>
-                        <input type="date" id="edit-endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                </div>
-                
-                <div id="edit-task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
-
-                <div class="flex justify-between">
-                    <button type="button" id="delete-task-btn" class="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
-                        ${__("DELETE_BUTTON")}
-                    </button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-                        ${__("SAVE_CHANGES_BUTTON")}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    `;
+    switch (priority) {
+      case "high": return "bg-red-100 text-red-800 border-red-400 hover:bg-red-200";
+      case "medium": return "bg-yellow-100 text-yellow-800 border-yellow-400 hover:bg-yellow-200";
+      case "low": return "bg-green-100 text-green-800 border-green-400 hover:bg-green-200";
+      default: return "bg-gray-300 text-gray-800 border-gray-300 hover:bg-gray-400";
+    }
 };
 %>
 <p class="text-lg text-gray-600 mb-2"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
 
 <div class="flex space-x-4 mb-2">
-    <button id="open-task-modal" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <%= __("CREATE_TASK_BUTTON") %>
-    </button>
-    <button id="unassigned-tasks-btn" class="px-4 py-2 bg-gray-500 text-white font-medium rounded-lg shadow-md hover:bg-gray-600 transition duration-150 flex items-center">
-        <%= __("UNASSIGNED_TASKS_BUTTON") %>
-    </button>
+    <button id="open-task-modal" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <%= __("CREATE_TASK_BUTTON") %>
+    </button>
+    <button id="unassigned-tasks-btn" class="px-4 py-2 bg-gray-500 text-white font-medium rounded-lg shadow-md hover:bg-gray-600 transition duration-150 flex items-center">
+        <%= __("UNASSIGNED_TASKS_BUTTON") %>
+    </button>
 </div>
 
 <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="p-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 shadow-sm w-40"><%= __("EMPLOYEE_HEADER") %></th>
-                <% daysOfWeek.forEach(day => { %>
-                    <th class="p-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"><%= day %></th>
-                <% }) %>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-            <% if (users && users.length > 0) { %>
-                <% users.forEach(user => { %>
-                    <tr class="hover:bg-gray-50">
-                        <td class="p-3 border border-gray-200 font-semibold sticky left-0 bg-white shadow-sm w-40"><%= user.username %></td>
-                        <% daysOfWeek.forEach(dayName => { 
-                            const userId = user._id.toString();
-                            const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
-                        %>
-                            <td class="p-2 border border-gray-200 align-top h-2">
-                                <% dayTasks.forEach(task => { const statusColor = getPriorityColor(task.taskPriority); %>
-                                    <div 
-                                        class="task-item px-2 py-1 rounded-lg text-xs font-medium border my-1 cursor-pointer transition duration-100 <%= statusColor %>" 
-                                        data-task-id="<%= task._id %>"
-                                        data-user-id="<%= task.userId %>"
-                                        data-task-name="<%= task.taskName %>"
-                                        data-task-desc="<%= task.taskDescription || '' %>"
-                                        data-task-status="<%= task.taskStatus %>"
-                                        data-task-priority="<%= task.taskPriority %>"
-                                        data-start-date="<%= task.startDate.toISOString().substring(0, 10) %>"
-                                        data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
-                                        title="<%= __("STATUS_TITLE") %>: <%= task.taskStatus %> - <%= __("CLICK_TO_EDIT") %>"
-                                    >
-                                        <%= task.taskName %> (<%= task.assignedUsername %>)
-                                    </div>
-                                <% }) %>
-                            </td>
-                        <% }) %>
-                    </tr>
-                <% }) %>
-            <% } else { %>
-                <tr>
-                    <td colspan="8" class="text-center py-10 text-gray-500 italic"><%= __("NO_DATA_FOUND") %></td>
-                </tr>
-            <% } %>
-        </tbody>
-    </table>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 shadow-sm w-40"><%= __("EMPLOYEE_HEADER") %></th>
+                <% daysOfWeek.forEach(day => { %>
+                    <th class="p-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider"><%= day %></th>
+                <% }) %>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            <% if (users && users.length > 0) { %>
+                <% users.forEach(user => { %>
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 border border-gray-200 font-semibold sticky left-0 bg-white shadow-sm w-40"><%= user.username %></td>
+                        <% daysOfWeek.forEach(dayName => { 
+                            const userId = user._id.toString();
+                            const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
+                        %>
+                            <td class="p-2 border border-gray-200 align-top h-2">
+                                <% dayTasks.forEach(task => { const statusColor = getPriorityColor(task.taskPriority); %>
+                                    <div 
+                                        class="task-item px-2 py-1 rounded-lg text-xs font-medium border my-1 cursor-pointer transition duration-100 <%= statusColor %>" 
+                                        data-task-id="<%= task._id %>"
+                                        data-user-id="<%= task.userId %>"
+                                        data-task-name="<%= task.taskName %>"
+                                        data-task-desc="<%= task.taskDescription || '' %>"
+                                        data-task-status="<%= task.taskStatus %>"
+                                        data-task-priority="<%= task.taskPriority %>"
+                                        data-start-date="<%= task.startDate.toISOString().substring(0, 10) %>"
+                                        data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
+                                        title="<%= __("STATUS_TITLE") %>: <%= task.taskStatus %> - <%= __("CLICK_TO_EDIT") %>"
+                                    >
+                                        <%= task.taskName %> (<%= task.assignedUsername %>)
+                                    </div>
+                                <% }) %>
+                            </td>
+                        <% }) %>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="8" class="text-center py-10 text-gray-500 italic"><%= __("NO_DATA_FOUND") %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
 </div>
 
-<%- generateTaskModal(users, __) %>
-<%- generateEditTaskModal(users, __) %>
+<%- include('task_board_create_modal', { users: users, __: __ }) %>
+<%- include('task_board_edit_modal', { users: users, __: __ }) %>
 <script src="/js/task-script.js"></script>
