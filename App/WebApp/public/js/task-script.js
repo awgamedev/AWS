@@ -1,197 +1,223 @@
+// public/js/task-script.js
+// KEINE EJS TAGS HIER!
+
 document.addEventListener("DOMContentLoaded", () => {
-  // --- ERSTELLEN MODAL LOGIK ---
-  const modal = document.getElementById("task-modal");
-  const modalContent = document.getElementById("task-modal-content");
-  const openButton = document.getElementById("open-task-modal");
-  const closeButton = document.getElementById("close-task-modal");
-  const form = document.getElementById("create-task-form");
-  const messageDiv = document.getElementById("task-form-message");
+  // ----------------------------------------------------------------------
+  // 1. SOFORTIGE KLICK-HANDLER (Wird ausgeführt, sobald der DOM geladen ist)
+  // ----------------------------------------------------------------------
 
-  const openModal = () => {
-    modal.classList.remove("hidden");
+  // Listener für den "Aufgabe erstellen" Button
+  const openTaskModalBtn = document.getElementById("open-task-modal");
+  if (openTaskModalBtn) {
+    openTaskModalBtn.addEventListener("click", () => {
+      // Optionaler Test
+      console.log("Button 'Aufgabe erstellen' geklickt!");
+
+      window.dispatchEvent(
+        new CustomEvent("open-modal", {
+          detail: {
+            // Verwendet die globalen Variablen aus der EJS-Brücke
+            title: window.CREATE_MODAL_TITLE,
+            content: window.CREATE_TASK_HTML,
+          },
+        })
+      );
+    });
+  } else {
+    console.error("Button 'open-task-modal' nicht gefunden!");
+  }
+
+  // Listener für den "Nicht zugewiesene Aufgaben" Button
+  const unassignedTasksBtn = document.getElementById("unassigned-tasks-btn");
+  if (unassignedTasksBtn) {
+    unassignedTasksBtn.addEventListener("click", () => {
+      window.dispatchEvent(
+        new CustomEvent("open-modal", {
+          detail: {
+            // Verwendet die globalen Variablen aus der EJS-Brücke
+            title: window.EDIT_MODAL_TITLE,
+            content: window.EDIT_TASK_STATIC_HTML,
+          },
+        })
+      );
+    });
+  } else {
+    console.error("Button 'unassigned-tasks-btn' nicht gefunden!");
+  }
+
+  // ----------------------------------------------------------------------
+  // 2. RESTLICHE LOGIK (Unverändert)
+  // ----------------------------------------------------------------------
+
+  const dispatchCloseModal = () => {
+    window.dispatchEvent(new CustomEvent("close-modal"));
+  };
+
+  // Event-Listener reagiert auf das Alpine-Öffnungs-Event, um den Submit-Handler zu binden
+  document.addEventListener("open-modal", () => {
     setTimeout(() => {
-      modal.classList.remove("opacity-0");
-      modalContent.classList.remove("opacity-0", "scale-95");
-      modalContent.classList.add("opacity-100", "scale-100");
-      form.reset(); // Formular zurücksetzen beim Öffnen
-      messageDiv.className = "mb-4 text-sm font-medium text-center hidden"; // Meldung ausblenden
-    }, 10);
-  };
+      const currentForm = document.getElementById("create-task-form");
 
-  const closeModal = () => {
-    modal.classList.add("opacity-0");
-    modalContent.classList.add("opacity-0", "scale-95");
-    modalContent.classList.remove("opacity-100", "scale-100");
-    setTimeout(() => modal.classList.add("hidden"), 300);
-  };
+      if (currentForm && !currentForm._listenerAdded) {
+        currentForm._listenerAdded = true;
+        const messageDiv = document.getElementById("task-form-message");
 
-  openButton.addEventListener("click", openModal);
-  closeButton.addEventListener("click", closeModal);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      closeModal();
-    }
-  }); // 2. Formular-Einreichung Logik (Erstellen)
+        currentForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    messageDiv.textContent = "Aufgabe wird gespeichert...";
-    messageDiv.className =
-      "mb-4 text-sm font-medium text-center text-yellow-600 block";
-    const formData = new FormData(form);
-    const taskData = Object.fromEntries(formData.entries());
+          messageDiv.textContent = "Aufgabe wird gespeichert...";
+          messageDiv.className =
+            "mb-4 text-sm font-medium text-center text-yellow-600 block";
 
-    if (taskData.userId == "") {
-      taskData.userId = null;
-    }
+          const formData = new FormData(currentForm);
+          const taskData = Object.fromEntries(formData.entries());
 
-    try {
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(taskData),
-      });
+          if (taskData.userId === "") {
+            taskData.userId = null;
+          }
 
-      const data = await response.json();
+          try {
+            const response = await fetch("/api/tasks", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(taskData),
+            });
 
-      if (response.ok) {
-        messageDiv.textContent = data.msg || "Aufgabe erfolgreich gespeichert!";
-        messageDiv.className =
-          "mb-4 text-sm font-medium text-center text-green-600 block";
-        form.reset();
-        setTimeout(() => {
-          closeModal();
-          window.location.reload();
-        }, 1000);
-      } else {
-        messageDiv.textContent =
-          data.msg || "Fehler beim Speichern der Aufgabe.";
-        messageDiv.className =
-          "mb-4 text-sm font-medium text-center text-red-600 block";
+            const data = await response.json();
+
+            if (response.ok) {
+              messageDiv.textContent =
+                data.msg || "Aufgabe erfolgreich gespeichert!";
+              messageDiv.className =
+                "mb-4 text-sm font-medium text-center text-green-600 block";
+              currentForm.reset();
+
+              setTimeout(() => {
+                dispatchCloseModal();
+                window.location.reload();
+              }, 1000);
+            } else {
+              messageDiv.textContent =
+                data.msg || "Fehler beim Speichern der Aufgabe.";
+              messageDiv.className =
+                "mb-4 text-sm font-medium text-center text-red-600 block";
+            }
+          } catch (error) {
+            console.error("Fetch Fehler:", error);
+            messageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
+            messageDiv.className =
+              "mb-4 text-sm font-medium text-center text-red-600 block";
+          }
+        });
       }
-    } catch (error) {
-      console.error("Fetch Fehler:", error);
-      messageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
-      messageDiv.className =
-        "mb-4 text-sm font-medium text-center text-red-600 block";
-    }
-  }); // --- BEARBEITEN MODAL LOGIK ---
+    }, 50);
+  });
 
-  const editModal = document.getElementById("edit-task-modal");
-  const editModalContent = document.getElementById("edit-task-modal-content");
-  const closeEditButton = document.getElementById("close-edit-task-modal");
-  const deleteButton = document.getElementById("delete-task-btn"); // HINZUGEFÜGT: Button zum Löschen
-  const editForm = document.getElementById("edit-task-form");
-  const editMessageDiv = document.getElementById("edit-task-form-message"); // Funktion zum Schließen/Öffnen des Bearbeitungs-Modals
-  const openTasksButton = document.getElementById("unassigned-tasks-btn");
+  // ... (Der restliche Code für Edit, PUT, DELETE, etc., folgt hier unverändert) ...
 
-  const openEditModal = (taskData) => {
-    // Fülle das Formular mit den Aufgaben-Daten
-    document.getElementById("edit-taskId").value = taskData.id; // <-- WICHTIG: ID setzen
-    document.getElementById("edit-taskName").value = taskData.taskName;
-    document.getElementById("edit-taskStatus").value = taskData.taskStatus;
-    document.getElementById("edit-userId").value = taskData.userId;
-    document.getElementById("edit-taskDescription").value =
-      taskData.taskDescription;
-    document.getElementById("edit-startDate").value = taskData.startDate;
-    document.getElementById("edit-endDate").value = taskData.endDate;
-    editMessageDiv.className = "mb-4 text-sm font-medium text-center hidden";
-
-    editModal.classList.remove("hidden");
-    setTimeout(() => {
-      editModal.classList.remove("opacity-0");
-      editModalContent.classList.remove("opacity-0", "scale-95");
-      editModalContent.classList.add("opacity-100", "scale-100");
-    }, 10);
-  };
-
-  const closeEditModal = () => {
-    editModal.classList.add("opacity-0");
-    editModalContent.classList.add("opacity-0", "scale-95");
-    editModalContent.classList.remove("opacity-100", "scale-100");
-    setTimeout(() => editModal.classList.add("hidden"), 300);
-  };
-
-  closeEditButton.addEventListener("click", closeEditModal);
-  editModal.addEventListener("click", (e) => {
-    if (e.target === editModal) {
-      closeEditModal();
-    }
-  }); // Listener für alle Aufgaben-Elemente
-
+  // Listener für alle Aufgaben-Elemente (klicken)
   document.querySelectorAll(".task-item").forEach((item) => {
     item.addEventListener("click", (event) => {
       const data = event.currentTarget.dataset;
-      openEditModal({
-        id: data.taskId,
-        taskName: data.taskName,
-        userId: data.userId,
-        taskDescription: data.taskDesc,
-        taskStatus: data.taskStatus,
-        startDate: data.startDate,
-        endDate: data.endDate,
-      });
+
+      // 1. Öffnen des Edit-Modals mit dem statischen HTML-Template
+      window.dispatchEvent(
+        new CustomEvent("open-modal", {
+          detail: {
+            title: `Aufgabe bearbeiten: ${data.taskName}`,
+            content: window.EDIT_TASK_STATIC_HTML,
+          },
+        })
+      );
+
+      // 2. Füllen der Formularfelder nach dem Öffnen (kurze Verzögerung)
+      setTimeout(() => {
+        document.getElementById("edit-taskId").value = data.taskId;
+        document.getElementById("edit-taskName").value = data.taskName;
+        document.getElementById("edit-taskStatus").value = data.taskStatus;
+        document.getElementById("edit-taskPriority").value = data.taskPriority;
+        document.getElementById("edit-userId").value = data.userId;
+        document.getElementById("edit-taskDescription").value = data.taskDesc;
+        document.getElementById("edit-startDate").value = data.startDate;
+        document.getElementById("edit-endDate").value = data.endDate;
+
+        const editMessageDiv = document.getElementById(
+          "edit-task-form-message"
+        );
+        if (editMessageDiv) {
+          editMessageDiv.className =
+            "mb-4 text-sm font-medium text-center hidden";
+          editMessageDiv.textContent = "";
+        }
+      }, 100);
     });
-  }); // Formular-Einreichung für die Bearbeitung
+  });
 
-  editForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // 🚨 HIER DIE PRÜFUNG: Hole die ID aus dem versteckten Feld
-    const taskId = document.getElementById("edit-taskId").value;
-    if (!taskId) {
-      editMessageDiv.textContent = "Fehler: Aufgaben-ID nicht gefunden.";
-      editMessageDiv.className =
-        "mb-4 text-sm font-medium text-center text-red-600 block";
-      return;
-    }
+  // Event Delegation für den Submit-Handler des Edit-Formulars (PUT)
+  document.addEventListener("submit", async (e) => {
+    if (e.target.id === "edit-task-form") {
+      e.preventDefault();
 
-    editMessageDiv.textContent = "Änderungen werden gespeichert...";
-    editMessageDiv.className =
-      "mb-4 text-sm font-medium text-center text-yellow-600 block";
-    const formData = new FormData(editForm);
-    const taskData = Object.fromEntries(formData.entries());
+      const editForm = e.target;
+      const editMessageDiv = document.getElementById("edit-task-form-message");
+      const taskId = document.getElementById("edit-taskId").value;
 
-    if (taskData.userId === "") {
-      taskData.userId = null;
-    }
-
-    try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(taskData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        editMessageDiv.textContent =
-          data.msg || "Aufgabe erfolgreich aktualisiert!";
+      if (!taskId) {
+        editMessageDiv.textContent = "Fehler: Aufgaben-ID nicht gefunden.";
         editMessageDiv.className =
-          "mb-4 text-sm font-medium text-center text-green-600 block";
-        setTimeout(() => {
-          closeEditModal();
-          window.location.reload();
-        }, 1000);
-      } else {
-        editMessageDiv.textContent =
-          data.msg || "Fehler beim Aktualisieren der Aufgabe.";
+          "mb-4 text-sm font-medium text-center text-red-600 block";
+        return;
+      }
+
+      editMessageDiv.textContent = "Änderungen werden gespeichert...";
+      editMessageDiv.className =
+        "mb-4 text-sm font-medium text-center text-yellow-600 block";
+
+      const formData = new FormData(editForm);
+      const taskData = Object.fromEntries(formData.entries());
+
+      if (taskData.userId === "") {
+        taskData.userId = null;
+      }
+
+      try {
+        const response = await fetch(`/api/tasks/${taskId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskData),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          editMessageDiv.textContent =
+            data.msg || "Aufgabe erfolgreich aktualisiert!";
+          editMessageDiv.className =
+            "mb-4 text-sm font-medium text-center text-green-600 block";
+          setTimeout(() => {
+            dispatchCloseModal();
+            window.location.reload();
+          }, 1000);
+        } else {
+          editMessageDiv.textContent =
+            data.msg || "Fehler beim Aktualisieren der Aufgabe.";
+          editMessageDiv.className =
+            "mb-4 text-sm font-medium text-center text-red-600 block";
+        }
+      } catch (error) {
+        console.error("Fetch Fehler (PUT):", error);
+        editMessageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
         editMessageDiv.className =
           "mb-4 text-sm font-medium text-center text-red-600 block";
       }
-    } catch (error) {
-      console.error("Fetch Fehler:", error);
-      editMessageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
-      editMessageDiv.className =
-        "mb-4 text-sm font-medium text-center text-red-600 block";
     }
-  }); // 🚨 NEU: Lösch-Handler
-  if (deleteButton) {
-    deleteButton.addEventListener("click", async () => {
+  });
+
+  // Event Delegation für den Lösch-Button (DELETE)
+  document.addEventListener("click", async (e) => {
+    if (e.target.id === "delete-task-btn") {
+      const editMessageDiv = document.getElementById("edit-task-form-message");
       const taskId = document.getElementById("edit-taskId").value;
+
       if (
         !taskId ||
         !confirm("Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?")
@@ -201,18 +227,20 @@ document.addEventListener("DOMContentLoaded", () => {
       editMessageDiv.textContent = "Aufgabe wird gelöscht...";
       editMessageDiv.className =
         "mb-4 text-sm font-medium text-center text-red-600 block";
+
       try {
         const response = await fetch(`/api/tasks/${taskId}`, {
           method: "DELETE",
         });
         const data = await response.json();
+
         if (response.ok) {
           editMessageDiv.textContent =
             data.msg || "Aufgabe erfolgreich gelöscht!";
           editMessageDiv.className =
             "mb-4 text-sm font-medium text-center text-green-600 block";
           setTimeout(() => {
-            closeEditModal();
+            dispatchCloseModal();
             window.location.reload();
           }, 1000);
         } else {
@@ -227,15 +255,15 @@ document.addEventListener("DOMContentLoaded", () => {
         editMessageDiv.className =
           "mb-4 text-sm font-medium text-center text-red-600 block";
       }
-    });
-  } // 🚨 NEU: Lösch-Button im Edit-Modal verknüpfen
-  if (deleteButton) {
-    deleteButton.addEventListener("click", () => {
-      // Der Klick wird im deleteButton Listener oben abgefangen
-    });
-  }
+    }
+  });
 
-  if (openTasksButton) {
+  // NAVIGATION: Unassigned Tasks Button
+  const openTasksButton = document.getElementById("unassigned-tasks-btn");
+  if (
+    openTasksButton &&
+    openTasksButton.getAttribute("data-action") === "navigate"
+  ) {
     openTasksButton.addEventListener("click", () => {
       window.location.href = "/task-backlog";
     });

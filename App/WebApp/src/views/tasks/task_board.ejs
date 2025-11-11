@@ -1,4 +1,5 @@
 <%
+// Nur noch die lokalen Hilfsfunktionen hier behalten, die in der Hauptdatei benötigt werden
 const getPriorityColor = (priority) => {
     switch (priority) {
       case "high": return "bg-red-100 text-red-800 border-red-400 hover:bg-red-200";
@@ -7,7 +8,11 @@ const getPriorityColor = (priority) => {
       default: return "bg-gray-300 text-gray-800 border-gray-300 hover:bg-gray-400";
     }
 };
+
+const createTaskTitle = __("CREATE_NEW_TASK");
+const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
 %>
+
 <p class="text-lg text-gray-600 mb-2"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
 
 <div class="flex space-x-4 mb-2">
@@ -69,6 +74,15 @@ const getPriorityColor = (priority) => {
     </table>
 </div>
 
-<%- include('task_board_create_modal', { users: users, __: __ }) %>
-<%- include('task_board_edit_modal', { users: users, __: __ }) %>
+<%- include('../partials/generic-modal') %> 
+
+<script>
+    window.CREATE_TASK_HTML = `<%- createTaskContentHtml %>`;
+    window.EDIT_TASK_STATIC_HTML = `<%- editTaskContentHtml %>`;
+
+    window.CREATE_MODAL_TITLE = "<%= createTaskTitle %>";
+    window.EDIT_MODAL_TITLE = "<%= unassignedTasksTitle %>";
+        
+    console.log("EJS Bridge geladen. Titel:", window.CREATE_MODAL_TITLE);
+</script>
 <script src="/js/task-script.js"></script>
