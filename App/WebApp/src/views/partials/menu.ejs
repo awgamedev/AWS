@@ -14,40 +14,59 @@ const getClasses = (href) => {
         ? `${ACTIVE_CLASSES} hover:bg-gray-800`
         : `${INACTIVE_CLASSES} hover:bg-gray-800`;
 };
+
+// **NEU:** Hilfsfunktion, um zu prüfen, ob der Hauptpunkt "Nutzer" aktiv sein soll
+// Füge alle Pfade der Unterpunkte hinzu, die den Hauptpunkt aktivieren sollen
+const isUserParentActive = currentPath.startsWith('/user') || currentPath.startsWith('/roles');
 %>
 <nav class="p-4 space-y-1">
-    <!-- Dashboard -->
     <a href="/" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/') %> transition duration-150">
         <span class="fas fa-home"></span>
         <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Dashboard</span>
     </a>
     
-    <!-- Stempelungen -->
     <a href="/stamping" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping') %> transition duration-150">
         <span class="fa-solid fa-stamp"></span>
         <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Zeiterfassung</span>
     </a>
 
-    <!-- Stempelungsübersicht -->
     <a href="/stamping-overview" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping-overview') %> transition duration-150">
         <span class="fa-solid fa-utensils"></span>
         <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungsübersicht</span>
     </a>
 
-    <!-- Aufgaben -->
     <a href="/task-list" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/task-list') %> transition duration-150">
         <span class="fa-solid fa-list-check"></span>
         <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Aufgaben</span>
     </a>
     
-    <!-- Nutzer -->
-    <a href="/user-list" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/user-list') %> transition duration-150">
-        <span class="fas fa-user"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Nutzer</span>
-    </a>
+    <div>
+        <div class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl 
+            <%= isUserParentActive ? ACTIVE_CLASSES : INACTIVE_CLASSES %> 
+            hover:bg-gray-800 transition duration-150 cursor-pointer">
+            
+            <span class="fas fa-user"></span>
+            <span class="sidebar-item-text flex-grow text-sm font-medium">Nutzer</span>
+            <span class="fa-solid fa-chevron-down text-xs transition-transform duration-300 
+                <%= isUserParentActive ? 'rotate-180' : '' %>"></span>
+        </div>
+
+        <% if (isUserParentActive) { %>
+            <div class="pl-8 pt-1 space-y-1"> 
+                <a href="/user-list" class="sidebar-item flex items-center space-x-3 p-2 rounded-xl text-sm
+                    <%= getClasses('/user-list') %>">
+                    <span class="sidebar-item-text font-medium">Nutzerliste</span>
+                </a>
+                
+                <a href="/roles" class="sidebar-item flex items-center space-x-3 p-2 rounded-xl text-sm
+                    <%= getClasses('/roles') %>">
+                    <span class="sidebar-item-text font-medium">Rollen</span>
+                </a>
+            </div>
+        <% } %>
+    </div>
     
-    <!-- Einstellungen -->
-    <a href="/settings" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/settings') %> transition duration-150"> 	
+    <a href="/settings" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/settings') %> transition duration-150">   
         <span class="fas fa-gear"></span>
         <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Einstellungen</span>
     </a>
