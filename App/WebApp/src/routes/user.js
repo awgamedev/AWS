@@ -40,7 +40,7 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
 
 // 2a. FORMULAR ANZEIGEN: Neuen Nutzer erstellen (GET /create-user)
 router.get("/create-user", ensureAuthenticated, (req, res) => {
-  const title = req.__("CREATE_USER_PAGE_TITLE") || "Neuen Nutzer erstellen 📝";
+  const title = req.__("CREATE_USER_PAGE_TITLE");
 
   // View rendern
   renderView(req, res, "user_form", title, {
@@ -230,7 +230,7 @@ router.get(
   ensureAuthenticated,
   async (req, res) => {
     const itemId = req.params.id;
-    const title = req.__("CONFIRM_DELETE_PAGE_TITLE") || "Löschen bestätigen";
+    const title = req.__("CONFIRM_DELETE_PAGE_TITLE");
     const errorTitle = req.__("ERROR_TITLE") || "Fehler";
     let entityToDelete;
 

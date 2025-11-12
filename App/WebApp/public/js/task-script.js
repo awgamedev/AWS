@@ -1,11 +1,4 @@
-// public/js/task-script.js
-// KEINE EJS TAGS HIER!
-
 document.addEventListener("DOMContentLoaded", () => {
-  // ----------------------------------------------------------------------
-  // 1. SOFORTIGE KLICK-HANDLER (Wird ausgeführt, sobald der DOM geladen ist)
-  // ----------------------------------------------------------------------
-
   // Listener für den "Aufgabe erstellen" Button
   const openTaskModalBtn = document.getElementById("open-task-modal");
   if (openTaskModalBtn) {

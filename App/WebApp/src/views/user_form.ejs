@@ -1,8 +1,8 @@
 <%
 // Lokale Variablen wie im JavaScript-Helfer definieren
 const isEditingLocal = isEditing || !!entityToModify._id;
-const titleText = isEditingLocal ? ( __('EDIT_USER_TITLE') ) : ( __('CREATE_USER_TITLE') || 'Neuen Nutzer erstellen 📝' );
-const submitText = isEditingLocal ? ( __('SAVE_CHANGES_BUTTON')) : ( __('SAVE_USER_BUTTON') || '💾 Nutzer speichern' );
+const titleText = isEditingLocal ? ( __('EDIT_USER_TITLE') ) : ( __('CREATE_USER_TITLE') );
+const submitText = isEditingLocal ? ( __('SAVE_CHANGES_BUTTON')) : ( __('SAVE_USER_BUTTON') );
 const formAction = isEditingLocal ? "/modify-user" : "/create-user";
 const currentUsername = entityToModify.username || "";
 const currentEmail = entityToModify.email || "";
