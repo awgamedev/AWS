@@ -9,21 +9,31 @@
         text: 'Dashboard',
         currentPath: currentPath 
     }) %>
-    
-    <%- include('_menu_item', { 
-        href: '/stamping', 
-        icon: 'fa-solid fa-stamp', 
+
+    <%- include('_menu_dropdown', {
+        prefix: '/time-tracking', // Präfix für die Alpine-Logik
+        icon: 'fa-solid fa-clock',
         text: 'Zeiterfassung',
-        currentPath: currentPath
-    }) %>
+        currentPath: currentPath,
+        subitems: [
+            // Unterpunkt 1: Nutzerliste (als String an das Dropdown übergeben)
+            include('_menu_item', { 
+                href: '/stamping', 
+                icon: 'fa-solid fa-stamp', 
+                text: 'Stempeln',
+                currentPath: currentPath
+            }),
 
-    <%- include('_menu_item', { 
-        href: '/stamping-overview', 
-        icon: 'fa-solid fa-utensils', 
-        text: 'Stempelungsübersicht',
-        currentPath: currentPath 
-    }) %>
-
+            include('_menu_item', { 
+                href: '/stamping-overview', 
+                icon: 'fa-solid fa-calendar', 
+                text: 'Monatsübersicht',
+                currentPath: currentPath 
+            })
+        ]
+    }) 
+    %>
+    
     <%- include('_menu_item', { 
         href: '/task-list', 
         icon: 'fa-solid fa-list-check', 
