@@ -11,6 +11,7 @@ COPY package*.json ./
 # 4. Install Dependencies: Install all project dependencies (including express).
 # This assumes you have run 'npm init -y' and 'npm install express --save' on your host.
 RUN npm install
+RUN npm install ejs
 
 # 5. Copy Application Code: Copy the rest of the application files (server.js, app.js, routes/).
 # The dot '.' copies everything from the current host directory to the WORKDIR in the container.
