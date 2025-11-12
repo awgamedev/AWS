@@ -16,6 +16,7 @@ const path = require("path");
 const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
 const favicon = require("serve-favicon");
+const flash = require("connect-flash");
 
 // --- Router Auto-Discovery Konfiguration ---
 const routesDir = path.join(__dirname, "src", "routes");
@@ -102,6 +103,8 @@ mongoose
 
 // Initialize the Express application
 const app = express();
+
+app.use(flash());
 
 // --- NEU: EJS View Engine Konfiguration ---
 app.set("view engine", "ejs");

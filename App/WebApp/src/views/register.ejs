@@ -1,0 +1,66 @@
+<!-- 
+    Registrierungs View (EJS Template)
+    Erwartete Variablen: title, error (Array von Fehlermeldungen), formData (Objekt mit alten Werten)
+-->
+
+<div class="max-w-md mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg border border-gray-100">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">Neues Konto erstellen ✍️</h1>
+
+    <% if (error && error.length > 0) { %>
+        <!-- Fehlerdarstellung für Registrierungsfehler -->
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <p class="font-bold">Fehler:</p>
+            <ul class="list-disc ml-5">
+                <% error.forEach(function(msg) { %>
+                    <li><%= msg %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+
+    <form action="/register" method="POST" class="space-y-4">
+        
+        <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Benutzername</label>
+            <input type="text" id="username" name="username" required 
+                   value="<%= formData.username || '' %>"
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                   placeholder="Ihr Wunsch-Benutzername">
+        </div>
+
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">E-Mail</label>
+            <input type="email" id="email" name="email" required 
+                   value="<%= formData.email || '' %>"
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                   placeholder="neue@adresse.de">
+        </div>
+        
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Passwort</label>
+            <input type="password" id="password" name="password" required 
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                   placeholder="Mindestens 6 Zeichen">
+        </div>
+        
+        <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Passwort bestätigen</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required 
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                   placeholder="Passwort wiederholen">
+        </div>
+
+        <div class="pt-2">
+            <button type="submit" 
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                Registrieren
+            </button>
+        </div>
+    </form>
+    
+    <!-- Links (ersetzt getAuthLinks(false)) -->
+    <div class="mt-6 flex justify-between text-sm">
+        <a href="/login" class="text-indigo-600 hover:text-indigo-500">← Zum Login</a>
+        <a href="/" class="text-gray-600 hover:text-gray-500">Zur Startseite</a>
+    </div>
+</div>
