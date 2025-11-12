@@ -1,0 +1,23 @@
+<%
+// Definiere die Klassen für den aktiven Zustand (muss in der Hauptdatei definiert sein)
+const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
+const INACTIVE_CLASSES = "text-gray-300";
+
+// Hole die Variablen, die über den 'include' Aufruf übergeben wurden
+const { href, icon, text, currentPath } = locals; 
+
+// Hilfsfunktion zur Bestimmung der Klassen (hier wiederholt, um autonom zu sein)
+const getClasses = (href, currentPath) => {
+    const isRoot = href === "/" && (currentPath === "/" || currentPath === "");
+    const isActive = currentPath === href || isRoot;
+
+    return isActive
+        ? `${ACTIVE_CLASSES} hover:bg-gray-800`
+        : `${INACTIVE_CLASSES} hover:bg-gray-800`;
+};
+%>
+
+<a href="<%= href %>" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses(href, currentPath) %> transition duration-150">
+    <span class="<%= icon %>"></span>
+    <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300"><%= text %></span>
+</a>

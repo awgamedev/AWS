@@ -1,0 +1,38 @@
+<%
+const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
+const INACTIVE_CLASSES = "text-gray-300";
+
+// Hole die Variablen
+const { prefix, icon, text, subitems, currentPath } = locals;
+
+// Logik, um zu prüfen, ob das Dropdown beim Laden offen sein muss
+const isParentActive = currentPath.startsWith(prefix);
+%>
+
+<div 
+    x-data="sidebarDropdown" 
+    data-active-prefix="<%= prefix %>" 
+    class="space-y-1"
+    x-init="init; open = <%= isParentActive %>;"
+>
+    
+    <button 
+        type="button" 
+        @click="open = !open" 
+        :class="isActive ? '<%= ACTIVE_CLASSES %>' : '<%= INACTIVE_CLASSES %>'"
+        class="sidebar-item group flex items-center justify-between w-full space-x-3 p-3 rounded-xl hover:bg-gray-800 transition duration-150"
+    >
+        <div class="flex items-center space-x-3">
+            <span class="<%= icon %>"></span> 
+            <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300"><%= text %></span>
+        </div>
+        
+        <span class="fa-solid fa-chevron-down w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }"></span>
+    </button>
+
+    <div class="ml-4 pl-2 border-l border-gray-700 space-y-1" x-show="open" x-collapse>
+        <% subitems.forEach(item => { %>
+            <%- item %>
+        <% }); %>
+    </div>
+</div>

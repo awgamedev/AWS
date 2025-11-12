@@ -1,73 +1,64 @@
 <%
-// Definiere die Klassen für den aktiven Zustand (muss hier wiederholt werden, da es eine separate Datei ist)
-const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
-const INACTIVE_CLASSES = "text-gray-300";
-
-// Hilfsfunktion, um die richtigen Klassen in EJS zu bestimmen
-const getClasses = (href) => {
-    // Überprüfe, ob der aktuelle Pfad exakt mit dem Link übereinstimmt,
-    // ODER (für das Dashboard), ob der Link '/' ist und der Pfad '/' oder leer ist.
-    const isRoot = href === "/" && (currentPath === "/" || currentPath === "");
-    const isActive = currentPath === href || isRoot;
-
-    return isActive
-        ? `${ACTIVE_CLASSES} hover:bg-gray-800`
-        : `${INACTIVE_CLASSES} hover:bg-gray-800`;
-};
-
-// **NEU:** Hilfsfunktion, um zu prüfen, ob der Hauptpunkt "Nutzer" aktiv sein soll
-// Füge alle Pfade der Unterpunkte hinzu, die den Hauptpunkt aktivieren sollen
-const isUserParentActive = currentPath.startsWith('/user') || currentPath.startsWith('/roles');
+    currentPath = currentPath || '/';
 %>
 <nav class="p-4 space-y-1">
-    <a href="/" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/') %> transition duration-150">
-        <span class="fas fa-home"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Dashboard</span>
-    </a>
     
-    <a href="/stamping" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping') %> transition duration-150">
-        <span class="fa-solid fa-stamp"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Zeiterfassung</span>
-    </a>
-
-    <a href="/stamping-overview" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/stamping-overview') %> transition duration-150">
-        <span class="fa-solid fa-utensils"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Stempelungsübersicht</span>
-    </a>
-
-    <a href="/task-list" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/task-list') %> transition duration-150">
-        <span class="fa-solid fa-list-check"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Aufgaben</span>
-    </a>
+    <%- include('_menu_item', { 
+        href: '/', 
+        icon: 'fas fa-home', 
+        text: 'Dashboard',
+        currentPath: currentPath 
+    }) %>
     
-    <div>
-        <div class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl 
-            <%= isUserParentActive ? ACTIVE_CLASSES : INACTIVE_CLASSES %> 
-            hover:bg-gray-800 transition duration-150 cursor-pointer">
+    <%- include('_menu_item', { 
+        href: '/stamping', 
+        icon: 'fa-solid fa-stamp', 
+        text: 'Zeiterfassung',
+        currentPath: currentPath
+    }) %>
+
+    <%- include('_menu_item', { 
+        href: '/stamping-overview', 
+        icon: 'fa-solid fa-utensils', 
+        text: 'Stempelungsübersicht',
+        currentPath: currentPath 
+    }) %>
+
+    <%- include('_menu_item', { 
+        href: '/task-list', 
+        icon: 'fa-solid fa-list-check', 
+        text: 'Aufgaben',
+        currentPath: currentPath 
+    }) %>
+    
+    <%- include('_menu_dropdown', {
+        prefix: '/user', // Präfix für die Alpine-Logik
+        icon: 'fa-solid fa-users',
+        text: 'Nutzerverwaltung',
+        currentPath: currentPath,
+        subitems: [
+            // Unterpunkt 1: Nutzerliste (als String an das Dropdown übergeben)
+            include('_menu_item', { 
+                href: '/user-list', 
+                icon: 'fa-solid fa-list-check', 
+                text: 'Nutzerliste', 
+                currentPath: currentPath 
+            }),
             
-            <span class="fas fa-user"></span>
-            <span class="sidebar-item-text flex-grow text-sm font-medium">Nutzer</span>
-            <span class="fa-solid fa-chevron-down text-xs transition-transform duration-300 
-                <%= isUserParentActive ? 'rotate-180' : '' %>"></span>
-        </div>
-
-        <% if (isUserParentActive) { %>
-            <div class="pl-8 pt-1 space-y-1"> 
-                <a href="/user-list" class="sidebar-item flex items-center space-x-3 p-2 rounded-xl text-sm
-                    <%= getClasses('/user-list') %>">
-                    <span class="sidebar-item-text font-medium">Nutzerliste</span>
-                </a>
-                
-                <a href="/roles" class="sidebar-item flex items-center space-x-3 p-2 rounded-xl text-sm
-                    <%= getClasses('/roles') %>">
-                    <span class="sidebar-item-text font-medium">Rollen</span>
-                </a>
-            </div>
-        <% } %>
-    </div>
+            // Unterpunkt 2: Rollenverwaltung
+            include('_menu_item', { 
+                href: '/roles', 
+                icon: 'fa-solid fa-user-tag', 
+                text: 'Rollenverwaltung', 
+                currentPath: currentPath 
+            })
+        ]
+    }) %>
     
-    <a href="/settings" class="sidebar-item group flex items-center space-x-3 p-3 rounded-xl <%= getClasses('/settings') %> transition duration-150">   
-        <span class="fas fa-gear"></span>
-        <span class="sidebar-item-text text-sm font-medium transition-opacity duration-300">Einstellungen</span>
-    </a>
+    <%- include('_menu_item', { 
+        href: '/settings', 
+        icon: 'fas fa-gear', 
+        text: 'Einstellungen',
+        currentPath: currentPath 
+    }) %>
 </nav>

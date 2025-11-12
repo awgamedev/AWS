@@ -1,3 +1,5 @@
+const { renderView } = require("../utils/view-renderer"); // NEU: Import der View-Renderer Utility
+
 /**
  * 404-Middleware (Catch-All-Handler).
  * Diese Funktion wird aufgerufen, wenn keine andere Express-Route
@@ -9,8 +11,7 @@
 const notFoundHandler = (req, res, next) => {
   res.status(404);
 
-  res.render("404", {
-    title: req.__("404_NOT_FOUND_TITLE"),
+  renderView(req, res, "404", req.__("404_NOT_FOUND_TITLE"), {
     originalUrl: req.originalUrl,
   });
 };
