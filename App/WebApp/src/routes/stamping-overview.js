@@ -106,7 +106,7 @@ const processStampings = (stampings) => {
 
 // 📊 GET Route: Admin-Übersicht über alle Stempelungen (/stamping-overview)
 router.get(
-  "/stamping-overview",
+  "/time-tracking/stamping-overview",
   ensureAuthenticated,
   checkRole("admin"),
   async (req, res) => {

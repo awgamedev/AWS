@@ -6,8 +6,8 @@ const bcrypt = require("bcryptjs");
 const { ensureAuthenticated } = require("../middleware/auth");
 const { renderView } = require("../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
 
-// 1. Liste anzeigen (GET /user-list)
-router.get("/user-list", ensureAuthenticated, async (req, res) => {
+// 1. Liste anzeigen (GET /user/list)
+router.get("/user/list", ensureAuthenticated, async (req, res) => {
   let items;
   const title = req.__("USER_LIST_PAGE_TITLE");
 
@@ -32,7 +32,7 @@ router.get("/user-list", ensureAuthenticated, async (req, res) => {
   }
 
   // View rendern
-  renderView(req, res, "user_list", title, {
+  renderView(req, res, "user/list", title, {
     // Konvertiere die Mongoose-Objekte, falls nötig, und übergebe sie
     items: items.map((item) => (item.toObject ? item.toObject() : item)),
   });
@@ -82,7 +82,7 @@ router.post("/create-user", ensureAuthenticated, async (req, res) => {
 
     const newUser = new User(data);
     await newUser.save();
-    res.redirect("/user-list");
+    res.redirect("/user/list");
   } catch (err) {
     req.logger.error("Fehler beim Erstellen des Nutzers:", err);
     // Fehlerseite rendern
@@ -205,7 +205,7 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
     entity.role = data.role || "user";
 
     await entity.save();
-    res.redirect("/user-list");
+    res.redirect("/user/list");
   } catch (err) {
     logger.error("There was an error updating user:", err);
     // Fehlerseite rendern
@@ -224,9 +224,9 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// 4. LÖSCHBESTÄTIGUNGSSEITE ANZEIGEN (GET /user-list/confirm-delete/:id)
+// 4. LÖSCHBESTÄTIGUNGSSEITE ANZEIGEN (GET /user/list/confirm-delete/:id)
 router.get(
-  "/user-list/confirm-delete/:id",
+  "/user/list/confirm-delete/:id",
   ensureAuthenticated,
   async (req, res) => {
     const itemId = req.params.id;
@@ -274,15 +274,15 @@ router.get(
   }
 );
 
-// 5. ENDGÜLTIGE AKTION: ENTITÄT LÖSCHEN (POST /user-list/delete/:id)
-router.post("/user-list/delete/:id", ensureAuthenticated, async (req, res) => {
+// 5. ENDGÜLTIGE AKTION: ENTITÄT LÖSCHEN (POST /user/list/delete/:id)
+router.post("/user/list/delete/:id", ensureAuthenticated, async (req, res) => {
   const itemId = req.params.id;
   const errorTitle = req.__("ERROR_TITLE") || "Fehler";
 
   try {
     const deletedItem = await User.findByIdAndDelete(itemId);
     if (deletedItem) {
-      res.redirect("/user-list");
+      res.redirect("/user/list");
     } else {
       return renderView(
         req,

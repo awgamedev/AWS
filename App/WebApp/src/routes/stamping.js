@@ -63,7 +63,7 @@ const getStampingPairs = async (userId) => {
 };
 
 // ⏳ GET Route: Stempel-Interface anzeigen (/stamping)
-router.get("/stamping", ensureAuthenticated, async (req, res) => {
+router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
   const title = req.__("STAMPING_PAGE_TITLE");
   let currentStatus = "out";
   let lastStampingTime = "N/A";

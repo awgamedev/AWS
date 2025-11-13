@@ -11,28 +11,28 @@
     }) %>
 
     <%- include('_menu_dropdown', {
-        prefix: '/time-tracking', // Präfix für die Alpine-Logik
-        icon: 'fa-solid fa-clock',
-        text: 'Zeiterfassung',
+        prefix: '/user', // Präfix für die Alpine-Logik
+        icon: 'fa-solid fa-users',
+        text: 'Nutzerverwaltung',
         currentPath: currentPath,
         subitems: [
             // Unterpunkt 1: Nutzerliste (als String an das Dropdown übergeben)
             include('_menu_item', { 
-                href: '/stamping', 
-                icon: 'fa-solid fa-stamp', 
-                text: 'Stempeln',
-                currentPath: currentPath
+                href: '/user/list', 
+                icon: 'fa-solid fa-list-check', 
+                text: 'Nutzerliste', 
+                currentPath: currentPath 
             }),
-
+            
+            // Unterpunkt 2: Rollenverwaltung
             include('_menu_item', { 
-                href: '/stamping-overview', 
-                icon: 'fa-solid fa-calendar', 
-                text: 'Monatsübersicht',
+                href: '/user/roles', 
+                icon: 'fa-solid fa-user-tag', 
+                text: 'Rollenverwaltung', 
                 currentPath: currentPath 
             })
         ]
-    }) 
-    %>
+    }) %>
     
     <%- include('_menu_item', { 
         href: '/task-list', 
@@ -42,28 +42,27 @@
     }) %>
     
     <%- include('_menu_dropdown', {
-        prefix: '/user', // Präfix für die Alpine-Logik
-        icon: 'fa-solid fa-users',
-        text: 'Nutzerverwaltung',
+        prefix: '/time-tracking',
+        icon: 'fa-solid fa-clock',
+        text: 'Zeiterfassung',
         currentPath: currentPath,
         subitems: [
-            // Unterpunkt 1: Nutzerliste (als String an das Dropdown übergeben)
             include('_menu_item', { 
-                href: '/user-list', 
-                icon: 'fa-solid fa-list-check', 
-                text: 'Nutzerliste', 
-                currentPath: currentPath 
+                href: '/time-tracking/stamping', 
+                icon: 'fa-solid fa-stamp', 
+                text: 'Stempeln',
+                currentPath: currentPath
             }),
-            
-            // Unterpunkt 2: Rollenverwaltung
+
             include('_menu_item', { 
-                href: '/roles', 
-                icon: 'fa-solid fa-user-tag', 
-                text: 'Rollenverwaltung', 
+                href: '/time-tracking/stamping-overview', 
+                icon: 'fa-solid fa-calendar', 
+                text: 'Monatsübersicht',
                 currentPath: currentPath 
             })
         ]
-    }) %>
+    }) 
+    %>
     
     <%- include('_menu_item', { 
         href: '/settings', 

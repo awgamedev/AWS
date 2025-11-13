@@ -2,18 +2,23 @@
 const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
 const INACTIVE_CLASSES = "text-gray-300";
 
-// Hole die Variablen
 const { prefix, icon, text, subitems, currentPath } = locals;
 
 // Logik, um zu prüfen, ob das Dropdown beim Laden offen sein muss
 const isParentActive = currentPath.startsWith(prefix);
+
+// 1. **Muss ein String sein**, da Alpine.js das Attribut als String liest.
+const initialOpenStateString = isParentActive ? 'true' : 'false'; 
+const initialIsActiveString = isParentActive ? 'true' : 'false';
 %>
 
 <div 
-    x-data="sidebarDropdown" 
-    data-active-prefix="<%= prefix %>" 
+    x-data="{ 
+        open: JSON.parse('<%= initialOpenStateString %>'), 
+        isActive: JSON.parse('<%= initialIsActiveString %>'), 
+        prefix: '<%= prefix %>' 
+    }" 
     class="space-y-1"
-    x-init="init; open = <%= isParentActive %>;"
 >
     
     <button 
