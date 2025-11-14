@@ -18,6 +18,75 @@ document.addEventListener("DOMContentLoaded", () => {
     el.className = `mb-4 text-sm font-medium text-center ${color} block`;
   };
 
+  // -------------------------------
+  // Open Create Task Modal (jQuery)
+  // -------------------------------
+  $("#open-task-modal").on("click", function () {
+    openModal(window.CREATE_MODAL_TITLE, window.CREATE_TASK_HTML);
+    setTimeout(setDatesOnChange, MODAL_RENDER_DELAY_MS);
+  });
+
+  // -------------------------------
+  // Unassigned Tasks Button (jQuery)
+  // -------------------------------
+  $("#unassigned-tasks-btn").on("click", function () {
+    const action = $(this).data("action");
+    if (action === "navigate") {
+      window.location.href = "/task-backlog";
+    } else {
+      openModal(window.EDIT_MODAL_TITLE, window.EDIT_TASK_STATIC_HTML);
+    }
+  });
+
+  // -------------------------------
+  // Task list items -> open edit modal (jQuery)
+  // -------------------------------
+  $(".task-item").on("click", function () {
+    const data = $(this).data();
+    openModal(
+      `Aufgabe bearbeiten: ${data.taskName}`,
+      window.EDIT_TASK_STATIC_HTML
+    );
+    setTimeout(() => fillEditFormFromDataset(data), MODAL_RENDER_DELAY_MS);
+  });
+
+  // -------------------------------
+  // Delete task button (jQuery delegated)
+  // -------------------------------
+  $(document).on("click", "#delete-task-btn", async function () {
+    const msg = byId("edit-task-form-message");
+    const taskId = $("#edit-taskId").val();
+
+    if (
+      !taskId ||
+      !confirm("Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?")
+    ) {
+      return;
+    }
+
+    setMessage(msg, "error", "Aufgabe wird gelöscht...");
+
+    try {
+      const { ok, data } = await api(`/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (ok) {
+        setMessage(msg, "success", data.msg || "Aufgabe erfolgreich gelöscht!");
+        reloadAfter();
+      } else {
+        setMessage(
+          msg,
+          "error",
+          data.msg || "Fehler beim Löschen der Aufgabe."
+        );
+      }
+    } catch (err) {
+      console.error("Fetch Delete Fehler:", err);
+      setMessage(msg, "error", "Netzwerkfehler beim Löschversuch.");
+    }
+  });
+
   const clearMessage = (el) => {
     if (!el) return;
     el.textContent = "";
@@ -238,13 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // Date helpers (jQuery-based)
 // -------------------------------
 function setDatesOnChange() {
-  function getTodayISO() {
-    const d = new Date();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${d.getFullYear()}-${m}-${day}`;
-  }
-
   const today = getTodayISO();
   $("#startDate").val(today);
   $("#endDate").val(today);

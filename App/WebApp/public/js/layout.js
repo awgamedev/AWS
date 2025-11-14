@@ -121,10 +121,9 @@ function setupSidebarActiveState() {
   // 2. Event Listener zu jedem Element hinzufügen
   sidebarItems.forEach((item) => {
     item.addEventListener("click", (event) => {
-      // Optional: Verhindere das sofortige Navigieren für reine 'href="#"' Links
-      // if (item.getAttribute('href') === '#') {
-      //     event.preventDefault();
-      // }
+      if (item.getAttribute("href") === "#") {
+        event.preventDefault();
+      }
 
       // Zustand von allen entfernen
       removeActiveState();
