@@ -24,6 +24,20 @@ const router = express.Router();
 const exampleController = require("../controllers/exampleController");
 const { renderView } = require("../utils/view-renderer");
 
+const UserModel = require("../models/UserModel");
+const { ensureAuthenticated } = require("../middleware/auth");
+const { renderView } = require("../utils/view-renderer");
+
+router.get("/user/list", ensureAuthenticated, async (req, res) => {
+    try {
+        const users = await UserModel.getAllUsers();
+        renderView(req, res, "userList", "User List", { users });
+    } catch (error) {
+        console.error("Error fetching user list:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}
+
 router.get("/register", (req, res) => {
   renderView(req, res, "register", "Registrierung", {
     // Variables for the inner view
