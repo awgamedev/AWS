@@ -1,309 +1,281 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const dispatchCloseModal = () => {
-    window.dispatchEvent(new CustomEvent("close-modal"));
+  // -------------------------------
+  // Utilities
+  // -------------------------------
+  const MODAL_RENDER_DELAY_MS = 100;
+
+  const byId = (id) => document.getElementById(id);
+
+  const setMessage = (el, type, text) => {
+    const color =
+      type === "success"
+        ? "text-green-600"
+        : type === "error"
+        ? "text-red-600"
+        : "text-yellow-600";
+
+    el.textContent = text;
+    el.className = `mb-4 text-sm font-medium text-center ${color} block`;
   };
 
-  // Listener für den "Aufgabe erstellen" Button
-  const openTaskModalBtn = document.getElementById("open-task-modal");
-  if (openTaskModalBtn) {
-    openTaskModalBtn.addEventListener("click", () => {
-      window.dispatchEvent(
-        new CustomEvent("open-modal", {
-          detail: {
-            title: window.CREATE_MODAL_TITLE,
-            content: window.CREATE_TASK_HTML,
-          },
-        })
-      );
+  const clearMessage = (el) => {
+    if (!el) return;
+    el.textContent = "";
+    el.className = "mb-4 text-sm font-medium text-center hidden";
+  };
 
-      setTimeout(() => {
-        setDatesOnChange();
-      }, 100);
-    });
-  } else {
-    console.error("Button 'open-task-modal' nicht gefunden!");
-  }
+  const toTaskPayload = (form) => {
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (data.userId === "") data.userId = null;
+    return data;
+  };
 
-  // Listener für den "Nicht zugewiesene Aufgaben" Button
-  const unassignedTasksBtn = document.getElementById("unassigned-tasks-btn");
-  if (unassignedTasksBtn) {
-    unassignedTasksBtn.addEventListener("click", () => {
-      window.dispatchEvent(
-        new CustomEvent("open-modal", {
-          detail: {
-            title: window.EDIT_MODAL_TITLE,
-            content: window.EDIT_TASK_STATIC_HTML,
-          },
-        })
-      );
-    });
-  } else {
-    console.error("Button 'unassigned-tasks-btn' nicht gefunden!");
-  }
-
-  document.addEventListener("submit", async (e) => {
-    // -------------------------------------------------
-    // A. SUBMIT FÜR CREATE-FORMULAR (NEU DELEGIERT)
-    // -------------------------------------------------
-    if (e.target.id === "create-task-form") {
-      e.preventDefault(); // Verhindert den Neuladen der Seite sofort
-
-      const currentForm = e.target;
-      const messageDiv = document.getElementById("task-form-message");
-
-      messageDiv.textContent = "Aufgabe wird gespeichert...";
-      messageDiv.className =
-        "mb-4 text-sm font-medium text-center text-yellow-600 block";
-
-      const formData = new FormData(currentForm);
-      const taskData = Object.fromEntries(formData.entries());
-
-      if (taskData.userId === "") {
-        taskData.userId = null;
-      }
-
-      try {
-        const response = await fetch("/api/tasks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(taskData),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          messageDiv.textContent =
-            data.msg || "Aufgabe erfolgreich gespeichert!";
-          messageDiv.className =
-            "mb-4 text-sm font-medium text-center text-green-600 block";
-          currentForm.reset();
-
-          setTimeout(() => {
-            dispatchCloseModal();
-            window.location.reload();
-          }, 1000);
-        } else {
-          messageDiv.textContent =
-            data.msg || "Fehler beim Speichern der Aufgabe.";
-          messageDiv.className =
-            "mb-4 text-sm font-medium text-center text-red-600 block";
-        }
-      } catch (error) {
-        console.error("Fetch Fehler:", error);
-        messageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
-        messageDiv.className =
-          "mb-4 text-sm font-medium text-center text-red-600 block";
-      }
+  // -------------------------------
+  // Create Task Modal
+  // -------------------------------
+  const initOpenCreateTaskModal = () => {
+    const btn = byId("open-task-modal");
+    if (!btn) {
+      console.error("Button 'open-task-modal' nicht gefunden!");
+      return;
     }
-    // -------------------------------------------------
-    // B. SUBMIT FÜR EDIT-FORMULAR (PUT)
-    // -------------------------------------------------
-    else if (e.target.id === "edit-task-form") {
+
+    btn.addEventListener("click", () => {
+      openModal(window.CREATE_MODAL_TITLE, window.CREATE_TASK_HTML);
+      setTimeout(setDatesOnChange, MODAL_RENDER_DELAY_MS);
+    });
+  };
+
+  // -------------------------------
+  // Unassigned Tasks Button
+  // - Either navigate or show modal (based on data-action)
+  // -------------------------------
+  const initUnassignedTasksButton = () => {
+    const btn = byId("unassigned-tasks-btn");
+    if (!btn) {
+      console.error("Button 'unassigned-tasks-btn' nicht gefunden!");
+      return;
+    }
+
+    const action = btn.getAttribute("data-action");
+    btn.addEventListener("click", () => {
+      if (action === "navigate") {
+        window.location.href = "/task-backlog";
+      } else {
+        openModal(window.EDIT_MODAL_TITLE, window.EDIT_TASK_STATIC_HTML);
+      }
+    });
+  };
+
+  // -------------------------------
+  // Form submits (delegated)
+  // -------------------------------
+  document.addEventListener("submit", async (e) => {
+    const { target } = e;
+
+    // Create Task
+    if (target.id === "create-task-form") {
       e.preventDefault();
 
-      const editForm = e.target;
-      const editMessageDiv = document.getElementById("edit-task-form-message");
-      const taskId = document.getElementById("edit-taskId").value;
+      const msg = byId("task-form-message");
+      setMessage(msg, "info", "Aufgabe wird gespeichert...");
+
+      try {
+        const payload = toTaskPayload(target);
+        const { ok, data } = await api("/api/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (ok) {
+          setMessage(
+            msg,
+            "success",
+            data.msg || "Aufgabe erfolgreich gespeichert!"
+          );
+          target.reset();
+          reloadAfter();
+        } else {
+          setMessage(
+            msg,
+            "error",
+            data.msg || "Fehler beim Speichern der Aufgabe."
+          );
+        }
+      } catch (err) {
+        console.error("Fetch Fehler:", err);
+        setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
+      }
+    }
+
+    // Edit Task
+    if (target.id === "edit-task-form") {
+      e.preventDefault();
+
+      const msg = byId("edit-task-form-message");
+      const taskId = byId("edit-taskId")?.value;
 
       if (!taskId) {
-        editMessageDiv.textContent = "Fehler: Aufgaben-ID nicht gefunden.";
-        editMessageDiv.className =
-          "mb-4 text-sm font-medium text-center text-red-600 block";
+        setMessage(msg, "error", "Fehler: Aufgaben-ID nicht gefunden.");
         return;
       }
 
-      editMessageDiv.textContent = "Änderungen werden gespeichert...";
-      editMessageDiv.className =
-        "mb-4 text-sm font-medium text-center text-yellow-600 block";
-
-      const formData = new FormData(editForm);
-      const taskData = Object.fromEntries(formData.entries());
-
-      if (taskData.userId === "") {
-        taskData.userId = null;
-      }
+      setMessage(msg, "info", "Änderungen werden gespeichert...");
 
       try {
-        const response = await fetch(`/api/tasks/${taskId}`, {
+        const payload = toTaskPayload(target);
+        const { ok, data } = await api(`/api/tasks/${taskId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(taskData),
+          body: JSON.stringify(payload),
         });
-        const data = await response.json();
 
-        if (response.ok) {
-          editMessageDiv.textContent =
-            data.msg || "Aufgabe erfolgreich aktualisiert!";
-          editMessageDiv.className =
-            "mb-4 text-sm font-medium text-center text-green-600 block";
-          setTimeout(() => {
-            dispatchCloseModal();
-            window.location.reload();
-          }, 1000);
+        if (ok) {
+          setMessage(
+            msg,
+            "success",
+            data.msg || "Aufgabe erfolgreich aktualisiert!"
+          );
+          reloadAfter();
         } else {
-          editMessageDiv.textContent =
-            data.msg || "Fehler beim Aktualisieren der Aufgabe.";
-          editMessageDiv.className =
-            "mb-4 text-sm font-medium text-center text-red-600 block";
+          setMessage(
+            msg,
+            "error",
+            data.msg || "Fehler beim Aktualisieren der Aufgabe."
+          );
         }
-      } catch (error) {
-        console.error("Fetch Fehler (PUT):", error);
-        editMessageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
-        editMessageDiv.className =
-          "mb-4 text-sm font-medium text-center text-red-600 block";
+      } catch (err) {
+        console.error("Fetch Fehler (PUT):", err);
+        setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
       }
     }
   });
 
-  // ----------------------------------------------------------------------
-  // 3. LISTEN-LOGIK (Unverändert)
-  // ----------------------------------------------------------------------
+  // -------------------------------
+  // Task list item -> open edit modal and populate
+  // -------------------------------
+  const fillEditFormFromDataset = (data) => {
+    const map = {
+      "edit-taskId": data.taskId,
+      "edit-taskName": data.taskName,
+      "edit-taskStatus": data.taskStatus,
+      "edit-taskPriority": data.taskPriority,
+      "edit-userId": data.userId,
+      "edit-taskDescription": data.taskDesc,
+      "edit-startDate": data.startDate,
+      "edit-endDate": data.endDate,
+    };
 
-  // Listener für alle Aufgaben-Elemente (klicken)
+    Object.entries(map).forEach(([id, value]) => {
+      const el = byId(id);
+      if (el && value !== undefined) el.value = value;
+    });
+
+    clearMessage(byId("edit-task-form-message"));
+  };
+
   document.querySelectorAll(".task-item").forEach((item) => {
-    item.addEventListener("click", (event) => {
-      const data = event.currentTarget.dataset;
+    item.addEventListener("click", (e) => {
+      const data = e.currentTarget.dataset;
 
-      // 1. Öffnen des Edit-Modals mit dem statischen HTML-Template
-      window.dispatchEvent(
-        new CustomEvent("open-modal", {
-          detail: {
-            title: `Aufgabe bearbeiten: ${data.taskName}`,
-            content: window.EDIT_TASK_STATIC_HTML,
-          },
-        })
+      openModal(
+        `Aufgabe bearbeiten: ${data.taskName}`,
+        window.EDIT_TASK_STATIC_HTML
       );
 
-      // 2. Füllen der Formularfelder nach dem Öffnen (kurze Verzögerung)
-      setTimeout(() => {
-        document.getElementById("edit-taskId").value = data.taskId;
-        document.getElementById("edit-taskName").value = data.taskName;
-        document.getElementById("edit-taskStatus").value = data.taskStatus;
-        document.getElementById("edit-taskPriority").value = data.taskPriority;
-        document.getElementById("edit-userId").value = data.userId;
-        document.getElementById("edit-taskDescription").value = data.taskDesc;
-        document.getElementById("edit-startDate").value = data.startDate;
-        document.getElementById("edit-endDate").value = data.endDate;
-
-        const editMessageDiv = document.getElementById(
-          "edit-task-form-message"
-        );
-        if (editMessageDiv) {
-          editMessageDiv.className =
-            "mb-4 text-sm font-medium text-center hidden";
-          editMessageDiv.textContent = "";
-        }
-      }, 100);
+      setTimeout(() => fillEditFormFromDataset(data), MODAL_RENDER_DELAY_MS);
     });
   });
 
+  // -------------------------------
+  // Delete task (delegated)
+  // -------------------------------
   document.addEventListener("click", async (e) => {
-    if (e.target.id === "delete-task-btn") {
-      const editMessageDiv = document.getElementById("edit-task-form-message");
-      const taskId = document.getElementById("edit-taskId").value;
+    if (e.target.id !== "delete-task-btn") return;
 
-      if (
-        !taskId ||
-        !confirm("Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?")
-      )
-        return;
+    const msg = byId("edit-task-form-message");
+    const taskId = byId("edit-taskId")?.value;
 
-      editMessageDiv.textContent = "Aufgabe wird gelöscht...";
-      editMessageDiv.className =
-        "mb-4 text-sm font-medium text-center text-red-600 block";
+    if (
+      !taskId ||
+      !confirm("Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?")
+    ) {
+      return;
+    }
 
-      try {
-        const response = await fetch(`/api/tasks/${taskId}`, {
-          method: "DELETE",
-        });
-        const data = await response.json();
+    setMessage(msg, "error", "Aufgabe wird gelöscht...");
 
-        if (response.ok) {
-          editMessageDiv.textContent =
-            data.msg || "Aufgabe erfolgreich gelöscht!";
-          editMessageDiv.className =
-            "mb-4 text-sm font-medium text-center text-green-600 block";
-          setTimeout(() => {
-            dispatchCloseModal();
-            window.location.reload();
-          }, 1000);
-        } else {
-          editMessageDiv.textContent =
-            data.msg || "Fehler beim Löschen der Aufgabe.";
-          editMessageDiv.className =
-            "mb-4 text-sm font-medium text-center text-red-600 block";
-        }
-      } catch (error) {
-        console.error("Fetch Delete Fehler:", error);
-        editMessageDiv.textContent = "Netzwerkfehler beim Löschversuch.";
-        editMessageDiv.className =
-          "mb-4 text-sm font-medium text-center text-red-600 block";
+    try {
+      const { ok, data } = await api(`/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (ok) {
+        setMessage(msg, "success", data.msg || "Aufgabe erfolgreich gelöscht!");
+        reloadAfter();
+      } else {
+        setMessage(
+          msg,
+          "error",
+          data.msg || "Fehler beim Löschen der Aufgabe."
+        );
       }
+    } catch (err) {
+      console.error("Fetch Delete Fehler:", err);
+      setMessage(msg, "error", "Netzwerkfehler beim Löschversuch.");
     }
   });
 
-  const openTasksButton = document.getElementById("unassigned-tasks-btn");
-  if (
-    openTasksButton &&
-    openTasksButton.getAttribute("data-action") === "navigate"
-  ) {
-    openTasksButton.addEventListener("click", () => {
-      window.location.href = "/task-backlog";
-    });
-  }
+  // -------------------------------
+  // Init
+  // -------------------------------
+  initOpenCreateTaskModal();
+  initUnassignedTasksButton();
 });
 
-// Change the date automaticly:
+// -------------------------------
+// Date helpers (jQuery-based)
+// -------------------------------
 function setDatesOnChange() {
-  function getTodayDateString() {
-    const today = new Date();
-    // getMonth() ist nullbasiert, daher +1
-    const month = (today.getMonth() + 1).toString().padStart(2, "0");
-    const day = today.getDate().toString().padStart(2, "0");
-    const year = today.getFullYear();
-
-    return `${year}-${month}-${day}`;
+  function getTodayISO() {
+    const d = new Date();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${d.getFullYear()}-${m}-${day}`;
   }
 
-  // 2. Den Wert des Input-Feldes setzen
-  const todayDate = getTodayDateString();
-  $("#startDate").val(todayDate);
-  $("#endDate").val(todayDate);
+  const today = getTodayISO();
+  $("#startDate").val(today);
+  $("#endDate").val(today);
 
   $("#startDate").on("change", function () {
-    // 1. Werte abrufen
-    var startDateInput = $(this);
-    var startDateValue = startDateInput.val();
+    const startVal = $(this).val();
+    const endInput = $("#endDate");
+    const endVal = endInput.val();
+    const errorEl = $("#date-error");
 
-    var endDateInput = $("#endDate");
-    var endDateValue = endDateInput.val();
+    const start = new Date(startVal);
+    const end = new Date(endVal);
 
-    var errorElement = $("#date-error");
-
-    var startDate = new Date(startDateValue);
-    var endDate = new Date(endDateValue);
-
-    if (startDateValue && startDate.getTime() >= endDate.getTime()) {
-      endDateInput.val(startDateValue);
-      errorElement.fadeIn().delay(3000).fadeOut();
+    if (startVal && start.getTime() >= end.getTime()) {
+      endInput.val(startVal);
+      errorEl.stop(true, true).fadeIn().delay(3000).fadeOut();
     }
   });
 
   $("#endDate").on("change", function () {
-    var endDateInput = $(this);
-    var endDateValue = endDateInput.val();
+    const endVal = $(this).val();
+    const startInput = $("#startDate");
+    const startVal = startInput.val();
+    const errorEl = $("#date-error");
 
-    var startDateInput = $("#startDate");
-    var startDateValue = startDateInput.val();
+    const start = new Date(startVal);
+    const end = new Date(endVal);
 
-    var errorElement = $("#date-error");
-
-    var startDate = new Date(startDateValue);
-    var endDate = new Date(endDateValue);
-
-    if (endDateValue && startDate.getTime() >= endDate.getTime()) {
-      startDateInput.val(endDateValue);
-      errorElement.fadeIn().delay(3000).fadeOut();
+    if (endVal && start.getTime() >= end.getTime()) {
+      startInput.val(endVal);
+      errorEl.stop(true, true).fadeIn().delay(3000).fadeOut();
     }
   });
 }
