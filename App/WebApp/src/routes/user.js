@@ -3,7 +3,12 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { ensureAuthenticated } = require("../middleware/auth");
-const { renderView } = require("../utils/view-renderer");
+const { renderView, renderErrorView } = require("../utils/view-renderer");
+const { hashPassword } = require("../utils/passwordUtils");
+const {
+  validateUserData,
+  validateEmailUniqueness,
+} = require("../validations/userValidation");
 
 // 1. Display user list (GET /user/list)
 router.get("/user/list", ensureAuthenticated, async (req, res) => {
@@ -35,7 +40,7 @@ router.post("/create-user", ensureAuthenticated, async (req, res) => {
   const { email, password } = data;
 
   try {
-    validateUserData(email, password);
+    validateUserData(req, password);
     data.password = await hashPassword(password);
 
     const existingUser = await User.findOne({ email });
@@ -78,7 +83,7 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
     const entity = await User.findById(id);
     if (!entity) return renderErrorView(req, res, "USER_NOT_FOUND", 404);
 
-    await validateEmailUniqueness(email, entity);
+    await validateEmailUniqueness(req, email, entity);
     if (password) entity.password = await hashPassword(password);
 
     entity.username = req.body.username;
@@ -131,41 +136,8 @@ router.post("/user/list/delete/:id", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Helper functions
-const renderErrorView = (req, res, errorKey, statusCode, customMessage) => {
-  const errorTitle = req.__("ERROR_TITLE") || "Error";
-  const message = customMessage || req.__(errorKey) || "An error occurred.";
-  return renderView(
-    req,
-    res,
-    "error_message",
-    errorTitle,
-    { message },
-    "",
-    statusCode
-  );
-};
-
-const validateUserData = (email, password) => {
-  if (!password) throw new Error(req.__("ERROR_PASSWORD_REQUIRED"));
-  if (password.length < 6) throw new Error(req.__("ERROR_PASSWORD_LENGTH"));
-};
-
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-};
-
-const validateEmailUniqueness = async (email, entity) => {
-  if (email !== entity.email) {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error(req.__("ERROR_EMAIL_USED_BY_OTHER"));
-  }
-};
-
 module.exports = router;
 
 // Additional logic can be refactored to:
 // - src/models/User.js
 // - src/utils/userValidation.js
-// - src/utils/passwordUtils.js

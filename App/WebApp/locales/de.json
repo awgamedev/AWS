@@ -44,10 +44,10 @@
 	"OPEN_SHIFT": "OFFEN",
 	"STATUS_ACTIVE": "Aktiv",
 	"TASK_BOARD_PAGE_TITLE": "Aufgabenboard",
-	"TASK_LOAD_ERROR": "TASK_LOAD_ERROR",
-	"ERROR_OCCURRED": "ERROR_OCCURRED",
-	"GO_HOME": "GO_HOME",
-	"RENDER_ERROR": "RENDER_ERROR",
+	"TASK_LOAD_ERROR": "Fehler beim Laden der Aufgaben",
+	"ERROR_OCCURRED": "Ein Fehler ist aufgetreten",
+	"GO_HOME": "Zur Startseite",
+	"RENDER_ERROR": "Fehler beim Rendern der Seite",
 	"TASK_BOARD_TITLE": "Aufgabenboard",
 	"WEEK_VIEW": "Wochenansicht",
 	"CREATE_TASK_BUTTON": "Aufgabe erstellen",
@@ -80,5 +80,6 @@
 	"CONFIRM_DELETE_TITLE": "Wirklich Nutzer löschen? ⚠️",
 	"CONFIRM_DELETE_QUESTION": "Sind Sie sicher, dass Sie diesen Nutzer **dauerhaft** löschen möchten? Diese Aktion kann **nicht** rückgängig gemacht werden.",
 	"USER_DETAILS_HEADER": "Nutzer-Details",
-	"YES_DELETE_BUTTON": "🗑️ Ja, endgültig löschen"
+	"YES_DELETE_BUTTON": "🗑️ Ja, endgültig löschen",
+	"ERROR_PASSWORD_LENGTH": "Bitte geben Sie ein Passwort mit mindestens 6 Zeichen ein."
 }

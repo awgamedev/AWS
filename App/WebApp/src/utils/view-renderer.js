@@ -50,7 +50,22 @@ const renderView = (
   });
 };
 
+const renderErrorView = (req, res, errorKey, statusCode, customMessage) => {
+  const errorTitle = req.__("ERROR_TITLE") || "Error";
+  const message = customMessage || req.__(errorKey) || "An error occurred.";
+  return renderView(
+    req,
+    res,
+    "error_message",
+    errorTitle,
+    { message },
+    "",
+    statusCode
+  );
+};
+
 module.exports = {
   renderView,
   renderWithLayout,
+  renderErrorView,
 };
