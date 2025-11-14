@@ -5,9 +5,6 @@ This file provides instructions for managing routes in the application. It outli
 ## General Guidelines
 
 - Define routes in the `src/routes` directory.
-- Avoid embedding HTML directly in route files; use EJS views instead.
-- Refactor business logic into controllers located in the `src/controllers` directory instead of placing it in route files.
-- Keep route definitions concise and focused on routing logic only.
 - Use descriptive names for route handlers to improve readability.
 - When rendering views, use a dedicated utility function (e.g., `renderView`) to handle common rendering tasks and pass necessary variables to the views.
 - Group related routes together in the same file for better organization.
@@ -15,6 +12,7 @@ This file provides instructions for managing routes in the application. It outli
 - Ensure that all routes are properly documented with comments explaining their purpose and functionality.
 - Follow RESTful conventions for route naming and HTTP methods where applicable.
 - Implement error handling for routes to manage unexpected situations gracefully.
+- If certain logic should be refactored to another file, add sections at the bottom of the file. These sections should suggest a file path, where these Locic should be moved to. For Example Controllers, Views (ejs files), Services, Utilities, Middleware, etc.
 
 ## Example Structure
 
@@ -34,7 +32,29 @@ router.get("/register", (req, res) => {
   });
 });
 
-// Define a GET route
 router.get("/example", exampleController.handleExample);
+
+// Define a GET route
 module.exports = router;
+
+// Additional logic can be refactored to:
+// - src/models/exampleModel.js
+// ...
+
+// - src/services/exampleService.js
+// ...
+
+// - src/views/exampleView.ejs
+// ...
+
+// - src/controllers/exampleController.js
+export const handleExample = (req, res) => {
+  // Controller logic here
+};
+
+// - src/middleware/exampleMiddleware.js
+// ...
+
+// - src/utils/view-renderer.js
+// ...
 ```
