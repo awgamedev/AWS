@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
 const { ensureAuthenticated } = require("../middleware/auth");
 const { renderView, renderErrorView } = require("../utils/view-renderer");
 const { hashPassword } = require("../utils/passwordUtils");
@@ -137,7 +136,3 @@ router.post("/user/list/delete/:id", ensureAuthenticated, async (req, res) => {
 });
 
 module.exports = router;
-
-// Additional logic can be refactored to:
-// - src/models/User.js
-// - src/utils/userValidation.js
