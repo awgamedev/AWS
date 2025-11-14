@@ -76,13 +76,11 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
 
 <%- include('../partials/generic-modal') %> 
 
-<script src="/js/task-script.js"></script>
 <script>
     window.CREATE_TASK_HTML = `<%- createTaskContentHtml %>`;
     window.EDIT_TASK_STATIC_HTML = `<%- editTaskContentHtml %>`;
-
+    
     window.CREATE_MODAL_TITLE = "<%= createTaskTitle %>";
     window.EDIT_MODAL_TITLE = "<%= unassignedTasksTitle %>";
-        
-    console.log("EJS Bridge geladen. Titel:", window.CREATE_MODAL_TITLE);
 </script>
+<script src="/js/task/task-script.js"></script>

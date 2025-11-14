@@ -3,16 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
     window.dispatchEvent(new CustomEvent("close-modal"));
   };
 
-  // ----------------------------------------------------------------------
-  // 1. MODAL ÖFFNEN LOGIK (Unverändert)
-  // ----------------------------------------------------------------------
-
   // Listener für den "Aufgabe erstellen" Button
   const openTaskModalBtn = document.getElementById("open-task-modal");
   if (openTaskModalBtn) {
     openTaskModalBtn.addEventListener("click", () => {
-      console.log("Button 'Aufgabe erstellen' geklickt!");
-
       window.dispatchEvent(
         new CustomEvent("open-modal", {
           detail: {
@@ -21,6 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         })
       );
+
+      setTimeout(() => {
+        setDatesOnChange();
+      }, 100);
     });
   } else {
     console.error("Button 'open-task-modal' nicht gefunden!");
@@ -43,14 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Button 'unassigned-tasks-btn' nicht gefunden!");
   }
 
-  // NOTE: Der alte open-modal Event-Listener zum Binden des Submit-Handlers wurde entfernt.
-  // Das Formular-Binding wird jetzt über Event Delegation gelöst (siehe Abschnitt 2).
-
-  // ----------------------------------------------------------------------
-  // 2. FORMULAR SUBMIT LOGIK (Überarbeitet: Event Delegation)
-  // ----------------------------------------------------------------------
-
-  // Event Delegation für BEIDE Formulare (Create und Edit/PUT)
   document.addEventListener("submit", async (e) => {
     // -------------------------------------------------
     // A. SUBMIT FÜR CREATE-FORMULAR (NEU DELEGIERT)
@@ -207,11 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ----------------------------------------------------------------------
-  // 4. DELETE LOGIK (Unverändert)
-  // ----------------------------------------------------------------------
-
-  // Event Delegation für den Lösch-Button (DELETE)
   document.addEventListener("click", async (e) => {
     if (e.target.id === "delete-task-btn") {
       const editMessageDiv = document.getElementById("edit-task-form-message");
@@ -257,11 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ----------------------------------------------------------------------
-  // 5. NAVIGATION (Unverändert)
-  // ----------------------------------------------------------------------
-
-  // NAVIGATION: Unassigned Tasks Button
   const openTasksButton = document.getElementById("unassigned-tasks-btn");
   if (
     openTasksButton &&
@@ -272,3 +252,58 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// Change the date automaticly:
+function setDatesOnChange() {
+  function getTodayDateString() {
+    const today = new Date();
+    // getMonth() ist nullbasiert, daher +1
+    const month = (today.getMonth() + 1).toString().padStart(2, "0");
+    const day = today.getDate().toString().padStart(2, "0");
+    const year = today.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  }
+
+  // 2. Den Wert des Input-Feldes setzen
+  const todayDate = getTodayDateString();
+  $("#startDate").val(todayDate);
+  $("#endDate").val(todayDate);
+
+  $("#startDate").on("change", function () {
+    // 1. Werte abrufen
+    var startDateInput = $(this);
+    var startDateValue = startDateInput.val();
+
+    var endDateInput = $("#endDate");
+    var endDateValue = endDateInput.val();
+
+    var errorElement = $("#date-error");
+
+    var startDate = new Date(startDateValue);
+    var endDate = new Date(endDateValue);
+
+    if (startDateValue && startDate.getTime() >= endDate.getTime()) {
+      endDateInput.val(startDateValue);
+      errorElement.fadeIn().delay(3000).fadeOut();
+    }
+  });
+
+  $("#endDate").on("change", function () {
+    var endDateInput = $(this);
+    var endDateValue = endDateInput.val();
+
+    var startDateInput = $("#startDate");
+    var startDateValue = startDateInput.val();
+
+    var errorElement = $("#date-error");
+
+    var startDate = new Date(startDateValue);
+    var endDate = new Date(endDateValue);
+
+    if (endDateValue && startDate.getTime() >= endDate.getTime()) {
+      startDateInput.val(endDateValue);
+      errorElement.fadeIn().delay(3000).fadeOut();
+    }
+  });
+}

@@ -30,7 +30,7 @@ const getStartOfWeek = (date) => {
 router.get("/task-list", ensureAuthenticated, async (req, res) => {
   let users = [];
   let tasksByDayAndUser = {};
-  const title = req.__("TASK_BOARD_PAGE_TITLE") || "Aufgabenboard";
+  const title = req.__("TASK_BOARD_PAGE_TITLE");
   const daysOfWeek = [
     "Montag",
     "Dienstag",
