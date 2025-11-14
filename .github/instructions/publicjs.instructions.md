@@ -1,4 +1,6 @@
-# This file describes the JavaScript code style for the public/js directory.
+# JavaScript Code Style for public/js Directory
+
+This file describes the JavaScript code style for the public/js directory.
 
 ## General structure of a JavaScript file
 
@@ -50,3 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 - Use ES6+ features (like `const`, `let`, arrow functions) for better readability and performance.
 - Keep the code modular and reusable by separating concerns into different files when appropriate.
 - Use jQuery, when it makes the code cleaner and more efficient, but avoid over-reliance on it for simple DOM manipulations that can be done with vanilla JavaScript.
+- Only document sections of code that are not self-explanatory and avoid redundant comments.
+- Only comment in English.
+- Ensure that all scripts are properly linked in the HTML files where they are used.
