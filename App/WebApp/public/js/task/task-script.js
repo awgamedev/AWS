@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------
   const MODAL_RENDER_DELAY_MS = 100;
 
-  const byId = (id) => document.getElementById(id);
-
   const setMessage = (el, type, text) => {
     const color =
       type === "success"
