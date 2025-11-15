@@ -26,44 +26,32 @@ const roles = [
         <% } %>
         
         <div>
-            <label for="username" class="block text-sm font-medium text-gray-700"><%= __('USERNAME_LABEL') %></label>
-            <input type="text" id="username" name="username" required value="<%= currentUsername %>"
-                    class="mt-1 block w-full px-4 py-2 border <%= validationErrors.username ? 'border-red-500' : 'border-gray-300' %> rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
-                    placeholder="<%= __('USERNAME_PLACEHOLDER') %>">
-            <% if (validationErrors.username) { %>
-                <p class="mt-1 text-sm text-red-600"><%= validationErrors.username %></p>
-            <% } %>
+            <%- include('../partials/_form_item_label', { id: "username", text: __('USERNAME_LABEL') }) %>
+            <%- include('../partials/_form_item', { type: "text", id: "username", value: currentUsername, validationErrorField: validationErrors.username, placeholder: __('USERNAME_PLACEHOLDER') }) %>    
+            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.username }) %>
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700"><%= __('EMAIL_LABEL') %></label>
-            <input type="email" id="email" name="email" required value="<%= currentEmail %>"
-                    class="mt-1 block w-full px-4 py-2 border <%= validationErrors.email ? 'border-red-500' : 'border-gray-300' %> rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
-                    placeholder="<%= __('EMAIL_PLACEHOLDER') %>">
-            <% if (validationErrors.email) { %>
-                <p class="mt-1 text-sm text-red-600"><%= validationErrors.email %></p>
-            <% } %>
+            <%- include('../partials/_form_item_label', { id: "email", text: __('EMAIL_LABEL') }) %>
+            <%- include('../partials/_form_item', { type: "email", id: "email", value: currentEmail, validationErrorField: validationErrors.email, placeholder: __('EMAIL_PLACEHOLDER') }) %>
+            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.email }) %>
         </div>
 
         <div>
-            <label for="password" class="block text-sm font-medium text-gray-700"><%= __('PASSWORD_LABEL') %></label>
-            <input type="password" id="password" name="password" 
-                    <%= !isEditingLocal ? "required" : "" %>
-                    class="mt-1 block w-full px-4 py-2 border <%= validationErrors.password ? 'border-red-500' : 'border-gray-300' %> rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
-                    placeholder="<%= isEditingLocal ? __("PASSWORD_EDIT_PLACEHOLDER") : __("PASSWORD_CREATE_PLACEHOLDER") %>">
-            <% if (validationErrors.password) { %>
-                <p class="mt-1 text-sm text-red-600"><%= validationErrors.password %></p>
-            <% } %>
+            <%- include('../partials/_form_item_label', { id: "password", text: __('PASSWORD_LABEL') }) %>
+            <%- include('../partials/_form_item', { type: "password", id: "password", value: "", validationErrorField: validationErrors.password, placeholder: isEditingLocal ? __("PASSWORD_EDIT_PLACEHOLDER") : __("PASSWORD_CREATE_PLACEHOLDER") }) %>
+            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.password }) %>
         </div>
 
         <div>
-            <label for="role" class="block text-sm font-medium text-gray-700"><%= __('ROLE_LABEL') %></label>
-            <select id="role" name="role"
-                    class="mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
-                <% roles.forEach(role => { %>
-                    <option value="<%= role.value %>" <%= currentRole === role.value ? "selected" : "" %>><%= role.label %></option>
-                <% }); %>
-            </select>
+            <%- include('../partials/_form_item_label', { id: "role", text: __('ROLE_LABEL') }) %>
+            <%- include('../partials/_form_select', { 
+                id: "role", 
+                name: "role", 
+                options: roles, 
+                value: currentRole, 
+                required: false 
+            }) %>
         </div>
         
         <div class="pt-4">

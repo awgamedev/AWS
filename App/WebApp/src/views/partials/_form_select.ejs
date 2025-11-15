@@ -1,0 +1,46 @@
+<!-- /src/views/partials/_form_select.ejs -->
+<%
+    // Compute name/id and options safely
+    const fieldId = (typeof id === 'string' && id.trim() !== '') ? id : (typeof name === 'string' ? name : 'select');
+    const fieldName = (typeof name === 'string' && name.trim() !== '') ? name : fieldId;
+
+    const formMultiple = (typeof multiple !== 'undefined' && multiple !== null && multiple !== '') ? multiple : false;
+    const formDisabled = (typeof disabled !== 'undefined' && disabled !== null && disabled !== '') ? disabled : false;
+    const formRequired = (typeof required !== 'undefined' && required !== null && required !== '') ? required : false;
+    const formPlaceholder = (typeof placeholder !== 'undefined' && placeholder !== null && placeholder !== '') ? placeholder : false;
+
+    // Options array: [{ value, label, disabled? }]
+    const opts = Array.isArray(options) ? options : [];
+
+    // Selection handling (single or multiple)
+    const isMultiple = !!formMultiple;
+    const hasValue = typeof value !== 'undefined' && value !== null && (Array.isArray(value) ? value.length > 0 : String(value) !== '');
+    const selectedValues = isMultiple
+        ? (Array.isArray(value) ? value.map(v => String(v)) : [])
+        : [String((typeof value !== 'undefined' && value !== null) ? value : '')];
+
+    // Classes (allow extra classes via className)
+    const baseClasses = 'mt-1 block w-full px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out';
+    const css = ((typeof className === 'string' ? className : '') + ' ' + baseClasses).trim();
+%>
+
+<select
+    id="<%= fieldId %>"
+    name="<%= fieldName %><%= isMultiple ? '[]' : '' %>"
+    class="<%= css %>"
+    <%= formRequired ? 'required' : '' %>
+    <%= formDisabled ? 'disabled' : '' %>
+    <%= isMultiple ? 'multiple' : '' %>>
+    <% if (formPlaceholder && !isMultiple) { %>
+        <option value="" disabled <%= hasValue ? '' : 'selected' %>><%= formPlaceholder %></option>
+    <% } %>
+
+    <% opts.forEach(function(opt) {
+             const optValue = String(opt.value);
+             const isSelected = isMultiple
+                 ? selectedValues.includes(optValue)
+                 : (hasValue && selectedValues[0] === optValue);
+    %>
+        <option value="<%= optValue %>" <%= isSelected ? 'selected' : '' %> <%= opt.disabled ? 'disabled' : '' %>><%= opt.label %></option>
+    <% }); %>
+</select>
