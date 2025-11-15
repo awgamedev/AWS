@@ -24,17 +24,17 @@ router.get("/user/list", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// 2a. Show form to create a new user (GET /create-user)
-router.get("/create-user", ensureAuthenticated, (req, res) => {
+// 2a. Show form to create a new user (GET /user/create)
+router.get("/user/create", ensureAuthenticated, (req, res) => {
   const title = req.__("CREATE_USER_PAGE_TITLE");
-  renderView(req, res, "user_form", title, {
+  renderView(req, res, "user/user_form", title, {
     entityToModify: {},
     isEditing: false,
   });
 });
 
-// 3a. Action to save a new user (POST /create-user)
-router.post("/create-user", ensureAuthenticated, async (req, res) => {
+// 3a. Action to save a new user (POST /user/create)
+router.post("/user/create", ensureAuthenticated, async (req, res) => {
   const data = req.body;
   const { email, password } = data;
 
@@ -64,7 +64,7 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
     if (!entityToModify)
       return renderErrorView(req, res, "USER_NOT_FOUND", 404);
 
-    renderView(req, res, "user_form", title, {
+    renderView(req, res, "user/user_form", title, {
       entityToModify: entityToModify.toObject(),
       isEditing: true,
     });

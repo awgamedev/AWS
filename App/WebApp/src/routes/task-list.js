@@ -1,33 +1,32 @@
-// routes/all-task.js
-
+// filepath: c:\Users\andre\Desktop\AWS\App\WebApp\src\routes\task-list.js
 const express = require("express");
 const router = express.Router();
 const Task = require("../models/Task");
 const User = require("../models/User");
-// import { getPriorityColor } from "./task-utils"; // Muss in EJS-View verfügbar sein oder im Controller angewendet werden
 const { ensureAuthenticated } = require("../middleware/auth");
-const { renderView } = require("../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
+const { renderView, renderErrorView } = require("../utils/view-renderer");
 
-// 📋 GET Route: Task Backlog anzeigen (/task-backlog)
+/**
+ * GET /task-backlog
+ * Display task backlog with all tasks sorted by assignment status, user, and priority
+ */
 router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
-  let allTasks = [];
-  let users = [];
-  let userMap = {};
+  const title = req.__("TASK_BACKLOG_PAGE_TITLE");
 
   try {
-    // Logik für die Sortierung nach Priorität
+    // Define priority order for sorting
     const priorityOrder = { high: 1, medium: 2, low: 3 };
 
-    // 1. Alle Tasks abrufen
-    allTasks = await Task.find({}).lean().exec();
+    // Fetch all tasks
+    const allTasks = await Task.find({}).lean().exec();
 
-    // 2. Sortieren im Code (zuerst Nicht zugewiesen, dann nach User-ID, dann nach Priorität)
+    // Sort tasks: unassigned first, then by userId, then by priority
     allTasks.sort((a, b) => {
-      // 1. Sortierung: Nicht zugewiesen (null) kommt zuerst
+      // Sort by assignment status (unassigned first)
       if (a.userId === null && b.userId !== null) return -1;
       if (b.userId === null && a.userId !== null) return 1;
 
-      // 2. Sortierung: Nach userId (falls beide vorhanden)
+      // Sort by userId if both are assigned
       if (a.userId !== null && b.userId !== null) {
         const userIdComparison = String(a.userId).localeCompare(
           String(b.userId)
@@ -35,57 +34,51 @@ router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
         if (userIdComparison !== 0) return userIdComparison;
       }
 
-      // 3. Sortierung: Nach Priorität (wenn userId-Werte gleich oder beide null)
+      // Sort by priority
       return priorityOrder[a.taskPriority] - priorityOrder[b.taskPriority];
     });
 
-    // 3. Alle Benutzer abrufen und UserMap erstellen
-    users = await User.find({}).select("_id username").lean().exec();
-    userMap = users.reduce((map, user) => {
+    // Fetch all users and create user map
+    const users = await User.find({}).select("_id username").lean().exec();
+    const userMap = users.reduce((map, user) => {
       map[user._id.toString()] = user.username;
       return map;
     }, {});
 
-    // Füge den Usernamen zu jedem Task hinzu, damit EJS ihn direkt anzeigen kann
-    allTasks = allTasks.map((task) => ({
+    // Enrich tasks with username and formatted date
+    const enrichedTasks = allTasks.map((task) => ({
       ...task,
-      assignedUsername: userMap[task.userId?.toString()] || "Nicht zugewiesen",
+      assignedUsername:
+        userMap[task.userId?.toString()] || req.__("UNASSIGNED"),
       dateStr: task.startDate.toLocaleDateString("de-DE"),
     }));
-  } catch (error) {
-    console.error("Fehler beim Abrufen des Task Backlogs:", error.message);
-    // Fehlerbehandlung: Leere Listen im Fehlerfall
-    allTasks = [];
-    users = [];
 
-    // Du könntest hier auch eine Fehlermeldung flashen oder eine dedizierte Fehler-View rendern
-    // Beispiel:
-    // req.flash('error_msg', 'Fehler beim Laden der Aufgaben.');
-    // return res.redirect('/');
+    renderView(req, res, "tasks/all_tasks", title, {
+      allTasks: enrichedTasks,
+      users: users,
+    });
+  } catch (err) {
+    req.logger.error("Error fetching task backlog:", err);
+    return renderErrorView(req, res, "TASK_BACKLOG_LOAD_ERROR", 500);
   }
-
-  // 4. EJS-View rendern und alle benötigten Daten übergeben
-  // Annahme: renderView ist verfügbar und funktioniert wie in tasks.js
-  renderView(req, res, "tasks/all_tasks", "Alle Aufgaben", {
-    allTasks: allTasks,
-    users: users,
-    // Die Funktion getPriorityColor muss jetzt in der EJS-View verfügbar sein
-    // oder du musst die notwendige Logik/Klasse direkt im EJS-Template abbilden.
-    // Falls getPriorityColor eine einfache Helper-Funktion ist, kannst du sie als Local übergeben:
-    // getPriorityColor: getPriorityColor,
-  });
 });
 
-// 📅 POST Route: Task einem Benutzer zuweisen (/task-backlog/assign) - BLEIBT IM ROUTER
+/**
+ * POST /task-backlog/assign
+ * Assign a task to a specific user
+ */
 router.post("/task-backlog/assign", ensureAuthenticated, async (req, res) => {
-  // ... Die Logik für die POST-Route bleibt unverändert in all-task.js, da sie eine API-Route ist.
-  try {
-    const { taskId, userId } = req.body;
+  const { taskId, userId } = req.body;
 
+  try {
+    // Validate input
     if (!taskId || !userId) {
-      return res.status(400).json({ msg: "Fehlende Task- oder Benutzer-ID." });
+      return res.status(400).json({
+        msg: req.__("MISSING_TASK_OR_USER_ID"),
+      });
     }
 
+    // Update task with assignment
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
       {
@@ -98,16 +91,20 @@ router.post("/task-backlog/assign", ensureAuthenticated, async (req, res) => {
     );
 
     if (!updatedTask) {
-      return res.status(404).json({ msg: "Task nicht gefunden." });
+      return res.status(404).json({
+        msg: req.__("TASK_NOT_FOUND"),
+      });
     }
 
     res.status(200).json({
-      msg: `Task '${updatedTask.taskName}' wurde erfolgreich zugewiesen.`,
+      msg: req.__("TASK_ASSIGNED_SUCCESS", updatedTask.taskName),
       task: updatedTask,
     });
   } catch (err) {
-    console.error("Fehler bei der Task-Zuweisung:", err.message);
-    res.status(500).json({ msg: "Serverfehler bei der Task-Zuweisung." });
+    req.logger.error("Error assigning task:", err);
+    res.status(500).json({
+      msg: req.__("TASK_ASSIGN_ERROR"),
+    });
   }
 });
 

@@ -3,7 +3,7 @@
 const isEditingLocal = isEditing || !!entityToModify._id;
 const titleText = isEditingLocal ? ( __('EDIT_USER_TITLE') ) : ( __('CREATE_USER_TITLE') );
 const submitText = isEditingLocal ? ( __('SAVE_CHANGES_BUTTON')) : ( __('SAVE_USER_BUTTON') );
-const formAction = isEditingLocal ? "/modify-user" : "/create-user";
+const formAction = isEditingLocal ? "/modify-user" : "/user/create";
 const currentUsername = entityToModify.username || "";
 const currentEmail = entityToModify.email || "";
 const currentRole = entityToModify.role || "user";
