@@ -13,7 +13,11 @@
 
   <!-- Metrics Grid -->
   <section x-show="tab==='overview'" class="space-y-6">
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div style="margin: auto;">
+        <img src="/img/onis.png" style="height:125px; object-fit: contain;" /> 
+      </div>
+
       <% metrics.forEach(function(m){ %>
         <%- include('partials/dashboard/metric_card', { metric: m }) %>
       <% }) %>
