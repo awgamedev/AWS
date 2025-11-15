@@ -4,7 +4,7 @@ const SELECTORS = {
   searchInputId: "entitySearch",
   tableBodyId: "entityTableBody",
   tableId: "entityTable",
-  sortableHeaderClass: ".sortable",
+  sortableHeaderClass: "thead th[data-column]",
   initialSortColumn: "username",
 };
 
