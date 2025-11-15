@@ -4,10 +4,7 @@ const User = require("../models/User");
 const { ensureAuthenticated } = require("../middleware/auth");
 const { renderView, renderErrorView } = require("../utils/view-renderer");
 const { hashPassword } = require("../utils/passwordUtils");
-const {
-  validateUserData,
-  validateEmailUniqueness,
-} = require("../validations/userValidation");
+const { validateUserData } = require("../validations/userValidation");
 
 // 1. Display user list (GET /user/list)
 router.get("/user/list", ensureAuthenticated, async (req, res) => {
@@ -36,15 +33,29 @@ router.get("/user/create", ensureAuthenticated, (req, res) => {
 // 3a. Action to save a new user (POST /user/create)
 router.post("/user/create", ensureAuthenticated, async (req, res) => {
   const data = req.body;
-  const { email, password } = data;
+  const { email, password, username, role } = data;
+  const title = req.__("CREATE_USER_PAGE_TITLE");
 
   try {
-    validateUserData(req, password);
+    // Validate user data and get field-specific errors
+    const validationErrors = await validateUserData(
+      req,
+      username,
+      password,
+      email
+    );
+
+    // If there are validation errors, re-render the form with errors
+    if (Object.keys(validationErrors).length > 0) {
+      return renderView(req, res, "user/user_form", title, {
+        entityToModify: { username, email, role: role || "user" },
+        isEditing: false,
+        errors: validationErrors,
+      });
+    }
+
+    // Hash password and save user
     data.password = await hashPassword(password);
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error(req.__("ERROR_EMAIL_EXISTS"));
-
     const newUser = new User(data);
     await newUser.save();
     res.redirect("/user/list");
@@ -67,6 +78,7 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
     renderView(req, res, "user/user_form", title, {
       entityToModify: entityToModify.toObject(),
       isEditing: true,
+      errors: {},
     });
   } catch (err) {
     req.logger.error("Error fetching user data:", err);
@@ -76,14 +88,35 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
 
 // 3b. Action to save an existing user (POST /modify-user)
 router.post("/modify-user", ensureAuthenticated, async (req, res) => {
-  const { id, email, password } = req.body;
+  const { id, username, email, password, role } = req.body;
+  const title = req.__("EDIT_USER_PAGE_TITLE");
 
   try {
     const entity = await User.findById(id);
-    if (!entity) return renderErrorView(req, res, "USER_NOT_FOUND", 404);
+    if (!entity) {
+      return renderErrorView(req, res, "USER_NOT_FOUND", 404);
+    }
 
-    await validateEmailUniqueness(req, email, entity);
-    if (password) entity.password = await hashPassword(password);
+    const validationErrors = await validateUserData(
+      req,
+      true,
+      username,
+      password,
+      email
+    );
+
+    // If there are validation errors, re-render the form with errors
+    if (Object.keys(validationErrors).length > 0) {
+      return renderView(req, res, "user/user_form", title, {
+        entityToModify: { _id: id, username, email, role: role || "user" },
+        isEditing: true,
+        errors: validationErrors,
+      });
+    }
+
+    if (password) {
+      entity.password = await hashPassword(password);
+    }
 
     entity.username = req.body.username;
     entity.email = email;

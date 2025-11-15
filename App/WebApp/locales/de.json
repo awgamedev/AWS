@@ -81,5 +81,10 @@
 	"CONFIRM_DELETE_QUESTION": "Sind Sie sicher, dass Sie diesen Nutzer **dauerhaft** löschen möchten? Diese Aktion kann **nicht** rückgängig gemacht werden.",
 	"USER_DETAILS_HEADER": "Nutzer-Details",
 	"YES_DELETE_BUTTON": "🗑️ Ja, endgültig löschen",
-	"ERROR_PASSWORD_LENGTH": "Bitte geben Sie ein Passwort mit mindestens 6 Zeichen ein."
+	"ERROR_PASSWORD_LENGTH": "Bitte geben Sie ein Passwort mit mindestens 6 Zeichen ein.",
+	"ERROR_PASSWORD_REQUIRED": "Passwort ist erforderlich",
+	"ERROR_EMAIL_REQUIRED": "E-Mail ist erforderlich",
+	"ERROR_EMAIL_INVALID": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+	"ERROR_EMAIL_EXISTS": "Diese E-Mail-Adresse wird bereits verwendet",
+	"ERROR_USERNAME_EXISTS": "Dieser Nutzername ist bereits vergeben"
 }

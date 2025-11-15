@@ -81,5 +81,10 @@
 	"CONFIRM_DELETE_QUESTION": "Are you sure you want to **permanently** delete this user? This action **cannot** be undone.",
 	"USER_DETAILS_HEADER": "User Details",
 	"YES_DELETE_BUTTON": "🗑️ Yes, permanently delete",
-	"ERROR_PASSWORD_LENGTH": "ERROR_PASSWORD_LENGTH"
+	"ERROR_PASSWORD_LENGTH": "Password must be at least 6 characters long",
+	"ERROR_PASSWORD_REQUIRED": "Password is required",
+	"ERROR_EMAIL_REQUIRED": "Email is required",
+	"ERROR_EMAIL_INVALID": "Please enter a valid email address",
+	"ERROR_EMAIL_EXISTS": "This email address is already in use",
+	"ERROR_USERNAME_EXISTS": "This username is already taken"
 }

@@ -81,5 +81,10 @@
 	"CONFIRM_DELETE_QUESTION": "Êtes-vous sûr de vouloir supprimer cet utilisateur **définitivement**? Cette action est **irréversible**.",
 	"USER_DETAILS_HEADER": "Détails de l'utilisateur",
 	"YES_DELETE_BUTTON": "🗑️ Oui, supprimer définitivement",
-	"ERROR_PASSWORD_LENGTH": "ERROR_PASSWORD_LENGTH"
+	"ERROR_PASSWORD_LENGTH": "Le mot de passe doit contenir au moins 6 caractères",
+	"ERROR_PASSWORD_REQUIRED": "Le mot de passe est requis",
+	"ERROR_EMAIL_REQUIRED": "L'e-mail est requis",
+	"ERROR_EMAIL_INVALID": "Veuillez entrer une adresse e-mail valide",
+	"ERROR_EMAIL_EXISTS": "Cette adresse e-mail est déjà utilisée",
+	"ERROR_USERNAME_EXISTS": "Ce nom d'utilisateur est déjà pris"
 }
