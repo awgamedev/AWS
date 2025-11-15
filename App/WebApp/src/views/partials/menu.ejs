@@ -11,37 +11,6 @@
     }) %>
 
     <%- include('_menu_dropdown', {
-        prefix: '/user', // Präfix für die Alpine-Logik
-        icon: 'fa-solid fa-users',
-        text: 'Nutzerverwaltung',
-        currentPath: currentPath,
-        subitems: [
-            // Unterpunkt 1: Nutzerliste (als String an das Dropdown übergeben)
-            include('_menu_item', { 
-                href: '/user/list', 
-                icon: 'fa-solid fa-list-check', 
-                text: 'Nutzerliste', 
-                currentPath: currentPath 
-            }),
-            
-            // Unterpunkt 2: Rollenverwaltung
-            include('_menu_item', { 
-                href: '/user/roles', 
-                icon: 'fa-solid fa-user-tag', 
-                text: 'Rollenverwaltung', 
-                currentPath: currentPath 
-            })
-        ]
-    }) %>
-    
-    <%- include('_menu_item', { 
-        href: '/task-list', 
-        icon: 'fa-solid fa-list-check', 
-        text: 'Aufgaben',
-        currentPath: currentPath 
-    }) %>
-    
-    <%- include('_menu_dropdown', {
         prefix: '/time-tracking',
         icon: 'fa-solid fa-clock',
         text: 'Zeiterfassung',
@@ -63,6 +32,22 @@
         ]
     }) 
     %>
+
+   
+    
+    <%- include('_menu_item', { 
+        href: '/task-list', 
+        icon: 'fa-solid fa-list-check', 
+        text: 'Aufgaben',
+        currentPath: currentPath 
+    }) %>
+    
+    <%- include('_menu_item', { 
+        href: '/user/list', 
+        icon: 'fa-solid fa-user', 
+        text: 'Nutzerliste', 
+        currentPath: currentPath 
+    }) %>
     
     <%- include('_menu_item', { 
         href: '/settings', 
