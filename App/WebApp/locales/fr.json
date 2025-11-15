@@ -86,5 +86,16 @@
 	"ERROR_EMAIL_REQUIRED": "L'e-mail est requis",
 	"ERROR_EMAIL_INVALID": "Veuillez entrer une adresse e-mail valide",
 	"ERROR_EMAIL_EXISTS": "Cette adresse e-mail est déjà utilisée",
-	"ERROR_USERNAME_EXISTS": "Ce nom d'utilisateur est déjà pris"
+	"ERROR_USERNAME_EXISTS": "Ce nom d'utilisateur est déjà pris",
+	"DASHBOARD_USERS": "Utilisateurs",
+	"DASHBOARD_STAMPINGS": "Pointages",
+	"DASHBOARD_SUBTITLE": "Aperçu du système et activités en cours.",
+	"DASHBOARD_CARD_HINT": "Métrique en temps réel",
+	"DASHBOARD_RECENT_STAMPINGS": "Derniers pointages",
+	"ENTITIES": "Entrées",
+	"DASHBOARD_ACTIVITY_TITLE": "Activités",
+	"DASHBOARD_ACTIVITY_DESCRIPTION": "Zone future pour graphiques, visualisations ou événements d'audit.",
+	"USER": "Utilisateur",
+	"TYPE": "Type",
+	"DATE": "Date"
 }

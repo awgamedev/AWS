@@ -1,0 +1,15 @@
+/* Dashboard specific styles (light custom layer atop Tailwind) */
+
+/* Smooth tab transitions */
+[x-cloak] { display: none !important; }
+
+/* Card hover accent */
+.group:hover .metric-accent { opacity: 0.15; }
+
+/* Table tweaks */
+table thead th { font-weight: 600; letter-spacing: .05em; }
+
+/* Responsive adjustments */
+@media (max-width: 640px){
+  .dashboard-grid { grid-template-columns: repeat(1, minmax(0,1fr)); }
+}

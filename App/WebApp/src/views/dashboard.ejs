@@ -1,0 +1,42 @@
+<div class="space-y-10" x-data="{ tab: 'overview' }">
+  <!-- Page Intro / Title Subheader -->
+  <section class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800"><%= __('APP_DASHBOARD_TITLE') %></h1>
+      <p class="text-sm text-gray-500 mt-1"><%= __('DASHBOARD_SUBTITLE') %></p>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button @click="tab='overview'" :class="tab==='overview' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition">Overview</button>
+      <button @click="tab='activity'" :class="tab==='activity' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition">Activity</button>
+    </div>
+  </section>
+
+  <!-- Metrics Grid -->
+  <section x-show="tab==='overview'" class="space-y-6">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <% metrics.forEach(function(m){ %>
+        <%- include('partials/dashboard/metric_card', { metric: m }) %>
+      <% }) %>
+    </div>
+
+    <!-- Recent Stampings Widget -->
+    <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+      <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <i class="fa-solid fa-clock text-indigo-500"></i>
+          <%= __('DASHBOARD_RECENT_STAMPINGS') %>
+        </h2>
+        <span class="text-xs uppercase tracking-wide text-gray-400"><%= recentStampings.length %>  <%= __('ENTITIES') %></span>
+      </div>
+      <%- include('partials/dashboard/recent_stampings', { recentStampings: recentStampings }) %>
+    </div>
+  </section>
+
+  <!-- Activity Tab (can be extended later) -->
+  <section x-show="tab==='activity'" class="space-y-6">
+    <div class="bg-white rounded-xl shadow p-6 border border-gray-200">
+      <h2 class="text-lg font-semibold mb-3 text-gray-800"><%= __('DASHBOARD_ACTIVITY_TITLE') %></h2>
+      <p class="text-sm text-gray-500"><%= __('DASHBOARD_ACTIVITY_DESCRIPTION') %></p>
+    </div>
+  </section>
+</div>

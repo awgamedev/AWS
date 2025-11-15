@@ -1,37 +1,79 @@
 const express = require("express");
 const router = express.Router();
+const { ensureAuthenticated } = require("./src/middleware/auth");
+const { renderView } = require("./src/utils/view-renderer");
+const Stamping = require("./src/models/Stamping");
+const User = require("./src/models/User");
 
-// --- Route: Home Page (GET /) ---
-router.get("/", (req, res, next) => {
-  // Daten, die für das Template (views/index.ejs) benötigt werden
-  const itemCount = 5;
-  const title = req.__("APP_DASHBOARD_TITLE"); // Titel für die Seite
+/**
+ * Home redirect – keep root path lean and forward to the dashboard.
+ * This keeps bookmark/backwards compatibility while making `/dashboard` canonical.
+ */
+router.get("/", (req, res) => {
+  return res.redirect("/dashboard");
+});
 
-  // 1. Zuerst den Inhalt der inneren View (index.ejs) als String rendern.
-  // Wir müssen die benötigten lokalen Variablen explizit übergeben.
-  const innerViewLocals = {
-    itemCount: itemCount,
-    // i18n-Funktionen
-    __: req.__,
-    // currentPath (wird in index.ejs verwendet)
-    currentPath: res.locals.currentPath, // Aus der Middleware in app.js
-  };
+/**
+ * Dashboard Route (GET /dashboard)
+ * Shows high level system widgets (users, stampings) and recent activity.
+ * Uses the shared renderView utility to inject the dashboard view into the layout.
+ */
+router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
+  try {
+    // Parallel DB queries for efficiency
+    const [userCount, stampingCount, recentStampings] = await Promise.all([
+      User.countDocuments(),
+      Stamping.countDocuments(),
+      Stamping.find()
+        .sort({ date: -1 })
+        .limit(10)
+        .populate("userId", "username")
+        .lean(),
+    ]);
 
-  // Express's render engine verwenden, um 'index' zu einem String zu rendern
-  req.app.render("index", innerViewLocals, (err, contentHtml) => {
-    if (err) {
-      req.logger.error("Error rendering index view:", err);
-      return next(err);
-    }
+    // Dashboard metrics (easily extendable: add icon + color for each card)
+    const metrics = [
+      {
+        key: "users",
+        label: req.__("DASHBOARD_USERS") || "Users",
+        value: userCount,
+        icon: "fa-users",
+        color: "indigo",
+      },
+      {
+        key: "stampings",
+        label: req.__("DASHBOARD_STAMPINGS"),
+        value: stampingCount,
+        icon: "fa-clock",
+        color: "emerald",
+      },
+    ];
 
-    // 2. Jetzt das Hauptlayout (layout.ejs) rendern und den Inhalt als bodyContent übergeben
-    res.render("layout", {
-      title: title,
-      bodyContent: contentHtml, // Der gerenderte Inhalt der index.ejs
-      // Alle anderen Variablen (userName, isLoggedIn, currentPath für das Menü, etc.)
-      // sind bereits über res.locals (in app.js gesetzt) verfügbar.
-    });
-  });
+    // Transform recent stampings for display (keep view logic light)
+    const stampingsView = recentStampings.map((s) => ({
+      id: s._id,
+      user: s.userId?.username || "-",
+      type: s.stampingType,
+      reason: s.stampingReason || "-",
+      date: s.date,
+    }));
+
+    renderView(
+      req,
+      res,
+      "dashboard",
+      req.__("APP_DASHBOARD_TITLE") || "Dashboard",
+      {
+        metrics,
+        recentStampings: stampingsView,
+      },
+      // Additional styles hook (dashboard specific)
+      '<link rel="stylesheet" href="/css/dashboard.css">'
+    );
+  } catch (err) {
+    req.logger && req.logger.error("Error loading dashboard", err);
+    return next(err);
+  }
 });
 
 // --- A simple API route (GET /api/status) ---
@@ -46,3 +88,11 @@ router.get("/api/status", (req, res) => {
 
 // Export the router
 module.exports = router;
+
+/**
+ * Potential refactoring targets (following routes instructions):
+ * - Controller: move dashboard aggregation to `src/controllers/dashboardController.js`
+ * - Service: encapsulate stamping/user metric logic in `src/services/dashboardService.js`
+ * - Views: keep EJS partials for widgets in `src/views/partials/dashboard/*`
+ * - Utilities: shared date formatting could move to a util `src/utils/date.js`
+ */

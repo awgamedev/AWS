@@ -1,0 +1,33 @@
+<table class="min-w-full text-sm">
+  <thead>
+    <tr class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wide">
+      <th class="px-4 py-3 text-left font-semibold"><%= __('USER') %></th>
+      <th class="px-4 py-3 text-left font-semibold"><%= __('TYPE') %></th>
+      <th class="px-4 py-3 text-left font-semibold"><%= __('REASON') %></th>
+      <th class="px-4 py-3 text-left font-semibold"><%= __('DATE') %></th>
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-100">
+    <% if(recentStampings.length === 0){ %>
+      <tr>
+        <td colspan="4" class="px-4 py-6 text-center text-gray-400"> <%= __('NO_STAMPINGS_YET') %></td>
+      </tr>
+    <% } %>
+    <% recentStampings.forEach(function(s){ %>
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-4 py-2 font-medium text-gray-700"><%= s.user %></td>
+        <td class="px-4 py-2">
+          <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold
+            <%= s.type === 'in' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' %>">
+            <i class="fa-solid fa-arrow-<%= s.type === 'in' ? 'right' : 'left' %>"></i>
+            <%= s.type %>
+          </span>
+        </td>
+        <td class="px-4 py-2 text-gray-600"><%= s.reason %></td>
+        <td class="px-4 py-2 text-gray-500">
+          <%= new Date(s.date).toLocaleString('de-DE', { hour12: false }) %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

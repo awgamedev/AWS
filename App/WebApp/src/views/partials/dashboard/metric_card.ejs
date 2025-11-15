@@ -1,0 +1,17 @@
+<% /* Single metric card partial. Expects: metric { label, value, icon, color } */ %>
+<div class="group relative bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col justify-between overflow-hidden hover:shadow-md transition">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= metric.label %></p>
+      <h3 class="mt-1 text-2xl font-bold text-gray-800"><%= metric.value %></h3>
+    </div>
+    <div class="text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-inner bg-gradient-to-br from-<%= metric.color %>-500 to-<%= metric.color %>-600">
+      <i class="fa-solid <%= metric.icon %>"></i>
+    </div>
+  </div>
+  <div class="mt-4 text-xs text-gray-400 flex items-center gap-1">
+    <i class="fa-solid fa-chart-line"></i>
+    <span><%= __('DASHBOARD_CARD_HINT') %></span>
+  </div>
+  <div class="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-10 bg-<%= metric.color %>-500 transition"></div>
+</div>

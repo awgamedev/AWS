@@ -86,5 +86,17 @@
 	"ERROR_EMAIL_REQUIRED": "E-Mail ist erforderlich",
 	"ERROR_EMAIL_INVALID": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
 	"ERROR_EMAIL_EXISTS": "Diese E-Mail-Adresse wird bereits verwendet",
-	"ERROR_USERNAME_EXISTS": "Dieser Nutzername ist bereits vergeben"
+	"ERROR_USERNAME_EXISTS": "Dieser Nutzername ist bereits vergeben",
+	"DASHBOARD_USERS": "Nutzer",
+	"DASHBOARD_STAMPINGS": "Stempelvorgänge",
+	"DASHBOARD_SUBTITLE": "System Überblick und aktuelle Aktivitäten.",
+	"DASHBOARD_CARD_HINT": "Live-Metrik",
+	"DASHBOARD_RECENT_STAMPINGS": "Letzte Stempelvorgänge",
+	"ENTITIES": "Einträge",
+	"DASHBOARD_ACTIVITY_TITLE": "Aktivitäten",
+	"DASHBOARD_ACTIVITY_DESCRIPTION": "Zukünftiger Bereich für Diagramme, Grafiken oder Prüfereignisse.",
+	"USER": "Nutzer",
+	"TYPE": "Typ",
+	"DATE": "Datum",
+	"NO_STAMPINGS_YET": "Noch keine Stempelvorgänge vorhanden."
 }

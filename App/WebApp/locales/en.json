@@ -86,5 +86,16 @@
 	"ERROR_EMAIL_REQUIRED": "Email is required",
 	"ERROR_EMAIL_INVALID": "Please enter a valid email address",
 	"ERROR_EMAIL_EXISTS": "This email address is already in use",
-	"ERROR_USERNAME_EXISTS": "This username is already taken"
+	"ERROR_USERNAME_EXISTS": "This username is already taken",
+	"DASHBOARD_USERS": "Users",
+	"DASHBOARD_STAMPINGS": "Clockings",
+	"DASHBOARD_SUBTITLE": "System overview and current activities.",
+	"DASHBOARD_CARD_HINT": "Live Metric",
+	"DASHBOARD_RECENT_STAMPINGS": "Recent Clockings",
+	"ENTITIES": "Entries",
+	"DASHBOARD_ACTIVITY_TITLE": "Activities",
+	"DASHBOARD_ACTIVITY_DESCRIPTION": "Future section for charts, graphs or audit events.",
+	"USER": "User",
+	"TYPE": "Type",
+	"DATE": "Date"
 }
