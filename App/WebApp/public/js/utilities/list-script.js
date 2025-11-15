@@ -9,7 +9,7 @@
  * @param {string} term - lowercase search term
  * @param {string[]} datasetKeys - list of dataset keys to search (e.g., ['username', 'email'])
  */
-export const filterRowsByTerm = (rows, term, datasetKeys = []) => {
+const filterRowsByTerm = (rows, term, datasetKeys = []) => {
   const list = Array.from(rows);
   list.forEach((row) => {
     const haystack = (
@@ -28,7 +28,7 @@ export const filterRowsByTerm = (rows, term, datasetKeys = []) => {
  * @param {boolean} ascending
  * @returns {HTMLElement[]} sorted rows
  */
-export const sortRowsByDataset = (rows, column, ascending = true) => {
+const sortRowsByDataset = (rows, column, ascending = true) => {
   const list = Array.from(rows);
   return list.sort((a, b) => {
     const aVal = (a.dataset[column] || "").toLowerCase();
@@ -46,7 +46,7 @@ export const sortRowsByDataset = (rows, column, ascending = true) => {
  * @param {HTMLElement} active
  * @param {boolean} asc
  */
-export const setSortIndicators = (headers, active, asc) => {
+const setSortIndicators = (headers, active, asc) => {
   Array.from(headers).forEach((h) =>
     h.classList.remove("sort-asc", "sort-desc")
   );

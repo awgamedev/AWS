@@ -1,7 +1,5 @@
-// Datei: public/js/userList.js
-// Zweck: Such- und Sortierlogik für die User-Tabelle
 // ----------------------------------------
-// Konstanten
+// Constants
 const SELECTORS = {
   searchInputId: "entitySearch",
   tableBodyId: "entityTableBody",
@@ -11,52 +9,7 @@ const SELECTORS = {
 };
 
 // ----------------------------------------
-// Utility-Funktionen (bei Wiederverwendung auslagern in utilities/table-utils.js)
-
-/**
- * Filtert Tabellenzeilen anhand eines Suchbegriffs.
- * @param {NodeList|HTMLElement[]} rows
- * @param {string} term lowercase Suchbegriff
- */
-const filterUserRows = (rows, term) => {
-  rows.forEach((row) => {
-    const rowText = `${row.dataset.username || ""} ${row.dataset.email || ""} ${
-      row.dataset.role || ""
-    }`.toLowerCase();
-    row.style.display = rowText.includes(term) ? "" : "none";
-  });
-};
-
-/**
- * Sortiert Zeilen nach einer Dataset-Spalte.
- * @param {HTMLElement[]} rows
- * @param {string} column dataset key (z.B. 'username')
- * @param {boolean} ascending
- * @returns {HTMLElement[]}
- */
-const sortUserRows = (rows, column, ascending) => {
-  return rows.sort((a, b) => {
-    const aVal = (a.dataset[column] || "").toLowerCase();
-    const bVal = (b.dataset[column] || "").toLowerCase();
-    if (aVal < bVal) return ascending ? -1 : 1;
-    if (aVal > bVal) return ascending ? 1 : -1;
-    return 0;
-  });
-};
-
-/**
- * Aktualisiert Sortierindikatoren.
- * @param {NodeList|HTMLElement[]} headers
- * @param {HTMLElement} active
- * @param {boolean} asc
- */
-const updateSortIndicators = (headers, active, asc) => {
-  headers.forEach((h) => h.classList.remove("sort-asc", "sort-desc"));
-  active.classList.add(asc ? "sort-asc" : "sort-desc");
-};
-
-// ----------------------------------------
-// Hauptcode
+// Main
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById(SELECTORS.searchInputId);
   const tableBody = document.getElementById(SELECTORS.tableBodyId);
@@ -68,16 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentSortColumn = null;
   let isAscending = true;
 
-  // Suche
+  // Search
   if (searchInput) {
     searchInput.addEventListener("keyup", (e) => {
       const term = e.target.value.toLowerCase().trim();
       const rows = tableBody.querySelectorAll("tr");
-      filterUserRows(rows, term);
+      // Filter by specific dataset keys to avoid relying on textContent
+      filterRowsByTerm(rows, term, ["username", "email", "role"]);
     });
   }
 
-  // Sortier-Events
+  // Sort events
   headers.forEach((header) => {
     header.addEventListener("click", () => {
       const column = header.dataset.column;
@@ -90,23 +44,23 @@ document.addEventListener("DOMContentLoaded", () => {
         isAscending = true;
       }
 
-      const rows = Array.from(tableBody.querySelectorAll("tr"));
-      const sorted = sortUserRows(rows, column, isAscending);
+      const rows = tableBody.querySelectorAll("tr");
+      const sorted = sortRowsByDataset(rows, column, isAscending);
       sorted.forEach((r) => tableBody.appendChild(r));
-      updateSortIndicators(headers, header, isAscending);
+      setSortIndicators(headers, header, isAscending);
     });
   });
 
-  // Initiale Sortierung
+  // Initial sort
   const initial = table.querySelector(
     `[data-column="${SELECTORS.initialSortColumn}"]`
   );
   if (initial) {
     currentSortColumn = SELECTORS.initialSortColumn;
     isAscending = true;
-    const rows = Array.from(tableBody.querySelectorAll("tr"));
-    const sorted = sortUserRows(rows, currentSortColumn, isAscending);
+    const rows = tableBody.querySelectorAll("tr");
+    const sorted = sortRowsByDataset(rows, currentSortColumn, isAscending);
     sorted.forEach((r) => tableBody.appendChild(r));
-    updateSortIndicators(headers, initial, isAscending);
+    setSortIndicators(headers, initial, isAscending);
   }
 });
