@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const Stamping = require("../models/Stamping"); // Dein Stamping-Model
-const User = require("../models/User"); // Dein User-Model für Benutzernamen
+const Stamping = require("./stamping.model"); // Dein Stamping-Model
+const User = require("../user/user.model"); // Dein User-Model für Benutzernamen
 // ANNAHME: Du hast eine renderView-Funktion und die Middleware:
-const { renderView } = require("../utils/view-renderer");
-const { ensureAuthenticated, checkRole } = require("../middleware/auth");
+const { renderView } = require("../../utils/view-renderer");
+const { ensureAuthenticated, checkRole } = require("../../middleware/auth");
 
 // ----------------------------------------------------------------------
 // 🛠️ HILFSFUNKTIONEN (Aus stamping-overview-utlis.js eingefügt)

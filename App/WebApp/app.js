@@ -19,8 +19,10 @@ const favicon = require("serve-favicon");
 const flash = require("connect-flash");
 
 // --- Router Auto-Discovery Konfiguration ---
-const routesDir = path.join(__dirname, "src", "routes");
+const featuresDir = path.join(__dirname, "src", "features"); // Suchpfad ist src/features
 const routerFiles = []; // Speichert die vollständigen Pfade zu den Router-Dateien
+const ROUTE_SUFFIX = ".routes.js"; // Dateiendung, nach der gesucht wird
+const viewDirectories = []; // NEU: Speichert die Pfade zu den 'views'-Ordnern
 
 // --- Logger Konfiguration ---
 const logger = winston.createLogger({
@@ -50,7 +52,7 @@ dotenv.config(); // Führt dotenv aus, um Umgebungsvariablen zu laden
 require("./src/config/passport"); // 3. Importiere die Passport-Strategie-Konfiguration
 
 /**
- * Durchsucht ein Verzeichnis rekursiv nach .js-Dateien (Routern)
+ * Durchsucht ein Verzeichnis rekursiv nach Dateien, die auf '.routes.js' enden.
  * @param {string} directory - Das aktuelle Verzeichnis, das durchsucht wird
  */
 function findRouterFiles(directory) {
@@ -64,8 +66,8 @@ function findRouterFiles(directory) {
       if (stat.isDirectory()) {
         // Wenn es ein Ordner ist, rufe die Funktion rekursiv auf
         findRouterFiles(fullPath);
-      } else if (file.endsWith(".js") && file !== "index.js") {
-        // Wenn es eine .js-Datei (und nicht 'index.js') ist, füge sie hinzu
+      } else if (file.endsWith(ROUTE_SUFFIX)) {
+        // Wenn es eine Datei ist, die mit '.routes.js' endet, füge sie hinzu
         routerFiles.push(fullPath);
       }
     });
@@ -80,14 +82,79 @@ function findRouterFiles(directory) {
   }
 }
 
-findRouterFiles(routesDir);
+/**
+ * Durchsucht ein Verzeichnis rekursiv nach 'views'-Unterordnern für EJS-Templates.
+ * @param {string} directory - Das aktuelle Verzeichnis, das durchsucht wird
+ */
+function findViewDirectories(directory) {
+  try {
+    const files = fs.readdirSync(directory);
+
+    files.forEach((file) => {
+      const fullPath = path.join(directory, file);
+      const stat = fs.statSync(fullPath);
+
+      if (stat.isDirectory()) {
+        if (file === "views") {
+          // Wenn der Ordner "views" heißt, füge ihn zur Liste hinzu
+          viewDirectories.push(fullPath);
+          return; // Nicht tiefer in den views-Ordner suchen
+        }
+        // Ansonsten, rufe die Funktion rekursiv auf
+        findViewDirectories(fullPath);
+      }
+    });
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      logger.error(
+        `🚨 Fehler beim Lesen des View-Verzeichnisses ${directory}:`,
+        error.message
+      );
+    }
+  }
+}
+
+// --- Starte das Suchen in src/features ---
+
+// 1. Suche nach Routern
+findRouterFiles(featuresDir);
 
 if (routerFiles.length > 0) {
   logger.info(
-    `✅ Gefundene ${routerFiles.length} Router-Dateien (inkl. Unterordner) für dynamisches Laden.`
+    `✅ Gefundene ${routerFiles.length} Feature-Router-Dateien (${ROUTE_SUFFIX}) für dynamisches Laden.`
   );
 } else {
-  logger.warn("⚠️ Keine Router-Dateien in src/routes gefunden.");
+  logger.warn(`⚠️ Keine Router-Dateien in ${featuresDir} gefunden.`);
+}
+
+// 2. Suche nach View-Verzeichnissen
+findViewDirectories(featuresDir);
+
+// Fügen Sie den globalen Views-Ordner hinzu, falls er existiert (z.B. src/views für Layouts)
+const globalViewsDir = path.join(__dirname, "src", "views");
+if (
+  fs.existsSync(globalViewsDir) &&
+  fs.statSync(globalViewsDir).isDirectory()
+) {
+  // 1. Fügen Sie src/views hinzu (für globale Layouts)
+  viewDirectories.push(globalViewsDir);
+
+  // 2. NEU: Fügen Sie den 'partials'-Unterordner hinzu, um kurze Aliase zu ermöglichen
+  const partialsDir = path.join(globalViewsDir, "partials");
+  if (fs.existsSync(partialsDir) && fs.statSync(partialsDir).isDirectory()) {
+    viewDirectories.push(partialsDir);
+    logger.info(
+      `✅ 'src/views/partials' als direkter EJS-Suchpfad hinzugefügt (Alias).`
+    );
+  }
+}
+
+if (viewDirectories.length > 0) {
+  logger.info(
+    `✅ Gefundene ${viewDirectories.length} View-Verzeichnisse für EJS-Templates.`
+  );
+} else {
+  logger.warn(`⚠️ Keine 'views'-Ordner in ${featuresDir} gefunden.`);
 }
 
 // --- Manuelle Imports (Für Router, die nicht im dynamischen Pfad sind oder speziell behandelt werden) ---
@@ -106,9 +173,10 @@ const app = express();
 
 app.use(flash());
 
-// --- NEU: EJS View Engine Konfiguration ---
+// --- NEU: EJS View Engine Konfiguration (Jetzt mit dynamischen Pfaden) ---
+// Setzt die Views auf alle rekursiv gefundenen 'views'-Ordner (z.B. ['src/features/user/views', 'src/views', 'src/views/partials'])
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "src", "views"));
+app.set("views", viewDirectories); // WICHTIG: Übergibt das Array an Express
 
 app.locals.rmWhitespace = true;
 
@@ -175,10 +243,10 @@ routerFiles.forEach((file) => {
     // Da Sie ursprünglich alle auf "/" gemountet hatten, behalten wir das bei.
     app.use("/", router);
 
-    const relativePath = path.relative(routesDir, file);
-    logger.info(` 	 - Mounted dynamically: /${relativePath}`);
+    const relativePath = path.relative(featuresDir, file);
+    logger.info(`    - Mounted dynamically: /${relativePath}`);
   } catch (ex) {
-    logger.error(`Could not mount route for file ${file}: `);
+    logger.error(`🚨 Could not mount route for file ${file}: `, ex);
   }
 });
 

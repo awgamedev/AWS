@@ -1,6 +1,6 @@
 // ./src/middleware/devAutoLogin.js
 
-const User = require("../models/User"); // Pfad zu Ihrem Mongoose User-Modell anpassen!
+const User = require("../features/user/user.model");
 
 /**
  * Middleware, die einen bestimmten Benutzer automatisch anmeldet,

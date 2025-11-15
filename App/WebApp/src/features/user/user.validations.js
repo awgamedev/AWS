@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("./user.model");
 
 /**
  * Validates user data and returns an object with field-specific errors

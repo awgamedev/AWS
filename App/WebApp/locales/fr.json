@@ -97,5 +97,6 @@
 	"DASHBOARD_ACTIVITY_DESCRIPTION": "Zone future pour graphiques, visualisations ou événements d'audit.",
 	"USER": "Utilisateur",
 	"TYPE": "Type",
-	"DATE": "Date"
+	"DATE": "Date",
+	"USER_LIST_LOAD_ERROR": "USER_LIST_LOAD_ERROR"
 }

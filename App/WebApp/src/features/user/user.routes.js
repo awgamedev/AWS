@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
-const { ensureAuthenticated } = require("../middleware/auth");
-const { renderView, renderErrorView } = require("../utils/view-renderer");
-const { hashPassword } = require("../utils/passwordUtils");
-const { validateUserData } = require("../validations/userValidation");
+const User = require("./user.model");
+const { ensureAuthenticated } = require("../../middleware/auth");
+const { renderView, renderErrorView } = require("../../utils/view-renderer");
+const { hashPassword } = require("../../utils/passwordUtils");
+const { validateUserData } = require("./user.validations");
 
 // 1. Display user list (GET /user/list)
 router.get("/user/list", ensureAuthenticated, async (req, res) => {
@@ -12,7 +12,7 @@ router.get("/user/list", ensureAuthenticated, async (req, res) => {
 
   try {
     const items = await User.find({});
-    renderView(req, res, "user/list", title, {
+    renderView(req, res, "user_list", title, {
       items: items.map((item) => (item.toObject ? item.toObject() : item)),
     });
   } catch (err) {
@@ -24,9 +24,10 @@ router.get("/user/list", ensureAuthenticated, async (req, res) => {
 // 2a. Show form to create a new user (GET /user/create)
 router.get("/user/create", ensureAuthenticated, (req, res) => {
   const title = req.__("CREATE_USER_PAGE_TITLE");
-  renderView(req, res, "user/user_form", title, {
+  renderView(req, res, "user_form", title, {
     entityToModify: {},
     isEditing: false,
+    errors: {},
   });
 });
 
@@ -47,7 +48,7 @@ router.post("/user/create", ensureAuthenticated, async (req, res) => {
 
     // If there are validation errors, re-render the form with errors
     if (Object.keys(validationErrors).length > 0) {
-      return renderView(req, res, "user/user_form", title, {
+      return renderView(req, res, "user_form", title, {
         entityToModify: { username, email, role: role || "user" },
         isEditing: false,
         errors: validationErrors,
@@ -75,7 +76,7 @@ router.get("/modify-user/:id", ensureAuthenticated, async (req, res) => {
     if (!entityToModify)
       return renderErrorView(req, res, "USER_NOT_FOUND", 404);
 
-    renderView(req, res, "user/user_form", title, {
+    renderView(req, res, "user_form", title, {
       entityToModify: entityToModify.toObject(),
       isEditing: true,
       errors: {},
@@ -107,7 +108,7 @@ router.post("/modify-user", ensureAuthenticated, async (req, res) => {
 
     // If there are validation errors, re-render the form with errors
     if (Object.keys(validationErrors).length > 0) {
-      return renderView(req, res, "user/user_form", title, {
+      return renderView(req, res, "user_form", title, {
         entityToModify: { _id: id, username, email, role: role || "user" },
         isEditing: true,
         errors: validationErrors,

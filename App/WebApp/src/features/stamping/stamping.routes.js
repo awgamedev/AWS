@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Stamping = require("../models/Stamping"); // Dein Stamping-Model
-const { ensureAuthenticated } = require("../middleware/auth"); // Deine Authentifizierungs-Middleware
-const { renderView } = require("../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
+const Stamping = require("./stamping.model"); // Dein Stamping-Model
+const { ensureAuthenticated } = require("../../middleware/auth"); // Deine Authentifizierungs-Middleware
+const { renderView } = require("../../utils/view-renderer"); // Angenommen, du hast eine renderView-Funktion wie in tasks.js
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];

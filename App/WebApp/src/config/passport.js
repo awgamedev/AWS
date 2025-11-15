@@ -3,7 +3,7 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
-const User = require("../models/User");
+const User = require("../features/user/user.model");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

@@ -1,10 +1,10 @@
 // filepath: c:\Users\andre\Desktop\AWS\App\WebApp\src\routes\task-list.js
 const express = require("express");
 const router = express.Router();
-const Task = require("../models/Task");
-const User = require("../models/User");
-const { ensureAuthenticated } = require("../middleware/auth");
-const { renderView, renderErrorView } = require("../utils/view-renderer");
+const Task = require("../../models/Task");
+const User = require("../../models/User");
+const { ensureAuthenticated } = require("../../middleware/auth");
+const { renderView, renderErrorView } = require("../../utils/view-renderer");
 
 /**
  * GET /task-backlog

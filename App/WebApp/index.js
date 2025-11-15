@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { ensureAuthenticated } = require("./src/middleware/auth");
 const { renderView } = require("./src/utils/view-renderer");
-const Stamping = require("./src/models/Stamping");
-const User = require("./src/models/User");
+const Stamping = require("./src/features/stamping/stamping.model");
+const User = require("./src/features/user/user.model");
 
 /**
  * Home redirect – keep root path lean and forward to the dashboard.

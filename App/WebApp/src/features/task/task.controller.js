@@ -1,6 +1,6 @@
 // controllers/taskController.js
 
-const Task = require("../models/Task"); // Achte auf den korrekten Pfad
+const Task = require("./task.model"); // Achte auf den korrekten Pfad
 
 // 1. POST: Eine neue Aufgabe erstellen
 exports.createTask = async (req, res) => {

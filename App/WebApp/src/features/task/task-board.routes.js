@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const Task = require("../models/Task");
-const User = require("../models/User");
-const { ensureAuthenticated } = require("../middleware/auth");
-const taskController = require("../controllers/taskController");
-const { renderView } = require("../utils/view-renderer");
+const Task = require("./task.model");
+const User = require("../user/user.model");
+const { ensureAuthenticated } = require("../../middleware/auth");
+const taskController = require("./task.controller");
+const { renderView } = require("../../utils/view-renderer");
 const ejs = require("ejs"); // NEU: EJS importieren
 const fs = require("fs"); // NEU: FS importieren
 const path = require("path"); // NEU: Path importieren
@@ -121,20 +121,17 @@ router.get("/task-list", ensureAuthenticated, async (req, res) => {
     );
   } // --- NEUE LOGIK: Modals VOR-RENDERN --- // Verwenden Sie path.join, um plattformunabhängige Pfade zu gewährleisten. // Passe den Pfad zu deinen EJS-Templates (z.B. views/tasks/...) entsprechend an!
 
-  const viewsPath = path.join(__dirname, "..", "views");
+  const viewsPath = path.join(__dirname, "views");
 
   const createTaskContentHtml = ejs.render(
     fs.readFileSync(
-      path.join(viewsPath, "tasks/task_board_create_modal.ejs"),
+      path.join(viewsPath, "task_board_create_modal.ejs"),
       "utf-8"
     ),
     { users: users, __: req.__ } // req.__ ist wichtig für i18n in der View
   );
   const editTaskContentHtml = ejs.render(
-    fs.readFileSync(
-      path.join(viewsPath, "tasks/task_board_edit_modal.ejs"),
-      "utf-8"
-    ),
+    fs.readFileSync(path.join(viewsPath, "task_board_edit_modal.ejs"), "utf-8"),
     { users: users, __: req.__ }
   ); // --- ENDE VOR-RENDERING ---
   const weekStartFormat = startOfWeek.toLocaleDateString("de-DE", {
@@ -149,7 +146,7 @@ router.get("/task-list", ensureAuthenticated, async (req, res) => {
     year: "numeric",
   }); // 4. View über die Helferfunktion rendern
 
-  renderView(req, res, "tasks/task_board", title, {
+  renderView(req, res, "task_board", title, {
     users: users,
     tasksByDayAndUser: tasksByDayAndUser,
     daysOfWeek: daysOfWeek,

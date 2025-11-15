@@ -98,5 +98,6 @@
 	"USER": "Nutzer",
 	"TYPE": "Typ",
 	"DATE": "Datum",
-	"NO_STAMPINGS_YET": "Noch keine Stempelvorgänge vorhanden."
+	"NO_STAMPINGS_YET": "Noch keine Stempelvorgänge vorhanden.",
+	"USER_LIST_LOAD_ERROR": "USER_LIST_LOAD_ERROR"
 }
