@@ -74,7 +74,7 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
     </table>
 </div>
 
-<%- include('../partials/generic-modal') %> 
+<%- include('../partials/_modal') %> 
 
 <script>
     window.CREATE_TASK_HTML = `<%- createTaskContentHtml %>`;
@@ -83,4 +83,5 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
     window.CREATE_MODAL_TITLE = "<%= createTaskTitle %>";
     window.EDIT_MODAL_TITLE = "<%= unassignedTasksTitle %>";
 </script>
+
 <script src="/js/task/task-script.js"></script>

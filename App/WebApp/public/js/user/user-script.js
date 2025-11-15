@@ -3,9 +3,9 @@
 // ----------------------------------------
 // Konstanten
 const SELECTORS = {
-  searchInputId: "userSearch",
-  tableBodyId: "userTableBody",
-  tableId: "userTable",
+  searchInputId: "entitySearch",
+  tableBodyId: "entityTableBody",
+  tableId: "entityTable",
   sortableHeaderClass: ".sortable",
   initialSortColumn: "username",
 };
