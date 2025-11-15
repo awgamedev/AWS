@@ -5,9 +5,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const User = require("../models/User"); // used to register new users
+const User = require("../user/user.model"); // NEU: User-Modell für Registrierung
 const bcrypt = require("bcryptjs"); // used for password hashing
-const { renderView } = require("../utils/view-renderer"); // NEU: Import der View-Renderer Utility
+const { renderView } = require("../../utils/view-renderer"); // NEU: Import der View-Renderer Utility
 
 // ------------------------------------------------------------------
 // --- Login-Seite (GET /login) ---
