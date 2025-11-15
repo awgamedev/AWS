@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("./user.model");
 const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
-const { hashPassword } = require("../../utils/passwordUtils");
+const { hashPassword } = require("../../utils/password-utils");
 const { validateUserData } = require("./user.validations");
 
 // 1. Display user list (GET /user/list)
