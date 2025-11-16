@@ -22,3 +22,10 @@ find . -type f -exec du -h {} + | sort -rh | head -n 100
 
 # Print the size of a docker image dir
 du -sh
+
+# Release docker image
+docker build -t onis-web-app:latest .
+docker save -o onis-web-app.tar onis-web-app:latest
+# run this on the server
+docker load -i onis-web-app.tar
+docker compose up -d

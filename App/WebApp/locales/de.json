@@ -99,5 +99,5 @@
 	"TYPE": "Typ",
 	"DATE": "Datum",
 	"NO_STAMPINGS_YET": "Noch keine Stempelvorgänge vorhanden.",
-	"USER_LIST_LOAD_ERROR": "USER_LIST_LOAD_ERROR"
+	"USER_LIST_LOAD_ERROR": "Fehler beim Laden der Nutzerliste"
 }

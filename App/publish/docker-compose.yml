@@ -1,0 +1,40 @@
+services:
+  # Node.js App Service (Web)
+  web:
+    image: onis-web-app:latest
+    container_name: node-web-app
+    ports:
+      - "4000:4000"
+      - "9229:9229"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+    command: ["npm", "start"]
+    logging:
+      driver: "json-file"
+
+  # MongoDB Service
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb
+    volumes:
+      - mongo-data:/data/db 
+
+  # Mongo Express (MongoDB Web-GUI)
+  mongo-express:
+   image: mongo-express
+   container_name: mongo-express
+   restart: always
+   ports:
+     - "8081:8081" 
+   environment:
+     ME_CONFIG_MONGODB_SERVER: mongo 
+     ME_CONFIG_MONGODB_PORT: 27017 
+     ME_CONFIG_BASICAUTH_USERNAME: user 
+     ME_CONFIG_BASICAUTH_PASSWORD: password 
+   depends_on:
+     - mongo
+
+volumes:
+  mongo-data:

@@ -3,6 +3,8 @@
 project.lock.json
 .DS_Store
 *.pyc
+*.tar.gz
+*.tar
 
 # Visual Studio Code
 .vscode
