@@ -14,8 +14,8 @@ COPY package*.json ./
 RUN npm init -y
 RUN npm install express --save
 RUN npm ci
-RUN npm install
-RUN npm install ejs
+# RUN npm install
+# RUN npm install ejs
 
 # Löscht unnötige Dokumentation und Build-Artefakte aus node_modules, um das Image zu verkleinern
 RUN find node_modules -type f -name '*.md' -delete && \

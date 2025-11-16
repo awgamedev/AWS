@@ -35,3 +35,65 @@ thead .sticky-col {
     background-color: #f9fafb; /* Hintergrundfarbe des Kopfes (Tailwind gray-50) */
     z-index: 2; /* Höherer Z-Index, da der TH top-0 sticky ist */
 }
+
+/* --- Responsive stacked table (mobile) --- */
+@media (max-width: 640px) {
+    table.responsive-table,
+    table.responsive-table thead,
+    table.responsive-table tbody,
+    table.responsive-table th,
+    table.responsive-table td,
+    table.responsive-table tr {
+        display: block;
+    }
+
+    /* Keep header accessible, hide visually */
+    table.responsive-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    table.responsive-table tr {
+        border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    table.responsive-table td {
+        padding: 0.5rem 1rem;
+        display: grid;
+        grid-template-columns: 10ch auto;
+        gap: 0.5rem;
+    }
+
+    table.responsive-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280; /* gray-500 */
+    }
+
+    /* If last column is actions, make buttons full-width */
+    table.responsive-table.actions-last td:last-child {
+        grid-template-columns: 1fr;
+    }
+    table.responsive-table.actions-last td:last-child::before {
+        content: '';
+        display: none;
+    }
+    table.responsive-table.actions-last td:last-child .flex.justify-end {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    table.responsive-table.actions-last td:last-child .inline-flex {
+        width: 100%;
+        justify-content: center;
+    }
+}
