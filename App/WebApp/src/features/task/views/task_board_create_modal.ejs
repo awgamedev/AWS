@@ -19,47 +19,50 @@ const { userOptions, priorityOptions } = generateTaskOptions(users, ["low", "med
 %>
 
 <form id="create-task-form">
-    <div class="mb-4">
-        <label for="userId" class="block text-sm font-medium text-gray-700"><%= __("ASSIGN_USER") %></label>
-        <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-            <option value=""><%= __("SELECT_DEFAULT") %></option>
-            <%- userOptions %>
-        </select>
-    </div>
-
-    <div class="mb-4">
-        <label for="taskPriority" class="block text-sm font-medium text-gray-700"><%= __("PRIORITY_LABEL") %> *</label>
-        <select id="taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-            <%- priorityOptions %>
-        </select>
-    </div>
-
-    <div class="mb-4">
-        <label for="taskName" class="block text-sm font-medium text-gray-700"><%= __("TASK_NAME_LABEL") %> *</label>
-        <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-    </div>
-
-    <div class="mb-4">
-        <label for="taskDescription" class="block text-sm font-medium text-gray-700"><%= __("DESCRIPTION_LABEL") %></label>
-        <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-    </div>
-    
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        <div>
-            <label for="startDate" class="block text-sm font-medium text-gray-700"><%= __("START_DATE_LABEL") %> *</label>
-            <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+    <div class="max-h-96 overflow-y-auto mb-2">
+        <div class="mb-4">
+            <label for="userId" class="block text-sm font-medium text-gray-700"><%= __("ASSIGN_USER") %></label>
+            <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                <option value=""><%= __("SELECT_DEFAULT") %></option>
+                <%- userOptions %>
+            </select>
         </div>
-        <div>
-            <label for="endDate" class="block text-sm font-medium text-gray-700"><%= __("END_DATE_LABEL") %></label>
-            <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+
+        <div class="mb-4">
+            <label for="taskPriority" class="block text-sm font-medium text-gray-700"><%= __("PRIORITY_LABEL") %> *</label>
+            <select id="taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                <%- priorityOptions %>
+            </select>
         </div>
+
+        <div class="mb-4">
+            <label for="taskName" class="block text-sm font-medium text-gray-700"><%= __("TASK_NAME_LABEL") %> *</label>
+            <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div class="mb-4">
+            <label for="taskDescription" class="block text-sm font-medium text-gray-700"><%= __("DESCRIPTION_LABEL") %></label>
+            <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <label for="startDate" class="block text-sm font-medium text-gray-700"><%= __("START_DATE_LABEL") %> *</label>
+                <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="endDate" class="block text-sm font-medium text-gray-700"><%= __("END_DATE_LABEL") %></label>
+                <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+        </div>
+        
+        <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
     </div>
-    
-    <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
 
     <div class="flex justify-end">
         <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
             <%= __("SAVE_TASK_BUTTON") %>
         </button>
     </div>
+
 </form>

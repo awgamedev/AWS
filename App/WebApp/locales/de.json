@@ -99,5 +99,7 @@
 	"TYPE": "Typ",
 	"DATE": "Datum",
 	"NO_STAMPINGS_YET": "Noch keine Stempelvorgänge vorhanden.",
-	"USER_LIST_LOAD_ERROR": "Fehler beim Laden der Nutzerliste"
+	"USER_LIST_LOAD_ERROR": "Fehler beim Laden der Nutzerliste",
+	"TASK_BACKLOG_PAGE_TITLE": "Alle Aufgaben",
+	"UNASSIGNED": "Nicht zugewiesen"
 }

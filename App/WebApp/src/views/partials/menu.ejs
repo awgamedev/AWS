@@ -33,13 +33,30 @@
     }) 
     %>
     
-    <%- include('_menu_item', { 
-        href: '/task-list', 
-        icon: 'fa-solid fa-list-check', 
+
+    <%- include('_menu_dropdown', {
+        prefix: '/task',
+        icon: 'fa-solid fa-bars-progress',
         text: 'Aufgaben',
-        currentPath: currentPath 
-    }) %>
-    
+        currentPath: currentPath,
+        subitems: [
+            include('_menu_item', { 
+                href: '/task/task-list', 
+                icon: 'fa-solid fa-chart-bar', 
+                text: 'Aufgabenplan',
+                currentPath: currentPath 
+            }),
+
+            include('_menu_item', { 
+                href: '/task/task-backlog', 
+                icon: 'fa-solid fa-list-check', 
+                text: 'Alle Aufgaben',
+                currentPath: currentPath 
+            })
+        ]
+    }) 
+    %>
+
     <%- include('_menu_item', { 
         href: '/user/list', 
         icon: 'fa-solid fa-user', 

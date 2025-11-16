@@ -27,7 +27,7 @@ const getStartOfWeek = (date) => {
 };
 
 // 📅 GET Route: Aufgabenboard anzeigen (/task-list)
-router.get("/task-list", ensureAuthenticated, async (req, res) => {
+router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
   let users = [];
   let tasksByDayAndUser = {};
   const title = req.__("TASK_BOARD_PAGE_TITLE");

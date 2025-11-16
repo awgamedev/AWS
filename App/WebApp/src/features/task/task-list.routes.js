@@ -10,7 +10,7 @@ const { renderView, renderErrorView } = require("../../utils/view-renderer");
  * GET /task-backlog
  * Display task backlog with all tasks sorted by assignment status, user, and priority
  */
-router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
+router.get("/task/task-backlog", ensureAuthenticated, async (req, res) => {
   const title = req.__("TASK_BACKLOG_PAGE_TITLE");
 
   try {
@@ -53,7 +53,7 @@ router.get("/task-backlog", ensureAuthenticated, async (req, res) => {
       dateStr: task.startDate.toLocaleDateString("de-DE"),
     }));
 
-    renderView(req, res, "tasks/all_tasks", title, {
+    renderView(req, res, "all_tasks", title, {
       allTasks: enrichedTasks,
       users: users,
     });
