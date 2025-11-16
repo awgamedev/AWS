@@ -1,5 +1,5 @@
 # 1. Base Image: Start from the official Node.js image, using the current LTS version.
-FROM node:24-alpine
+FROM node:24-alpine AS builder
 
 # 2. Working Directory: Set the directory inside the container
 WORKDIR /usr/src/app
@@ -10,12 +10,20 @@ COPY package*.json ./
 
 # 4. Install Dependencies: Install all project dependencies (including express).
 # This assumes you have run 'npm init -y' and 'npm install express --save' on your host.
-RUN npm install
-RUN npm install ejs
+RUN npm ci --only=production
+# RUN npm install
+# RUN npm install ejs
 
 # 5. Copy Application Code: Copy the rest of the application files (server.js, app.js, routes/).
 # The dot '.' copies everything from the current host directory to the WORKDIR in the container.
 COPY . .
+
+FROM node:24-slim AS final
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app .
 
 # 6. Expose Port: Inform Docker that the container listens on this port.
 EXPOSE 4000
