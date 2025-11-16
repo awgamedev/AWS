@@ -1,0 +1,28 @@
+# .dockerignore
+
+# 1. Lokale Abhängigkeiten ausschließen
+# Wir installieren node_modules im Container neu. Die lokalen
+# Ordner zu kopieren, würde den Build-Cache brechen und ist ineffizient.
+# WICHTIG: Dies verhindert, dass der große node_modules Ordner vom Host kopiert wird!
+# node_modules
+
+# 2. Entwicklungsspezifische Dateien und Ordner
+npm-debug.log*
+yarn-error.log*
+.nyc_output
+.git
+.gitignore
+.editorconfig
+.vscode/
+
+# 3. Build-Artefakte und Temporäre Dateien
+dist
+build
+temp
+tmp/
+*.log
+
+# 4. Betriebssystemspezifische Dateien
+# MacOS/Windows
+.DS_Store
+Thumbs.db

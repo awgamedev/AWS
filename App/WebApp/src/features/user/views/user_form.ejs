@@ -26,26 +26,26 @@ const roles = [
         <% } %>
         
         <div>
-            <%- include('../partials/_form_item_label', { id: "username", text: __('USERNAME_LABEL') }) %>
-            <%- include('../partials/_form_item', { type: "text", id: "username", value: currentUsername, validationErrorField: validationErrors.username, placeholder: __('USERNAME_PLACEHOLDER') }) %>    
-            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.username }) %>
+            <%- include('_form_item_label', { id: "username", text: __('USERNAME_LABEL') }) %>
+            <%- include('_form_item', { type: "text", id: "username", value: currentUsername, validationErrorField: validationErrors.username, placeholder: __('USERNAME_PLACEHOLDER') }) %>    
+            <%- include('_form_item_validation', { validationErrorField: validationErrors.username }) %>
         </div>
 
         <div>
-            <%- include('../partials/_form_item_label', { id: "email", text: __('EMAIL_LABEL') }) %>
-            <%- include('../partials/_form_item', { type: "email", id: "email", value: currentEmail, validationErrorField: validationErrors.email, placeholder: __('EMAIL_PLACEHOLDER') }) %>
-            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.email }) %>
+            <%- include('_form_item_label', { id: "email", text: __('EMAIL_LABEL') }) %>
+            <%- include('_form_item', { type: "email", id: "email", value: currentEmail, validationErrorField: validationErrors.email, placeholder: __('EMAIL_PLACEHOLDER') }) %>
+            <%- include('_form_item_validation', { validationErrorField: validationErrors.email }) %>
         </div>
 
         <div>
-            <%- include('../partials/_form_item_label', { id: "password", text: __('PASSWORD_LABEL') }) %>
-            <%- include('../partials/_form_item', { type: "password", id: "password", value: "", validationErrorField: validationErrors.password, placeholder: isEditingLocal ? __("PASSWORD_EDIT_PLACEHOLDER") : __("PASSWORD_CREATE_PLACEHOLDER") }) %>
-            <%- include('../partials/_form_item_validation', { validationErrorField: validationErrors.password }) %>
+            <%- include('_form_item_label', { id: "password", text: __('PASSWORD_LABEL') }) %>
+            <%- include('_form_item', { type: "password", id: "password", value: "", validationErrorField: validationErrors.password, placeholder: isEditingLocal ? __("PASSWORD_EDIT_PLACEHOLDER") : __("PASSWORD_CREATE_PLACEHOLDER") }) %>
+            <%- include('_form_item_validation', { validationErrorField: validationErrors.password }) %>
         </div>
 
         <div>
-            <%- include('../partials/_form_item_label', { id: "role", text: __('ROLE_LABEL') }) %>
-            <%- include('../partials/_form_select', { 
+            <%- include('_form_item_label', { id: "role", text: __('ROLE_LABEL') }) %>
+            <%- include('_form_select', { 
                 id: "role", 
                 name: "role", 
                 options: roles, 

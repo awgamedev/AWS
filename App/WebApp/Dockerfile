@@ -10,9 +10,23 @@ COPY package*.json ./
 
 # 4. Install Dependencies: Install all project dependencies (including express).
 # This assumes you have run 'npm init -y' and 'npm install express --save' on your host.
-RUN npm ci --only=production
+# RUN npm ci --only=production
+RUN npm init -y
+RUN npm install express --save
+RUN npm ci
 # RUN npm install
 # RUN npm install ejs
+
+# Löscht unnötige Dokumentation und Build-Artefakte aus node_modules, um das Image zu verkleinern
+RUN find node_modules -type f -name '*.md' -delete && \
+    find node_modules -type f -name '*.ts' -delete && \
+    find node_modules -type f -name '*.flow' -delete && \
+    find node_modules -type d -name '__tests__' -exec rm -rf {} + && \
+    find node_modules -type d -name 'test' -exec rm -rf {} + && \
+    npm cache clean --force
+
+RUN rm -rf /tmp/* && \
+    rm -rf /root/.npm
 
 # 5. Copy Application Code: Copy the rest of the application files (server.js, app.js, routes/).
 # The dot '.' copies everything from the current host directory to the WORKDIR in the container.

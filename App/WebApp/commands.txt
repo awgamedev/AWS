@@ -16,3 +16,9 @@ start http://localhost
 
 # Delete unused docker resources
 docker system prune -a --volumes
+
+# find the 100 largest files in dockerfile
+find . -type f -exec du -h {} + | sort -rh | head -n 100
+
+# Print the size of a docker image dir
+du -sh
