@@ -157,9 +157,6 @@ if (viewDirectories.length > 0) {
   logger.warn(`⚠️ Keine 'views'-Ordner in ${featuresDir} gefunden.`);
 }
 
-// --- Manuelle Imports (Für Router, die nicht im dynamischen Pfad sind oder speziell behandelt werden) ---
-const mainRouter = require("./index"); // Import the main router
-
 // --- MongoDB Connection ---
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -231,10 +228,6 @@ app.use((req, res, next) => {
 // ---------------------------------------------------
 
 app.use(devAutoLogin);
-
-// --- Routes ---
-// 1. Manuell importierte Router
-app.use("/", mainRouter);
 
 // 2. Dynamisch geladene Router (inkl. Unterordner)
 routerFiles.forEach((file) => {

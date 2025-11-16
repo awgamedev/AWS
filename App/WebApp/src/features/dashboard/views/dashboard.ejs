@@ -15,7 +15,7 @@
   <section x-show="tab==='overview'" class="space-y-6">
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       <% metrics.forEach(function(m){ %>
-        <%- include('partials/dashboard/metric_card', { metric: m }) %>
+        <%- include('metric_card', { metric: m }) %>
       <% }) %>
     </div>
 
@@ -28,7 +28,7 @@
         </h2>
         <span class="text-xs uppercase tracking-wide text-gray-400"><%= recentStampings.length %>  <%= __('ENTITIES') %></span>
       </div>
-      <%- include('partials/dashboard/recent_stampings', { recentStampings: recentStampings }) %>
+      <%- include('recent_stampings', { recentStampings: recentStampings }) %>
     </div>
   </section>
 
