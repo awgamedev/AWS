@@ -86,6 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     items.forEach((item) => {
       item.addEventListener("click", (e) => {
+        // Do not close the sidebar when clicking a dropdown toggle
+        // Dropdown toggle buttons are marked with data-sidebar-role="dropdown-toggle"
+        if (item.dataset && item.dataset.sidebarRole === "dropdown-toggle") {
+          // Let Alpine handle expanding/collapsing; prevent unintended mobile close
+          e.stopPropagation();
+          // No active state update or sidebar toggle for dropdown toggles
+          return;
+        }
+
         if (item.getAttribute("href") === "#") e.preventDefault();
         clearActive();
         item.classList.add(...activeClasses);
