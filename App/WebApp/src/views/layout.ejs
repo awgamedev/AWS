@@ -27,8 +27,9 @@
             <!-- Sidebar-Kopfzeile/Logo -->
             <div class="p-6 flex items-center justify-between border-b border-gray-800">
                 <div class="flex items-center space-x-3">
-                    <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9.25 20.25L13.25 20.25L13.75 17M12 4V1M12 23V20M20 12H23M1 12H4M16.95 7.05L19.07 4.93M4.93 19.07L7.05 16.95M16.95 16.95L19.07 19.07M4.93 4.93L7.05 7.05"></path></svg>
-                    <h1 class="logo-text text-xl font-bold tracking-tight transition-opacity duration-300">App-Dashboard</h1>
+                    <img src="/img/onis-menu-light.png" alt="App Logo"/>
+                    <!-- <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9.25 20.25L13.25 20.25L13.75 17M12 4V1M12 23V20M20 12H23M1 12H4M16.95 7.05L19.07 4.93M4.93 19.07L7.05 16.95M16.95 16.95L19.07 19.07M4.93 4.93L7.05 7.05"></path></svg> -->
+                    <!-- <h1 class="logo-text text-xl font-bold tracking-tight transition-opacity duration-300">App-Dashboard</h1> -->
                 </div>
                 <!-- Toggle-Button für Mobile -->
                 <button id="closeSidebarMobile" class="md:hidden p-1 rounded-full text-gray-400 hover:bg-gray-800 focus:outline-none">
@@ -37,11 +38,11 @@
             </div>
 
             <!-- Sprachauswahl -->
-            <div class="p-4 flex space-x-4 text-xs">
+            <!-- <div class="p-4 flex space-x-4 text-xs">
                 <a href="/changelang/de" class="text-gray-400 hover:text-white transition">Deutsch</a>
                 <a href="/changelang/en" class="text-gray-400 hover:text-white transition">English</a>
                 <a href="/changelang/fr" class="text-gray-400 hover:text-white transition">Français</a>
-            </div>
+            </div> -->
 
             <!-- NEUE Menüeinträge: Werden über das EJS-Partial gerendert -->
             <%- include('partials/menu', { currentPath: currentPath }) %>
