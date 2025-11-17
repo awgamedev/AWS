@@ -6,6 +6,7 @@ const { renderView } = require("../../utils/view-renderer"); // Angenommen, du h
 const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
+const { validateStampingData } = require("./stamping.validations");
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
@@ -228,40 +229,33 @@ router.put("/api/stampings/:id", ensureAuthenticated, async (req, res) => {
     const { stampingReason, arriveDate, leaveDate } = req.body;
     const userId = req.user.id;
 
-    // Stempelung abrufen und Besitzrecht prüfen
-    const stamping = await Stamping.findById(id);
+    // Centralized validation using stamping.validations.js
+    const errors = await validateStampingData(req, {
+      id,
+      userId,
+      arriveDate,
+      leaveDate,
+      stampingReason,
+      allowedReasons: ALLOWED_REASONS,
+    });
 
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
+    }
+
+    // Fetch stamping after validation (exists, owned, and type already checked there)
+    const stamping = await Stamping.findById(id);
     if (!stamping) {
       return res.status(404).json({ msg: "Stempelung nicht gefunden." });
     }
 
-    if (stamping.userId.toString() !== userId) {
-      return res
-        .status(403)
-        .json({ msg: "Keine Berechtigung zum Bearbeiten dieser Stempelung." });
-    }
-
-    // Validierung
-    if (!arriveDate) {
-      return res
-        .status(400)
-        .json({ msg: "Ankunftsdatum ist erforderlich." });
-    }
-
-    if (stampingReason && !ALLOWED_REASONS.includes(stampingReason)) {
-      return res
-        .status(400)
-        .json({ msg: "Ungültiger Stempelungsgrund." });
-    }
-
-    // Aktualisierung der Ankuftsstempelung
+    // Update arrival ("in") stamping
     stamping.date = new Date(arriveDate);
     stamping.stampingReason = stampingReason;
     await stamping.save();
 
-    // Wenn ein Abgangsdatum vorhanden ist, suche oder erstelle die Austempelung
+    // Update or create corresponding "out" stamping if leaveDate provided
     if (leaveDate) {
-      // Suche die nächste "out"-Stempelung nach der "in"-Stempelung
       let outStamping = await Stamping.findOne({
         userId,
         stampingType: "out",
@@ -269,11 +263,9 @@ router.put("/api/stampings/:id", ensureAuthenticated, async (req, res) => {
       }).sort({ date: 1 });
 
       if (outStamping) {
-        // Aktualisiere die vorhandene Austempelung
         outStamping.date = new Date(leaveDate);
         await outStamping.save();
       } else {
-        // Erstelle eine neue Austempelung
         const newOutStamping = new Stamping({
           userId,
           stampingType: "out",
@@ -329,9 +321,7 @@ router.delete("/api/stampings/:id", ensureAuthenticated, async (req, res) => {
     res.json({ msg: "Stempelung erfolgreich gelöscht." });
   } catch (err) {
     console.error("Fehler beim Löschen der Stempelung:", err.message);
-    res
-      .status(500)
-      .json({ msg: "Serverfehler beim Löschen der Stempelung." });
+    res.status(500).json({ msg: "Serverfehler beim Löschen der Stempelung." });
   }
 });
 

@@ -35,13 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageDiv = document.getElementById("stamping-message");
   const reasonSelect = document.getElementById("stamping-reason");
   const reasonError = document.getElementById("reason-error");
-  const reasonSelectionDiv = document.getElementById("reason-selection");
-
-  if ("<%= currentStatus %>" === "out") {
-    reasonSelectionDiv.classList.remove("hidden");
-  } else {
-    reasonSelectionDiv.classList.add("hidden");
-  }
 
   stampButtons.forEach((button) => {
     button.addEventListener("click", async (event) => {
