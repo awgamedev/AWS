@@ -102,17 +102,9 @@
 	"USER_LIST_LOAD_ERROR": "Fehler beim Laden der Nutzerliste",
 	"TASK_BACKLOG_PAGE_TITLE": "Alle Aufgaben",
 	"UNASSIGNED": "Nicht zugewiesen",
-	"LEAVE_TIME": "LEAVE_TIME",
-	"NO_LEAVE_TIME": "NO_LEAVE_TIME",
-	"ARRIVE_TIME": "ARRIVE_TIME",
-	"CANCEL": "CANCEL",
-	"SAVE": "SAVE",
-	"EDIT_STAMPING": "EDIT_STAMPING",
-	"LEAVE_BEFORE_ARRIVE_ERROR": "LEAVE_BEFORE_ARRIVE_ERROR",
-	"SAVING": "SAVING",
-	"SAVE_SUCCESS": "SAVE_SUCCESS",
-	"SAVE_ERROR": "SAVE_ERROR",
-	"NETWORK_ERROR": "NETWORK_ERROR",
-	"ARRIVE_DATE": "ARRIVE_DATE",
-	"LEAVE_DATE": "LEAVE_DATE"
+	"CANCEL": "Abbrechen",
+	"SAVE": "Speichern",
+	"EDIT_STAMPING": "Stempelung bearbeiten",
+	"ARRIVE_DATE": "Ankunftsdatum",
+	"LEAVE_DATE": "Abgangsdatum"
 }
