@@ -100,11 +100,7 @@ const processStampings = (stampings) => {
   };
 };
 
-// ----------------------------------------------------------------------
-// 🔄 ROUTEN-LOGIK
-// ----------------------------------------------------------------------
-
-// 📊 GET Route: Admin-Übersicht über alle Stempelungen (/stamping-overview)
+// Get route: for admin overview of all stampings (/stamping-overview)
 router.get(
   "/time-tracking/stamping-overview",
   ensureAuthenticated,
