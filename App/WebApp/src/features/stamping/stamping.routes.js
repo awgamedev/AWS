@@ -69,41 +69,13 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
     const userId = req.user.id;
     const { stampingType, stampingReason } = req.body;
 
-    if (!stampingType || !["in", "out"].includes(stampingType)) {
+    const validationErrors = await validateStampingData(req);
+
+    // If there are validation errors, re-render the form with errors
+    if (Object.keys(validationErrors).length > 0) {
       return res
         .status(400)
-        .json({ msg: "Ungültiger Stempeltyp. Erlaubt sind 'in' oder 'out'." });
-    }
-
-    if (stampingType === "in") {
-      if (!stampingReason || !ALLOWED_REASONS.includes(stampingReason)) {
-        return res
-          .status(400)
-          .json({ msg: "Bitte wähle einen gültigen Stempelungsgrund aus." });
-      }
-    }
-
-    const lastStamping = await Stamping.findOne({ userId })
-      .sort({ date: -1 })
-      .exec();
-
-    if (
-      stampingType === "in" &&
-      lastStamping &&
-      lastStamping.stampingType === "in"
-    ) {
-      return res
-        .status(409)
-        .json({ msg: "Fehler: Du bist bereits eingestempelt." });
-    }
-
-    if (
-      stampingType === "out" &&
-      (!lastStamping || lastStamping.stampingType === "out")
-    ) {
-      return res.status(409).json({
-        msg: "Fehler: Du bist bereits ausgestempelt oder hast noch nicht eingestempelt.",
-      });
+        .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
     }
 
     const newStamping = new Stamping({

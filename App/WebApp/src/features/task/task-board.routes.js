@@ -4,7 +4,7 @@ const Task = require("./task.model");
 const User = require("../user/user.model");
 const { ensureAuthenticated } = require("../../middleware/auth");
 const taskController = require("./task.controller");
-const { renderView } = require("../../utils/view-renderer");
+const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const ejs = require("ejs"); // NEU: EJS importieren
 const fs = require("fs"); // NEU: FS importieren
 const path = require("path"); // NEU: Path importieren
@@ -53,7 +53,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
     const userMap = users.reduce((map, user) => {
       map[user._id.toString()] = user.username;
       return map;
-    }, {}); // 2. Alle Aufgaben abrufen (Logik unverändert)
+    }, {});
 
     const tasks = await Task.find({
       $or: [
@@ -65,7 +65,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       .select(
         "userId taskName taskStatus startDate endDate taskDescription taskPriority"
       )
-      .lean(); // 3. Aufgaben den Tagen und Mitarbeitern zuordnen (Logik unverändert)
+      .lean();
 
     // ... (Ihre Aufgaben-Zuordnungslogik) ...
     tasks.forEach((task) => {
@@ -105,21 +105,9 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       }
     });
   } catch (error) {
-    req.logger.error("Fehler beim Abrufen des Aufgabenboards:", error);
-    return renderView(
-      req,
-      res,
-      "error_message",
-      req.__("ERROR_TITLE") || "Fehler",
-      {
-        message:
-          req.__("TASK_LOAD_ERROR") ||
-          "Fehler beim Laden der Aufgaben. Bitte versuchen Sie es später erneut.",
-      },
-      "",
-      500
-    );
-  } // --- NEUE LOGIK: Modals VOR-RENDERN --- // Verwenden Sie path.join, um plattformunabhängige Pfade zu gewährleisten. // Passe den Pfad zu deinen EJS-Templates (z.B. views/tasks/...) entsprechend an!
+    req.logger.error("Error while fetching task board:", error);
+    return renderErrorView(req, res, "TASK_LOAD_ERROR", 500, error.message);
+  }
 
   const viewsPath = path.join(__dirname, "views");
 
