@@ -4,10 +4,44 @@ const Stamping = require("./stamping.model");
 const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView } = require("../../utils/view-renderer");
 const { formatTime, formatDate } = require("../../utils/date-utils");
-const { getStampingPairs } = require("./utils/stamping-pair-utils");
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
+
+// Funktion zur Paarung der Stempelvorgänge (Ein- und Ausstempelungen)
+const getStampingPairs = async (userId) => {
+  // Holen Sie alle Stempelungen und sortieren Sie sie aufsteigend nach Datum
+  const stampings = await Stamping.find({ userId })
+    .sort({ date: 1 }) // Wichtig: Aufsteigend sortieren
+    .exec();
+
+  let currentIn = null;
+  const pairs = [];
+
+  // Paar-Bildungs-Logik
+  for (const stamp of stampings) {
+    if (stamp.stampingType === "in") {
+      if (currentIn) {
+        pairs.push({ come: currentIn.toObject(), go: null });
+      }
+      currentIn = stamp;
+    } else if (stamp.stampingType === "out") {
+      if (currentIn) {
+        // Passendes 'out' gefunden
+        pairs.push({ come: currentIn.toObject(), go: stamp.toObject() });
+        currentIn = null;
+      }
+    }
+  }
+
+  if (currentIn) {
+    // Der letzte Eintrag ist ein 'in' ohne 'out'
+    pairs.push({ come: currentIn.toObject(), go: null });
+  }
+
+  // Sortiere die Paare für die Anzeige absteigend (die neuesten Paare zuerst)
+  return pairs.reverse();
+};
 
 // ⏳ GET Route: Stempel-Interface anzeigen (/stamping)
 router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
@@ -30,11 +64,7 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     }
 
     // 2. Stempel-Paare für die Liste abrufen
-    const stampings = await Stamping.find({ userId })
-      .sort({ date: 1 }) // Wichtig: Aufsteigend sortieren
-      .exec();
-
-    stampingPairs = await getStampingPairs(stampings);
+    stampingPairs = await getStampingPairs(userId);
   } catch (error) {
     console.error("Fehler beim Abrufen der Stempeldaten:", error.message);
     // Fehlerseite rendern

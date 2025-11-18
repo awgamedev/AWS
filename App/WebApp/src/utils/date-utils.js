@@ -48,4 +48,28 @@ function dateUpdateTime(date, timeAsString) {
   return date;
 }
 
-module.exports = { dateUpdateTime };
+// Funktion zur Formatierung der Zeit
+function formatTime(date) {
+  if (!date) {
+    throw new Error("No date provided for formatting.");
+  }
+  return date.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+// Funktion zur Formatierung des Datums
+function formatDate(date) {
+  if (!date) {
+    throw new Error("No date provided for formatting.");
+  }
+
+  return date.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+module.exports = { dateUpdateTime, formatTime, formatDate };

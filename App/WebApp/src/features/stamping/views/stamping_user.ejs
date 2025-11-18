@@ -80,10 +80,10 @@
         <ul class="divide-y divide-gray-200 px-2">
             <% if (stampingPairs && stampingPairs.length > 0) { %>
                 <% stampingPairs.forEach(function(pair) { 
-                    const dateStr = formatDate(pair.come); 
-                    const comeTime = formatTime(pair.come);
+                    const dateStr = formatDate(pair.come.date); 
+                    const comeTime = formatTime(pair.come.date);
                     // Sicherstellen, dass die Funktion existiert und aufgerufen wird
-                    const goTime = pair.go ? formatTime(pair.go) : ""; 
+                    const goTime = pair.go ? formatTime(pair.go.date) : ""; 
                     const reason = pair.come.stampingReason || (__("NA_SHORT") || "N/A");
 
                     const timeDisplay = pair.go ? `${comeTime} - ${goTime}` : `${comeTime} - <strong>${__("OPEN_SHIFT")}</strong>`;
