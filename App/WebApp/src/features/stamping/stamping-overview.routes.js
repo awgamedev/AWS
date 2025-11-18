@@ -177,19 +177,7 @@ router.get(
       });
     } catch (error) {
       console.error("Fehler beim Abrufen der Admin-Übersicht:", error.message);
-      // Fehler mit renderView rendern
-      return renderView(
-        req,
-        res,
-        "error_message",
-        "Serverfehler", // Titel für Fehlerseite
-        {
-          message: "Ein Fehler ist beim Laden der Übersicht aufgetreten.",
-          details: error.message,
-        },
-        req.path,
-        500
-      );
+      return renderErrorView(req, res, "Serverfehler", 500, error.message);
     }
 
     // --- Daten für die EJS-Ansicht vorbereiten ---
