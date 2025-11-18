@@ -6,7 +6,6 @@ const { renderView } = require("../../utils/view-renderer"); // Angenommen, du h
 const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
-const { validateStampingData } = require("./stamping.validations");
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
@@ -106,13 +105,6 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     );
   }
 
-  // --- PRE-RENDER MODAL HTML ---
-  const viewsPath = path.join(__dirname, "views");
-  const editStampingContentHtml = ejs.render(
-    fs.readFileSync(path.join(viewsPath, "stamping_edit_modal.ejs"), "utf-8"),
-    { ALLOWED_REASONS: ALLOWED_REASONS, __: req.__ }
-  );
-
   // Daten an die EJS-Datei übergeben und View rendern
   renderView(req, res, "stamping_interface", title, {
     currentStatus: currentStatus,
@@ -121,7 +113,6 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     ALLOWED_REASONS: ALLOWED_REASONS,
     formatDate: formatDate, // Funktion für EJS bereitstellen
     formatTime: formatTime, // Funktion für EJS bereitstellen
-    editStampingContentHtml: editStampingContentHtml, // Modal HTML
   });
 });
 
@@ -219,109 +210,6 @@ router.get("/status", ensureAuthenticated, async (req, res) => {
   } catch (err) {
     console.error("Fehler beim Abrufen des Status:", err.message);
     res.status(500).json({ msg: "Serverfehler beim Abrufen des Status." });
-  }
-});
-
-// 🔄 PUT Route: Stempelung bearbeiten (/api/stampings/:id)
-router.put("/api/stampings/:id", ensureAuthenticated, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { stampingReason, arriveDate, leaveDate } = req.body;
-    const userId = req.user.id;
-
-    // Centralized validation using stamping.validations.js
-    const errors = await validateStampingData(req, {
-      id,
-      userId,
-      arriveDate,
-      leaveDate,
-      stampingReason,
-      allowedReasons: ALLOWED_REASONS,
-    });
-
-    if (Object.keys(errors).length > 0) {
-      return res.status(400).json({ errors });
-    }
-
-    // Fetch stamping after validation (exists, owned, and type already checked there)
-    const stamping = await Stamping.findById(id);
-    if (!stamping) {
-      return res.status(404).json({ msg: "Stempelung nicht gefunden." });
-    }
-
-    // Update arrival ("in") stamping
-    stamping.date = new Date(arriveDate);
-    stamping.stampingReason = stampingReason;
-    await stamping.save();
-
-    // Update or create corresponding "out" stamping if leaveDate provided
-    if (leaveDate) {
-      let outStamping = await Stamping.findOne({
-        userId,
-        stampingType: "out",
-        date: { $gt: stamping.date },
-      }).sort({ date: 1 });
-
-      if (outStamping) {
-        outStamping.date = new Date(leaveDate);
-        await outStamping.save();
-      } else {
-        const newOutStamping = new Stamping({
-          userId,
-          stampingType: "out",
-          date: new Date(leaveDate),
-        });
-        await newOutStamping.save();
-      }
-    }
-
-    res.json({
-      msg: "Stempelung erfolgreich aktualisiert.",
-      stamping: stamping.toObject(),
-    });
-  } catch (err) {
-    console.error("Fehler beim Aktualisieren der Stempelung:", err.message);
-    res
-      .status(500)
-      .json({ msg: "Serverfehler beim Aktualisieren der Stempelung." });
-  }
-});
-
-// 🗑️ DELETE Route: Stempelung löschen (/api/stampings/:id)
-router.delete("/api/stampings/:id", ensureAuthenticated, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    // Stempelung abrufen und Besitzrecht prüfen
-    const stamping = await Stamping.findById(id);
-
-    if (!stamping) {
-      return res.status(404).json({ msg: "Stempelung nicht gefunden." });
-    }
-
-    if (stamping.userId.toString() !== userId) {
-      return res
-        .status(403)
-        .json({ msg: "Keine Berechtigung zum Löschen dieser Stempelung." });
-    }
-
-    // Lösche die Einstempelung
-    await Stamping.findByIdAndDelete(id);
-
-    // Lösche auch die zugehörige Austempelung (falls vorhanden)
-    if (stamping.stampingType === "in") {
-      await Stamping.findOneAndDelete({
-        userId,
-        stampingType: "out",
-        date: { $gt: stamping.date },
-      }).sort({ date: 1 });
-    }
-
-    res.json({ msg: "Stempelung erfolgreich gelöscht." });
-  } catch (err) {
-    console.error("Fehler beim Löschen der Stempelung:", err.message);
-    res.status(500).json({ msg: "Serverfehler beim Löschen der Stempelung." });
   }
 });
 
