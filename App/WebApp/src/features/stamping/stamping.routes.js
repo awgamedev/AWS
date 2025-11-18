@@ -53,25 +53,21 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     );
   }
 
-  // Daten an die EJS-Datei übergeben und View rendern
   renderView(req, res, "stamping_user", title, {
     currentStatus: currentStatus,
     lastStampingTime: lastStampingTime,
     stampingPairs: stampingPairs,
     ALLOWED_REASONS: ALLOWED_REASONS,
-    formatDate: formatDate, // Funktion für EJS bereitstellen
-    formatTime: formatTime, // Funktion für EJS bereitstellen
+    formatDate: formatDate,
+    formatTime: formatTime,
   });
 });
 
-// 📅 POST Route: Mitarbeiter stempelt ein oder aus (/stamp) - Bleibt eine API-Route
-// Die Logik bleibt gleich, da sie JSON zurückgibt und keine EJS-Views rendert.
+// A route for an employee to stamp in or out (/stamp) - remains an API route
 router.post("/stamp", ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user.id;
     const { stampingType, stampingReason } = req.body;
-
-    // ... (Validierungs- und Stempellogik bleibt unverändert) ...
 
     if (!stampingType || !["in", "out"].includes(stampingType)) {
       return res
@@ -135,9 +131,8 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
   }
 });
 
-// 🔎 GET Route: Aktuellen Stempelstatus abrufen (/status) - Bleibt eine API-Route
+// A route to get the current stamping status (/status) - remains an API route
 router.get("/status", ensureAuthenticated, async (req, res) => {
-  // Die Logik bleibt gleich, da sie JSON zurückgibt.
   try {
     const userId = req.user.id;
     const lastStamping = await Stamping.findOne({ userId })
@@ -156,8 +151,8 @@ router.get("/status", ensureAuthenticated, async (req, res) => {
       }.`,
     });
   } catch (err) {
-    console.error("Fehler beim Abrufen des Status:", err.message);
-    res.status(500).json({ msg: "Serverfehler beim Abrufen des Status." });
+    console.error("Error fetching stamping status:", err.message);
+    res.status(500).json({ msg: "Server error while fetching status." });
   }
 });
 
