@@ -34,6 +34,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
     const result = processStampings(userStampings);
 
     overviewData[userId] = {
+      userId,
       username,
       totalHours: result.totalHours,
       dailyWork: result.dailyWork,
@@ -47,6 +48,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
     const userId = user._id.toString();
     if (!overviewData[userId]) {
       overviewData[userId] = {
+        userId,
         username: user.username,
         totalHours: 0,
         dailyWork: {},

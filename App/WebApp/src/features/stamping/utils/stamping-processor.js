@@ -31,6 +31,8 @@ const processStampings = (stampings) => {
       const workDurationHours = workDurationMs / (1000 * 60 * 60);
 
       dailyWork[dateKey].pairs.push({
+        inId: current._id.toString(),
+        outId: next._id.toString(),
         stampingReason: current.stampingReason,
         in: timeIn.toLocaleTimeString("de-DE", {
           hour: "2-digit",
@@ -51,6 +53,7 @@ const processStampings = (stampings) => {
       (!next || next.stampingType === "in")
     ) {
       dailyWork[dateKey].pairs.push({
+        inId: current._id.toString(),
         in: current.date.toLocaleTimeString("de-DE", {
           hour: "2-digit",
           minute: "2-digit",
