@@ -118,6 +118,48 @@ const handleDeleteStampingPair = async () => {
   }
 };
 
+const handleEditStampingPair = async (form) => {
+  const msg = byId("edit-stamping-pair-message");
+  setMessage(msg, "info", "Änderungen werden gespeichert...");
+
+  try {
+    const formData = new FormData(form);
+
+    const payload = {
+      inId: formData.get("inId"),
+      outId: formData.get("outId"),
+      reason: formData.get("reason"),
+      date: formData.get("date"),
+      inTime: formData.get("inTime"),
+      outTime: formData.get("outTime") || null,
+    };
+
+    const { ok, data } = await api("/api/stampings/pair", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      setMessage(
+        msg,
+        "success",
+        data.msg || "Stempelpaar erfolgreich aktualisiert!"
+      );
+      reloadAfter();
+    } else {
+      setMessage(
+        msg,
+        "error",
+        data.msg || "Fehler beim Aktualisieren des Stempelpaars."
+      );
+    }
+  } catch (err) {
+    console.error("Edit stamping pair error:", err);
+    setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
+  }
+};
+
 // ============================================================================
 // EVENT LISTENERS
 // ============================================================================
@@ -135,6 +177,36 @@ document.addEventListener("DOMContentLoaded", () => {
       openModalFromApi(
         `Stempelung hinzufügen für ${username}`,
         `/api/modal/stamping-create?userId=${userId}`
+      );
+    });
+  });
+
+  // Open Edit Stamping Pair Modal
+  document.querySelectorAll(".edit-stamping-pair-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const inId = e.currentTarget.dataset.inId;
+      const outId = e.currentTarget.dataset.outId;
+      const date = e.currentTarget.dataset.date;
+      const inTime = e.currentTarget.dataset.inTime;
+      const outTime = e.currentTarget.dataset.outTime;
+      const reason = e.currentTarget.dataset.reason;
+      const unclosed = e.currentTarget.dataset.unclosed;
+
+      // Convert time format from HH:MM to HH:MM for input
+      const inTimeFormatted = inTime.replace(":", ":").substring(0, 5);
+      const outTimeFormatted =
+        outTime !== "FEHLT" ? outTime.replace(":", ":").substring(0, 5) : "";
+
+      openModalFromApi(
+        "Stempelpaar bearbeiten",
+        `/api/modal/stamping-edit?inId=${inId}&outId=${
+          outId || ""
+        }&date=${date}&inTime=${encodeURIComponent(
+          inTimeFormatted
+        )}&outTime=${encodeURIComponent(
+          outTimeFormatted
+        )}&reason=${encodeURIComponent(reason)}&unclosed=${unclosed}`
       );
     });
   });
@@ -163,6 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (form.id === "create-stamping-form") {
       e.preventDefault();
       await handleCreateStamping(form);
+    } else if (form.id === "edit-stamping-pair-form") {
+      e.preventDefault();
+      await handleEditStampingPair(form);
     }
   });
 

@@ -101,9 +101,6 @@
 	"USER_LIST_LOAD_ERROR": "USER_LIST_LOAD_ERROR",
 	"TASK_BACKLOG_PAGE_TITLE": "TASK_BACKLOG_PAGE_TITLE",
 	"UNASSIGNED": "UNASSIGNED",
-	"LEAVE_TIME": "LEAVE_TIME",
-	"NO_LEAVE_TIME": "NO_LEAVE_TIME",
-	"ARRIVE_TIME": "ARRIVE_TIME",
 	"CANCEL": "CANCEL",
 	"SAVE": "SAVE",
 	"EDIT_STAMPING": "EDIT_STAMPING",
@@ -133,5 +130,12 @@
 	"ERROR_INVALID_STAMPING_TYPE": "Type de pointage invalide. Les valeurs autorisées sont 'in' ou 'out'.",
 	"ERROR_INVALID_STAMPING_REASON": "Veuillez sélectionner une raison de pointage valide.",
 	"ERROR_ALREADY_STAMPED_IN": "Vous êtes déjà pointé à l'entrée. Veuillez d'abord pointer à la sortie.",
-	"ERROR_NOT_STAMPED_IN": "Vous n'êtes pas pointé à l'entrée. Veuillez d'abord pointer à l'entrée."
+	"ERROR_NOT_STAMPED_IN": "Vous n'êtes pas pointé à l'entrée. Veuillez d'abord pointer à l'entrée.",
+	"ARRIVE_TIME": "Heure d'arrivée",
+	"LEAVE_TIME": "Heure de départ",
+	"LEAVE_TIME_OPTIONAL_NOTE": "Laisser vide si pas encore pointé à la sortie",
+	"ERROR_DATE_REQUIRED": "La date est requise.",
+	"ERROR_ARRIVE_TIME_REQUIRED": "L'heure d'arrivée est requise.",
+	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "L'heure d'arrivée doit être définie avant l'heure de départ.",
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "L'heure de départ doit être après l'heure d'arrivée."
 }

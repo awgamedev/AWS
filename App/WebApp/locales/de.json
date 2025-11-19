@@ -125,5 +125,12 @@
 	"ERROR_INVALID_STAMPING_TYPE": "Ungültiger Stempeltyp. Erlaubt sind 'in' oder 'out'.",
 	"ERROR_INVALID_STAMPING_REASON": "Bitte wähle einen gültigen Stempelungsgrund aus.",
 	"ERROR_ALREADY_STAMPED_IN": "Du bist bereits eingestempelt. Bitte stempel zuerst aus.",
-	"ERROR_NOT_STAMPED_IN": "Du bist nicht eingestempelt. Bitte stempel zuerst ein."
+	"ERROR_NOT_STAMPED_IN": "Du bist nicht eingestempelt. Bitte stempel zuerst ein.",
+	"ARRIVE_TIME": "Ankunftszeit",
+	"LEAVE_TIME": "Abgangszeit",
+	"LEAVE_TIME_OPTIONAL_NOTE": "Leer lassen, falls noch nicht ausgestempelt",
+	"ERROR_DATE_REQUIRED": "Datum ist erforderlich.",
+	"ERROR_ARRIVE_TIME_REQUIRED": "Ankunftszeit ist erforderlich.",
+	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "Ankunftszeit muss vor der Abgangszeit gesetzt werden.",
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Abgangszeit muss nach der Ankunftszeit liegen."
 }

@@ -84,6 +84,45 @@ router.get(
 );
 
 /**
+ * GET /api/modal/stamping-edit
+ * Returns HTML for the edit stamping pair modal
+ */
+router.get(
+  "/api/modal/stamping-edit",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { inId, outId, date, inTime, outTime, reason, unclosed } =
+        req.query;
+      const {
+        ALLOWED_STAMPING_REASONS,
+      } = require("../stamping/stamping.constants");
+      const viewsPath = path.join(__dirname, "../stamping/views");
+      const templatePath = path.join(viewsPath, "stamping_edit_modal.ejs");
+      const template = require("fs").readFileSync(templatePath, "utf-8");
+      const ejs = require("ejs");
+
+      const html = ejs.render(template, {
+        inId,
+        outId,
+        date,
+        inTimeStr: inTime,
+        outTimeStr: outTime,
+        reason,
+        unclosed,
+        allowedReasons: ALLOWED_STAMPING_REASONS,
+        __: req.__,
+      });
+
+      res.json({ html });
+    } catch (error) {
+      req.logger.error("Error rendering edit stamping modal:", error);
+      res.status(500).json({ error: "Failed to load modal content" });
+    }
+  }
+);
+
+/**
  * GET /api/modal/stamping-delete
  * Returns HTML for the delete stamping confirmation modal
  */

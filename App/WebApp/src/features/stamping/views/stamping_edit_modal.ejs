@@ -1,0 +1,63 @@
+<%
+const generateReasonOptions = (reasons, selectedReason, __) => {
+  const reasonOptions = reasons
+    .map((reason) => {
+      const selected = reason === selectedReason ? 'selected' : '';
+      return `<option value="${reason}" ${selected}>${reason}</option>`;
+    })
+    .join("");
+  
+  return reasonOptions;
+};
+
+const reasonOptions = generateReasonOptions(allowedReasons, reason, __);
+
+// Parse times for display (HH:mm format)
+const inTime = inTimeStr !== 'null' && inTimeStr ? inTimeStr : '';
+const outTime = outTimeStr !== 'null' && outTimeStr !== 'FEHLT' && outTimeStr ? outTimeStr : '';
+const isUnclosed = unclosed === 'true' || outTimeStr === 'FEHLT';
+%>
+
+<form id="edit-stamping-pair-form">
+    <input type="hidden" id="edit-pair-inId" name="inId" value="<%= inId %>">
+    <input type="hidden" id="edit-pair-outId" name="outId" value="<%= outId %>">
+    
+    <div class="max-h-96 overflow-y-auto mb-2">
+        <div class="mb-4">
+            <label for="edit-pair-reason" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_REASON_LABEL") %> *</label>
+            <select id="edit-pair-reason" name="reason" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                <%- reasonOptions %>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="edit-pair-date" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_DATE_LABEL") %> *</label>
+            <input type="date" id="edit-pair-date" name="date" value="<%= date %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label for="edit-pair-inTime" class="block text-sm font-medium text-gray-700"><%= __("ARRIVE_TIME") %> *</label>
+                <input type="time" id="edit-pair-inTime" name="inTime" value="<%= inTime %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="edit-pair-outTime" class="block text-sm font-medium text-gray-700"><%= __("LEAVE_TIME") %> <%= isUnclosed ? '' : '*' %></label>
+                <input type="time" id="edit-pair-outTime" name="outTime" value="<%= outTime %>" <%= isUnclosed ? '' : 'required' %> class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <% if (isUnclosed) { %>
+                    <p class="text-xs text-gray-500 mt-1"><%= __("LEAVE_TIME_OPTIONAL_NOTE") %></p>
+                <% } %>
+            </div>
+        </div>
+        
+        <div id="edit-stamping-pair-message" class="mb-4 text-sm font-medium text-center hidden"></div>
+    </div>
+
+    <div class="flex justify-end space-x-2">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition duration-150">
+            <%= __("CANCEL_BUTTON") %>
+        </button>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+            <%= __("SAVE_CHANGES_BUTTON") %>
+        </button>
+    </div>
+</form>

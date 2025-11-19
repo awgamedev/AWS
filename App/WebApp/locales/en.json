@@ -133,5 +133,10 @@
 	"ERROR_INVALID_STAMPING_TYPE": "Invalid stamping type. Allowed are 'in' or 'out'.",
 	"ERROR_INVALID_STAMPING_REASON": "Please select a valid stamping reason.",
 	"ERROR_ALREADY_STAMPED_IN": "You are already clocked in. Please clock out first.",
-	"ERROR_NOT_STAMPED_IN": "You are not clocked in. Please clock in first."
+	"ERROR_NOT_STAMPED_IN": "You are not clocked in. Please clock in first.",
+	"LEAVE_TIME_OPTIONAL_NOTE": "Leave empty if not clocked out yet",
+	"ERROR_DATE_REQUIRED": "Date is required.",
+	"ERROR_ARRIVE_TIME_REQUIRED": "Arrive time is required.",
+	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "Arrive time must be set before leave time.",
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Leave time must be after arrive time."
 }

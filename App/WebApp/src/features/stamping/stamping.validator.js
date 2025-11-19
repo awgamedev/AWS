@@ -58,4 +58,47 @@ async function validateStampingData(
   return errors;
 }
 
-module.exports = { validateStampingData };
+/**
+ * Validates stamping pair edit data
+ * @param {Object} req - Request object with body and __ (translator)
+ * @param {Array} allowedReasons - Array of allowed stamping reasons
+ * @returns {Object} - Errors object
+ */
+async function validateStampingPairEdit(req, allowedReasons) {
+  const { reason, date, inTime, outTime } = req.body;
+  const errors = {};
+
+  // Validate reason
+  if (!reason || !allowedReasons.includes(reason)) {
+    errors.reason = req.__("ERROR_INVALID_STAMPING_REASON");
+  }
+
+  // Validate date
+  if (!date) {
+    errors.date = req.__("ERROR_DATE_REQUIRED");
+  }
+
+  // Validate arrive time
+  if (!inTime) {
+    errors.inTime = req.__("ERROR_ARRIVE_TIME_REQUIRED");
+  }
+
+  // Validate leave time logic (if provided, must be after arrive time)
+  if (outTime) {
+    if (!inTime) {
+      errors.outTime = req.__("ERROR_ARRIVE_TIME_REQUIRED_FIRST");
+    } else {
+      // Compare times
+      const inDateTime = new Date(`${date}T${inTime}:00`);
+      const outDateTime = new Date(`${date}T${outTime}:00`);
+
+      if (outDateTime <= inDateTime) {
+        errors.outTime = req.__("ERROR_LEAVE_TIME_AFTER_ARRIVE");
+      }
+    }
+  }
+
+  return errors;
+}
+
+module.exports = { validateStampingData, validateStampingPairEdit };
