@@ -8,6 +8,8 @@ const passport = require("passport");
 const User = require("../user/user.model"); // NEU: User-Modell für Registrierung
 const bcrypt = require("bcryptjs"); // used for password hashing
 const { renderView } = require("../../utils/view-renderer"); // NEU: Import der View-Renderer Utility
+const jwt = require("jsonwebtoken"); // Für Access Token (kurzlebig)
+const crypto = require("crypto"); // Für Refresh Token (opaque random)
 
 // ------------------------------------------------------------------
 // --- Login-Seite (GET /login) ---
@@ -18,6 +20,7 @@ router.get("/login", (req, res) => {
   const redirectPath = req.query.redirect || "/";
   const error = req.query.error; // Wenn error=true, wird die Fehlermeldung angezeigt
   const email = req.query.email || ""; // Zum Vorbefüllen der E-Mail
+  const rememberMe = req.query.rememberMe === "true"; // Vorbelegung Checkbox
   const success = req.flash("success"); // Erfolgsmeldung (z.B. nach der Registrierung)
 
   logger.info(`Login-Seite aufgerufen. Redirect-Pfad: ${redirectPath}`);
@@ -27,6 +30,7 @@ router.get("/login", (req, res) => {
     error: error,
     redirectPath: redirectPath,
     email: email,
+    rememberMe: rememberMe,
     success: success.length > 0 ? success[0] : null,
   });
 });
@@ -35,12 +39,9 @@ router.get("/login", (req, res) => {
 router.post(
   "/login",
   passport.authenticate("local", {
-    // Bei Fehlschlag zur Login-Seite mit Fehlermeldung zurückkehren
     failureRedirect: "/login?error=true",
-    // Optional: E-Mail wieder mitgeben
-    // failureRedirect: "/login?error=true&email=" + encodeURIComponent(req.body.email),
   }),
-  (req, res) => {
+  async (req, res) => {
     const encodedRedirectPath = req.body.redirect;
     let redirectPath = "/"; // Standardwert
     try {
@@ -50,17 +51,92 @@ router.post(
       // Fallback auf Standardpfad
     }
 
+    const rememberMe = !!req.body.rememberMe;
+
+    // Session-Cookie dynamisch anpassen
+    if (rememberMe) {
+      try {
+        const secret = process.env.JWT_SECRET;
+        if (secret && req.user) {
+          // Kurzlebiges Access Token (15 Minuten)
+          const accessToken = jwt.sign({ id: req.user.id }, secret, {
+            expiresIn: "15m",
+          });
+          res.cookie("auth_token", accessToken, {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 15 * 60 * 1000,
+          });
+
+          // Langlebiges Refresh Token (opaque)
+          const refreshRaw = crypto.randomBytes(32).toString("hex");
+          const refreshCookieValue = `${req.user.id}.${refreshRaw}`;
+          const refreshHash = crypto
+            .createHash("sha256")
+            .update(refreshRaw)
+            .digest("hex");
+
+          // Speichere Hash in User-Dokument
+          req.user.refreshTokens = req.user.refreshTokens || [];
+          req.user.refreshTokens.push({ tokenHash: refreshHash });
+          await req.user.save();
+
+          res.cookie("refresh_token", refreshCookieValue, {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Tage
+          });
+        }
+        if (req.session && req.session.cookie) {
+          req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
+        }
+      } catch (err) {
+        console.error("Fehler beim Erstellen von Access/Refresh Tokens:", err);
+      }
+    } else {
+      // Sitzung nur bis Browser-Ende
+      if (req.session && req.session.cookie) {
+        req.session.cookie.expires = false;
+        req.session.cookie.maxAge = null;
+      }
+      res.clearCookie("auth_token");
+      res.clearCookie("refresh_token");
+    }
+
     res.redirect(redirectPath);
   }
 );
 
-router.post("/logout", (req, res) => {
-  // req.logout erwartet nun einen Callback-Funktion
-  req.logout((err) => {
+router.post("/logout", async (req, res) => {
+  const refreshCookie = req.cookies ? req.cookies.refresh_token : null;
+  // req.logout erwartet Callback
+  req.logout(async (err) => {
     if (err) {
       console.error("Logout Fehler:", err);
-      // Optional: Error handling
     }
+    // Entferne Tokens für dieses Gerät (Refresh Hash)
+    if (refreshCookie) {
+      const parts = refreshCookie.split(".");
+      if (parts.length === 2) {
+        const userId = parts[0];
+        const raw = parts[1];
+        try {
+          if (req.user && req.user.id === userId) {
+            const hash = crypto.createHash("sha256").update(raw).digest("hex");
+            req.user.refreshTokens = (req.user.refreshTokens || []).filter(
+              (t) => t.tokenHash !== hash
+            );
+            await req.user.save();
+          }
+        } catch (ex) {
+          console.error("Fehler beim Entfernen des Refresh Tokens:", ex);
+        }
+      }
+    }
+    res.clearCookie("auth_token");
+    res.clearCookie("refresh_token");
     res.redirect("/login");
   });
 });

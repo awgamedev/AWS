@@ -25,6 +25,12 @@ const UserSchema = new mongoose.Schema(
       default: "user",
       enum: ["user", "admin"],
     },
+    refreshTokens: [
+      {
+        tokenHash: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ], // Speicherung gehashter Refresh Tokens für Rotation / Geräteverwaltung
   },
   { timestamps: true }
 ); // Fügt createdAt und updatedAt hinzu

@@ -32,14 +32,14 @@ This README explains the app's concepts, folder structure, how to run it locally
 Folder structure (top-level notable files and directories):
 
 - `public/` — static assets; served directly by Express.
-	- `css/` — stylesheet(s)
-	- `js/` — client JavaScript
+  - `css/` — stylesheet(s)
+  - `js/` — client JavaScript
 - `src/` (or top-level `controllers`, `models`, `routes`, `middleware`, `utils`) — server-side code:
-	- `controllers/` — request handlers and business logic
-	- `models/` — data models and database integration
-	- `routes/` — path -> controller wiring
-	- `middleware/` — Express middleware (auth, request timer, 404 handling)
-	- `utils/` — helper utilities used by controllers/views
+  - `controllers/` — request handlers and business logic
+  - `models/` — data models and database integration
+  - `routes/` — path -> controller wiring
+  - `middleware/` — Express middleware (auth, request timer, 404 handling)
+  - `utils/` — helper utilities used by controllers/views
 - `locales/` — translation JSON files (for i18n)
 
 ## Environment and configuration
@@ -83,8 +83,8 @@ npm start
 
 - Purpose: `nodemon` restarts the Node process when files change — convenient for development.
 - The `nodemon.json` file defines what files to watch/ignore and how to restart. Typical examples in this project:
-	- watch `src/`, `routes/`, `controllers/` and reload on server-side file changes
-	- ignore build or log directories
+  - watch `src/`, `routes/`, `controllers/` and reload on server-side file changes
+  - ignore build or log directories
 
 Open `nodemon.json` to see which extensions and paths are watched. If you need to exclude large folders (e.g., `node_modules`) make sure they are listed in the `ignore` array to speed up restarts.
 
@@ -92,9 +92,9 @@ Example (common fields):
 
 ```json
 {
-	"watch": ["src", "routes", "controllers"],
-	"ext": "js,json",
-	"ignore": ["node_modules", "public"]
+  "watch": ["src", "routes", "controllers"],
+  "ext": "js,json",
+  "ignore": ["node_modules", "public"]
 }
 ```
 
@@ -191,6 +191,65 @@ Use these scripts rather than calling `node` directly where possible; they may s
 - Never commit production secrets or private keys.
 - Use environment variables, a secrets manager, or mount secrets at runtime in containers.
 
+### Persistent Login (Remember Me)
+
+The application supports an optional "Remember Me" checkbox on the login page:
+
+- If checked: a JWT (`auth_token`) httpOnly, sameSite=strict (and secure in production) cookie is issued with a 30 day lifetime and the Express session `maxAge` is extended to the same period.
+- If not checked: only a session cookie (no `maxAge`) is used; closing the browser clears authentication and no persistent JWT cookie is stored.
+- Logging out always removes the `auth_token` and destroys the session.
+
+Environment requirements:
+
+- `JWT_SECRET` for signing the JWT.
+- `SESSION_SECRET` for the Express session.
+- Set `COOKIE_SECURE=true` (and serve via HTTPS) in production so cookies are only sent over TLS.
+
+To disable persistence entirely remove the token issuance block in `src/features/login/login.routes.js` and/or the `jwtCookieAuth` middleware.
+
+### Token Rotation & Device Management
+
+The app now uses two tokens when "Remember Me" is selected:
+
+- Access Token: JWT (`auth_token`) valid for 15 minutes.
+- Refresh Token: Opaque random value (`refresh_token`) valid for 30 days; stored as `userId.randomHex` in a cookie and hashed server-side.
+
+Rotation flow:
+
+- On each request if the access token is missing/expired but a valid refresh token cookie exists, `jwtCookieAuth` rotates both tokens (issues new access + refresh) and replaces the old hashed entry.
+- Failed validation clears the refresh cookie.
+
+Logout:
+
+- Removes current device's refresh token hash and clears both cookies.
+
+Forget All Devices:
+
+- POST `/account/forget-devices` (authenticated) clears every stored refresh token (logs out all devices) and removes cookies.
+
+Security notes:
+
+- Refresh tokens are stored hashed (`sha256`) in `user.refreshTokens`.
+- Cookies are httpOnly, sameSite=strict and should be `secure` in production.
+- Consider adding IP/device metadata and limiting number of stored refresh tokens for stricter control.
+
+### Persistent Authentication (JWT Cookie)
+
+The login flow now issues a signed JWT (`auth_token`) stored in a secure HTTP-only cookie (30 day lifetime) in addition to the session cookie.
+
+Details:
+
+- Cookie attributes: `httpOnly`, `sameSite=strict`, `secure` (only in production), `maxAge=30d`.
+- On each request, middleware `jwtCookieAuth` (in `src/middleware/`) restores the user if the session has expired but the JWT is still valid.
+- Logout clears both the session and the `auth_token` cookie.
+
+Environment requirements:
+
+- `JWT_SECRET` must be set; otherwise the JWT cookie is skipped.
+- Set `COOKIE_SECURE=true` in production behind HTTPS to enforce secure cookies.
+
+To disable persistence temporarily, remove or comment out the `jwtCookieAuth` middleware and the JWT creation block in `login.routes.js`.
+
 ## Troubleshooting
 
 - App doesn't start: check `node` version, install dependencies, and inspect `npm start` output.
@@ -250,4 +309,3 @@ If you'd like, I can also:
 - Add a short `CONTRIBUTING.md` or a `dev-setup` script for Windows-specific steps.
 
 Let me know which additions you'd like next.
-

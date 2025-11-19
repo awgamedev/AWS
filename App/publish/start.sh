@@ -1,5 +1,5 @@
 docker compose down
-ducker system prune -a
+docker system prune -a
 
 gunzip onis-web-app.tar.gz 
 docker load -i onis-web-app.tar

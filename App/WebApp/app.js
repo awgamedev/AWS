@@ -205,10 +205,20 @@ app.use(
     secret: process.env.SESSION_SECRET || "a-strong-default-secret", // Verwenden Sie ein echtes Geheimnis aus der .env
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.COOKIE_SECURE === "true",
+      // Standard: keine maxAge -> Sitzungscookie bis Browser geschlossen
+    },
   })
 );
 app.use(passport.initialize());
 app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passport
+
+// JWT-Cookie Auth vor devAutoLogin ausführen (stellt req.user wieder her, falls keine Session vorhanden)
+const { jwtCookieAuth } = require("./src/middleware/jwtCookieAuth");
+app.use(jwtCookieAuth);
 
 // --- NEUE MIDDLEWARE FÜR EJS GLOBALE VARIABLEN ---
 // Diese Middleware macht allgemeine Variablen für alle EJS-Templates verfügbar (res.locals)

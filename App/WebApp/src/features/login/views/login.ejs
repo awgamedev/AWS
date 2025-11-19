@@ -40,6 +40,10 @@
                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
                    placeholder="Ihr Passwort">
         </div>
+        <div class="flex items-center">
+            <input id="rememberMe" name="rememberMe" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" <%= rememberMe ? 'checked' : '' %> />
+            <label for="rememberMe" class="ml-2 block text-sm text-gray-700">Angemeldet bleiben (30 Tage)</label>
+        </div>
         
         <div class="pt-2">
             <button type="submit" 

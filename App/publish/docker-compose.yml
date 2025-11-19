@@ -9,7 +9,16 @@ services:
     depends_on:
       - mongo
     environment:
+      - NODE_ENV=production
+      - PORT=4000
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+      - COOKIE_SECURE=true
+      - JWT_SECRET=awdjwakdjj4l324j2v2jn4234423lj4n2l4j2fejlk23j4l23j4l23j4l23j4l23
+      - SESSION_SECRET=kdlwke3km333282jgrkjk34758923498jfklsdfjlsdfjsldfjsldfjsldfjsldfjsldfjsld
+      # Optional tunables (uncomment to override defaults)
+      # - ACCESS_TOKEN_TTL=15m
+      # - REFRESH_TOKEN_TTL=30d
+      # - MAX_REFRESH_TOKENS=10
     command: ["npm", "start"]
     logging:
       driver: "json-file"
