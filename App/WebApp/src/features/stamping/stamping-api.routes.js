@@ -17,10 +17,17 @@ router.post(
     try {
       const { userId, stampingType, stampingReason, date } = req.body;
 
-      // Validate stamping data
+      // Validate stamping data - create a modified req object with the target userId
+      const validationReq = {
+        body: { stampingType, stampingReason },
+        user: { id: userId },
+        __: req.__,
+      };
+
       const validationErrors = await validateStampingData(
-        { body: { stampingType, stampingReason }, user: { id: userId } },
-        ALLOWED_STAMPING_REASONS
+        validationReq,
+        ALLOWED_STAMPING_REASONS,
+        true // Skip sequence check for admin-created entries
       );
 
       if (Object.keys(validationErrors).length > 0) {
@@ -29,12 +36,19 @@ router.post(
           .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
       }
 
+      // Parse date string as local time (format: YYYY-MM-DDTHH:mm:ss)
+      // Split the datetime string and create a Date object with local timezone
+      const [datePart, timePart] = date.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second = 0] = timePart.split(":").map(Number);
+      const localDate = new Date(year, month - 1, day, hour, minute, second);
+
       // Create new stamping
       const newStamping = new Stamping({
         userId,
         stampingType,
         stampingReason: stampingType === "in" ? stampingReason : undefined,
-        date: new Date(date),
+        date: localDate,
       });
 
       const stampingEntry = await newStamping.save();

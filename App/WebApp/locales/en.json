@@ -129,5 +129,9 @@
 	"DELETE_STAMPING_TITLE": "Delete Stamping",
 	"CONFIRM_DELETE_STAMPING": "Are you sure you want to delete this stamping entry?",
 	"DELETE_STAMPING_BUTTON": "Delete",
-	"STAMPING_REASON_LABEL": "Reason (for Clock In)"
+	"STAMPING_REASON_LABEL": "Reason (for Clock In)",
+	"ERROR_INVALID_STAMPING_TYPE": "Invalid stamping type. Allowed are 'in' or 'out'.",
+	"ERROR_INVALID_STAMPING_REASON": "Please select a valid stamping reason.",
+	"ERROR_ALREADY_STAMPED_IN": "You are already clocked in. Please clock out first.",
+	"ERROR_NOT_STAMPED_IN": "You are not clocked in. Please clock in first."
 }

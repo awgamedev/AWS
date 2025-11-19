@@ -129,5 +129,9 @@
 	"DELETE_STAMPING_TITLE": "Supprimer le pointage",
 	"CONFIRM_DELETE_STAMPING": "Êtes-vous sûr de vouloir supprimer ce pointage?",
 	"DELETE_STAMPING_BUTTON": "Supprimer",
-	"STAMPING_REASON_LABEL": "Raison (pour l'entrée)"
+	"STAMPING_REASON_LABEL": "Raison (pour l'entrée)",
+	"ERROR_INVALID_STAMPING_TYPE": "Type de pointage invalide. Les valeurs autorisées sont 'in' ou 'out'.",
+	"ERROR_INVALID_STAMPING_REASON": "Veuillez sélectionner une raison de pointage valide.",
+	"ERROR_ALREADY_STAMPED_IN": "Vous êtes déjà pointé à l'entrée. Veuillez d'abord pointer à la sortie.",
+	"ERROR_NOT_STAMPED_IN": "Vous n'êtes pas pointé à l'entrée. Veuillez d'abord pointer à l'entrée."
 }

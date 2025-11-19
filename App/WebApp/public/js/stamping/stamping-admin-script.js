@@ -43,13 +43,14 @@ const handleCreateStamping = async (form) => {
     const stampingReason = formData.get("stampingReason");
     const userId = formData.get("userId");
 
-    const dateTime = new Date(`${date}T${time}`);
+    // Combine date and time as a single string to avoid timezone conversion
+    const dateTimeString = `${date}T${time}:00`;
 
     const payload = {
       userId,
       stampingType,
       stampingReason: stampingType === "in" ? stampingReason : undefined,
-      date: dateTime.toISOString(),
+      date: dateTimeString,
     };
 
     const { ok, data } = await api("/api/stampings", {

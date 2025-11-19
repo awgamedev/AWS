@@ -121,5 +121,9 @@
 	"DELETE_STAMPING_TITLE": "Stempelung löschen",
 	"CONFIRM_DELETE_STAMPING": "Möchten Sie diese Stempelung wirklich löschen?",
 	"DELETE_STAMPING_BUTTON": "Löschen",
-	"STAMPING_REASON_LABEL": "Grund (für Einstempelung)"
+	"STAMPING_REASON_LABEL": "Grund (für Einstempelung)",
+	"ERROR_INVALID_STAMPING_TYPE": "Ungültiger Stempeltyp. Erlaubt sind 'in' oder 'out'.",
+	"ERROR_INVALID_STAMPING_REASON": "Bitte wähle einen gültigen Stempelungsgrund aus.",
+	"ERROR_ALREADY_STAMPED_IN": "Du bist bereits eingestempelt. Bitte stempel zuerst aus.",
+	"ERROR_NOT_STAMPED_IN": "Du bist nicht eingestempelt. Bitte stempel zuerst ein."
 }
