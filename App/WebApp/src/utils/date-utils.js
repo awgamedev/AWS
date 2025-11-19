@@ -99,6 +99,35 @@ const addDays = (date, days) => {
   return newDate;
 };
 
+/**
+ * Formats week range for display
+ */
+function formatWeekRange(startOfWeek) {
+  const weekStartFormat = startOfWeek.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  const weekEndDisplay = addDays(startOfWeek, 6);
+  const weekEndFormat = weekEndDisplay.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  return `${weekStartFormat} - ${weekEndFormat}`;
+}
+
+/**
+ * Calculates the end of the displayed week
+ */
+function getEndOfDisplayedWeek(startOfWeek) {
+  const endOfWeek = addDays(startOfWeek, 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+  return endOfWeek;
+}
+
 module.exports = {
   dateUpdateTime,
   formatTime,
@@ -106,4 +135,6 @@ module.exports = {
   getDaysOfTheWeek,
   getStartOfWeek,
   addDays,
+  formatWeekRange,
+  getEndOfDisplayedWeek,
 };
