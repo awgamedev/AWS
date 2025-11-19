@@ -1,4 +1,6 @@
-async function validateStampingData(req) {
+const Stamping = require("./stamping.model");
+
+async function validateStampingData(req, allowedReasons) {
   const userId = req.user.id;
   const { stampingType, stampingReason } = req.body;
 
@@ -11,7 +13,7 @@ async function validateStampingData(req) {
   }
 
   if (stampingType === "in") {
-    if (!stampingReason || !ALLOWED_REASONS.includes(stampingReason)) {
+    if (!stampingReason || !allowedReasons.includes(stampingReason)) {
       errors.stampingReason = req.__(
         "Bitte wähle einen gültigen Stempelungsgrund aus."
       );

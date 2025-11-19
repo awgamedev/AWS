@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
 // Define the schema for our simple stamping
+const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
+
 const stampingSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -14,10 +16,7 @@ const stampingSchema = new mongoose.Schema({
   },
   stampingReason: {
     type: String,
-    // Feste, vorgegebene Auswahlmöglichkeiten für den Grund
-    enum: ["Kühe melken", "Feldarbeit", "Büroarbeit"],
-    // Wir machen es nicht required: true, da es bei "out" nicht benötigt wird.
-    // Die Logik, wann es benötigt wird, behandeln wir im POST-Handler.
+    enum: ALLOWED_STAMPING_REASONS,
   },
   date: {
     type: Date,

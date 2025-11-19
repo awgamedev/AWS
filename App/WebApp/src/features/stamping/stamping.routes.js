@@ -7,8 +7,8 @@ const { formatTime, formatDate } = require("../../utils/date-utils");
 const { getStampingPairs } = require("./utils/stamping-pair-utils");
 const { validateStampingData } = require("./stamping.validator");
 
-// NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
-const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];
+// Centralized allowed reasons
+const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
 
 // ⏳ GET Route: Stempel-Interface anzeigen (/stamping)
 router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
@@ -58,7 +58,7 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     currentStatus: currentStatus,
     lastStampingTime: lastStampingTime,
     stampingPairs: stampingPairs,
-    ALLOWED_REASONS: ALLOWED_REASONS,
+    allowedReasons: ALLOWED_STAMPING_REASONS,
     formatDate: formatDate,
     formatTime: formatTime,
   });
@@ -70,7 +70,10 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
     const userId = req.user.id;
     const { stampingType, stampingReason } = req.body;
 
-    const validationErrors = await validateStampingData(req);
+    const validationErrors = await validateStampingData(
+      req,
+      ALLOWED_STAMPING_REASONS
+    );
 
     // If there are validation errors, re-render the form with errors
     if (Object.keys(validationErrors).length > 0) {
@@ -127,6 +130,11 @@ router.get("/status", ensureAuthenticated, async (req, res) => {
     console.error("Error fetching stamping status:", err.message);
     res.status(500).json({ msg: "Server error while fetching status." });
   }
+});
+
+// Provide allowed reasons to client
+router.get("/stamp/reasons", ensureAuthenticated, (req, res) => {
+  res.json({ reasons: ALLOWED_STAMPING_REASONS });
 });
 
 module.exports = router;
