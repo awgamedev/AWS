@@ -57,6 +57,7 @@ router.post(
     if (rememberMe) {
       try {
         const secret = process.env.JWT_SECRET;
+        const cookieSecure = process.env.COOKIE_SECURE === "true";
         if (secret && req.user) {
           // Kurzlebiges Access Token (15 Minuten)
           const accessToken = jwt.sign({ id: req.user.id }, secret, {
@@ -65,7 +66,7 @@ router.post(
           res.cookie("auth_token", accessToken, {
             httpOnly: true,
             sameSite: "strict",
-            secure: process.env.NODE_ENV === "production",
+            secure: cookieSecure,
             maxAge: 15 * 60 * 1000,
           });
 
@@ -85,7 +86,7 @@ router.post(
           res.cookie("refresh_token", refreshCookieValue, {
             httpOnly: true,
             sameSite: "strict",
-            secure: process.env.NODE_ENV === "production",
+            secure: cookieSecure,
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Tage
           });
         }

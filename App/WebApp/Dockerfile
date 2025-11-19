@@ -1,21 +1,11 @@
 # 1. Base Image: Start from the official Node.js image, using the current LTS version.
-FROM node:24-alpine AS builder
+FROM node:24-alpine AS build
 
 # 2. Working Directory: Set the directory inside the container
 WORKDIR /usr/src/app
 
-# 3. Copy only the package.json and package-lock.json files first.
-# This allows Docker to cache the 'npm install' step efficiently.
 COPY package*.json ./
-
-# 4. Install Dependencies: Install all project dependencies (including express).
-# This assumes you have run 'npm init -y' and 'npm install express --save' on your host.
-# RUN npm ci --only=production
-RUN npm init -y
-RUN npm install express --save
-RUN npm ci
-# RUN npm install
-# RUN npm install ejs
+RUN npm ci --omit=dev
 
 # Löscht unnötige Dokumentation und Build-Artefakte aus node_modules, um das Image zu verkleinern
 RUN find node_modules -type f -name '*.md' -delete && \
@@ -36,8 +26,10 @@ FROM node:24-slim AS final
 
 WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app .
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY . .
 
 # 6. Expose Port: Inform Docker that the container listens on this port.
 EXPOSE 4000

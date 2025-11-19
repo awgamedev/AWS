@@ -72,16 +72,17 @@ async function jwtCookieAuth(req, res, next) {
     user.refreshTokens.push({ tokenHash: newRefreshHash });
     await user.save();
 
+    const cookieSecure = process.env.COOKIE_SECURE === "true";
     res.cookie("auth_token", newAccess, {
       httpOnly: true,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      secure: cookieSecure,
       maxAge: 15 * 60 * 1000,
     });
     res.cookie("refresh_token", `${user.id}.${newRefreshRaw}`, {
       httpOnly: true,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      secure: cookieSecure,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 

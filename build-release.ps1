@@ -50,7 +50,7 @@ try {
     Write-Host "Starting Docker build. Context: ."
     # Führt den Build im Kontext von 'App/WebApp' aus.
     # Das Dockerfile und package.json befinden sich jetzt im aktuellen Verzeichnis ('.').
-    & docker build -t $fullTag . 
+    & docker build --no-cache -t $fullTag . 
 }
 finally {
     Pop-Location # Kehrt zum ursprünglichen Verzeichnis zurück

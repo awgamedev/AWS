@@ -168,6 +168,11 @@ mongoose
 // Initialize the Express application
 const app = express();
 
+// Wenn hinter einem Reverse Proxy (z.B. nginx) in Produktion, aktivieren damit secure-Cookies korrekt erkannt werden
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 app.use(flash());
 
 // --- NEU: EJS View Engine Konfiguration (Jetzt mit dynamischen Pfaden) ---
