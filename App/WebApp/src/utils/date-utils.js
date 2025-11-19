@@ -48,6 +48,15 @@ function dateUpdateTime(date, timeAsString) {
   return date;
 }
 
+/**
+ * Get month name in German
+ */
+const getMonthNameDisplay = (date) =>
+  date.toLocaleDateString("de-DE", {
+    year: "numeric",
+    month: "long",
+  });
+
 // Funktion zur Formatierung der Zeit
 function formatTime(date) {
   if (!date) {
@@ -128,6 +137,15 @@ function getEndOfDisplayedWeek(startOfWeek) {
   return endOfWeek;
 }
 
+/**
+ * Get start and end date for a given month
+ */
+const getMonthDateRange = (year, month) => {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  return { startDate, endDate };
+};
+
 module.exports = {
   dateUpdateTime,
   formatTime,
@@ -137,4 +155,6 @@ module.exports = {
   addDays,
   formatWeekRange,
   getEndOfDisplayedWeek,
+  getMonthNameDisplay,
+  getMonthDateRange,
 };

@@ -44,7 +44,7 @@
                         <% sortedDays.forEach(day => { %>
                             <% const dayData = userData.dailyWork[day]; %>
                             <div class="p-2 border-b border-gray-100 flex justify-between items-start hover:bg-gray-50 transition duration-100">
-                                <span class="text-sm text-gray-900"><%= formatDate(day) %></span>
+                                <span class="text-sm text-gray-900"><%= formatDate(new Date(day)) %></span>
                                 <div class="text-left space-y-1">
                                     <% dayData.pairs.forEach(pair => { %>
                                         <%
@@ -78,7 +78,7 @@
             const selectedMonth = monthSelect.value;
             const selectedYear = yearSelect.value;
             // Seite mit den neuen Query-Parametern neu laden
-            window.location.href = `/stamping-overview?month=${selectedMonth}&year=${selectedYear}`;
+            window.location.href = `/time-tracking/stamping-overview?month=${selectedMonth}&year=${selectedYear}`;
         };
 
         monthSelect.addEventListener('change', navigateToSelectedMonth);
