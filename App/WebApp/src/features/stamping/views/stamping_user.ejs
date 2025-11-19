@@ -99,14 +99,7 @@
                     const comeDate = pair.come.date.toISOString().substring(0, 16);
                     const goDate = pair.go ? pair.go.date.toISOString().substring(0, 16) : "";
                 %>
-                <li class="stamping-item py-2 border-b border-gray-100 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition duration-100"
-                    data-come-id="<%= comeId %>"
-                    data-go-id="<%= goId %>"
-                    data-come-date="<%= comeDate %>"
-                    data-go-date="<%= goDate %>"
-                    data-reason="<%= reason %>"
-                    title="<%= __("CLICK_TO_EDIT") || "Klicken zum Bearbeiten" %>"
-                >
+                <li class="stamping-item py-2 border-b border-gray-100 flex justify-between items-center hover:bg-gray-50 transition duration-100">
                     <div class="flex flex-col flex-grow">
                         <div class="flex justify-between items-start">
                             <div class="flex-shrink-0">
@@ -131,7 +124,5 @@
         </ul>
     </div>
 </div>
-
-<%- include('_modal') %>
 
 <script src="/js/stamping/stamping-script.js"></script>

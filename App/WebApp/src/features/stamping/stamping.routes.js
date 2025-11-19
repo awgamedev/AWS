@@ -5,6 +5,7 @@ const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView } = require("../../utils/view-renderer");
 const { formatTime, formatDate } = require("../../utils/date-utils");
 const { getStampingPairs } = require("./utils/stamping-pair-utils");
+const { validateStampingData } = require("./stamping.validator");
 
 // NEU: Array der erlaubten Stempelungsgründe (für GET-Route und POST-Handler)
 const ALLOWED_REASONS = ["Kühe melken", "Feldarbeit", "Büroarbeit"];

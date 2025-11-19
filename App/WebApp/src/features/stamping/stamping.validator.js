@@ -1,4 +1,4 @@
-const validateStampingData = async (req) => {
+async function validateStampingData(req) {
   const userId = req.user.id;
   const { stampingType, stampingReason } = req.body;
 
@@ -42,4 +42,6 @@ const validateStampingData = async (req) => {
   }
 
   return errors;
-};
+}
+
+module.exports = { validateStampingData };
