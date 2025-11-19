@@ -4,8 +4,6 @@ const User = require("../user/user.model");
 const { ensureAuthenticated } = require("../../middleware/auth");
 const taskController = require("./task.controller");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
-const path = require("path");
-const { renderModalContent } = require("../modal/modal-utils");
 const {
   getDaysOfTheWeek,
   getStartOfWeek,
@@ -16,7 +14,7 @@ const {
 const { fetchTasksForWeek, groupTasksByDayAndUser } = require("./task-utils");
 
 // ============================================================================
-// HELPER METHODS (Move these to a separate utils file later)
+// HELPER METHODS
 // ============================================================================
 
 /**
@@ -55,29 +53,12 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       daysOfWeek
     );
 
-    // Render modals
-    const viewsPath = path.join(__dirname, "views");
-    const createTaskContentHtml = renderModalContent(
-      viewsPath,
-      "task_board_create_modal.ejs",
-      users,
-      req.__
-    );
-    const editTaskContentHtml = renderModalContent(
-      viewsPath,
-      "task_board_edit_modal.ejs",
-      users,
-      req.__
-    );
-
     // Render view
     renderView(req, res, "task_board", title, {
       users,
       tasksByDayAndUser,
       daysOfWeek,
       weekRange: formatWeekRange(startOfWeek),
-      createTaskContentHtml,
-      editTaskContentHtml,
     });
   } catch (error) {
     req.logger.error("Error while fetching task board:", error);

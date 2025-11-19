@@ -71,12 +71,7 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
     </table>
 </div>
 
-<%- include('_modal') %>
-
 <script>
-    window.CREATE_TASK_HTML = `<%- createTaskContentHtml %>`;
-    window.EDIT_TASK_STATIC_HTML = `<%- editTaskContentHtml %>`;
-    
     window.CREATE_MODAL_TITLE = "<%= createTaskTitle %>";
     window.EDIT_MODAL_TITLE = "<%= unassignedTasksTitle %>";
 </script>
