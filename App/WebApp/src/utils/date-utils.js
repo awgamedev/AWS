@@ -72,4 +72,38 @@ function formatDate(date) {
   });
 }
 
-module.exports = { dateUpdateTime, formatTime, formatDate };
+function getDaysOfTheWeek() {
+  return [
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag",
+    "Sonntag",
+  ];
+}
+
+const getStartOfWeek = (date) => {
+  const d = new Date(date);
+  const day = d.getDay(); // Passe den Tag an, sodass 0 = Sonntag, 1 = Montag, ..., 6 = Samstag.
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const addDays = (date, days) => {
+  const newDate = new Date(date);
+  newDate.setDate(date.getDate() + days);
+  return newDate;
+};
+
+module.exports = {
+  dateUpdateTime,
+  formatTime,
+  formatDate,
+  getDaysOfTheWeek,
+  getStartOfWeek,
+  addDays,
+};

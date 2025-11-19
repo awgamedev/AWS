@@ -8,38 +8,18 @@ const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const ejs = require("ejs"); // NEU: EJS importieren
 const fs = require("fs"); // NEU: FS importieren
 const path = require("path"); // NEU: Path importieren
-
-// Hilfsfunktion: Fügt Tage zu einem Datum hinzu
-const addDays = (date, days) => {
-  const newDate = new Date(date);
-  newDate.setDate(date.getDate() + days);
-  return newDate;
-};
-
-// Hilfsfunktion: Ermittelt den Start der Woche (Montag)
-const getStartOfWeek = (date) => {
-  const d = new Date(date);
-  const day = d.getDay(); // Passe den Tag an, sodass 0 = Sonntag, 1 = Montag, ..., 6 = Samstag.
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
+const {
+  getDaysOfTheWeek,
+  getStartOfWeek,
+  addDays,
+} = require("../../utils/date-utils");
 
 // 📅 GET Route: Aufgabenboard anzeigen (/task-list)
 router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
   let users = [];
   let tasksByDayAndUser = {};
   const title = req.__("TASK_BOARD_PAGE_TITLE");
-  const daysOfWeek = [
-    "Montag",
-    "Dienstag",
-    "Mittwoch",
-    "Donnerstag",
-    "Freitag",
-    "Samstag",
-    "Sonntag",
-  ]; // Ermittle den Start der aktuellen Woche (Montag)
+  const daysOfWeek = getDaysOfTheWeek();
 
   const startOfWeek = getStartOfWeek(new Date());
   const endOfDisplayedWeek = addDays(startOfWeek, 7); // Wir brauchen das Enddatum der angezeigten Woche (Sonntag 23:59:59)
@@ -121,7 +101,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
   const editTaskContentHtml = ejs.render(
     fs.readFileSync(path.join(viewsPath, "task_board_edit_modal.ejs"), "utf-8"),
     { users: users, __: req.__ }
-  ); // --- ENDE VOR-RENDERING ---
+  );
   const weekStartFormat = startOfWeek.toLocaleDateString("de-DE", {
     day: "2-digit",
     month: "2-digit",
