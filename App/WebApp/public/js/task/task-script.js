@@ -92,13 +92,9 @@ const loadWeekData = async (offset) => {
   currentWeekOffset = offset;
 
   try {
-    console.log(`Fetching week data for offset: ${offset}`);
     const response = await api(`/api/task-board/week?offset=${offset}`);
-    console.log("API Response:", response);
-
     if (response && response.ok && response.data) {
       const { html, weekRange, weekOffset } = response.data;
-      console.log("Week data received");
       updateTaskBoard(html, weekRange);
       updateWeekDisplay();
 
