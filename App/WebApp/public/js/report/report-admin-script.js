@@ -1,5 +1,8 @@
 // Report admin calendar renderer
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize modal
+  initModal();
+
   const yearInput = document.getElementById("year-input");
   const monthInput = document.getElementById("month-input");
   const loadBtn = document.getElementById("load-calendar");
@@ -77,48 +80,58 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showDetails(r) {
-    detailsDiv.innerHTML = `<div class="p-4 border rounded">
-      <h2 class="font-semibold mb-2">Meldung-Details</h2>
-      <p><strong>User:</strong> ${r.user}</p>
-      <p><strong>Typ:</strong> ${r.type}</p>
-      <p><strong>Status:</strong> ${r.status}</p>
-      <p><strong>Von:</strong> ${new Date(r.startDate).toLocaleDateString(
-        "de-DE"
-      )}</p>
-      <p><strong>Bis:</strong> ${new Date(r.endDate).toLocaleDateString(
-        "de-DE"
-      )}</p>
-      <p><strong>Beschreibung:</strong> ${r.description || ""}</p>
-      <div class="mt-3 space-x-2">
-        <button id="approve-btn" class="bg-green-600 text-white px-2 py-1 rounded">Genehmigen</button>
-        <button id="reject-btn" class="bg-red-600 text-white px-2 py-1 rounded">Ablehnen</button>
-      </div>
-      <div id="admin-action-msg" class="mt-2 text-sm"></div>
-    </div>`;
+    const params = new URLSearchParams({
+      reportId: r.id,
+      user: r.user || "?",
+      type: r.type,
+      status: r.status,
+      startDate: r.startDate,
+      endDate: r.endDate,
+      description: r.description || "",
+    });
 
-    document
-      .getElementById("approve-btn")
-      .addEventListener("click", () => adminAction(r.id, "approve"));
-    document
-      .getElementById("reject-btn")
-      .addEventListener("click", () => adminAction(r.id, "reject"));
+    openModalFromApi(
+      "Meldung-Details",
+      `/api/modal/report-details?${params.toString()}`,
+      () => {
+        // Setup action buttons
+        const approveBtn = document.getElementById("approve-btn");
+        const rejectBtn = document.getElementById("reject-btn");
+
+        if (approveBtn) {
+          approveBtn.addEventListener("click", () =>
+            adminAction(r.id, "approve")
+          );
+        }
+        if (rejectBtn) {
+          rejectBtn.addEventListener("click", () =>
+            adminAction(r.id, "reject")
+          );
+        }
+      }
+    );
   }
 
   async function adminAction(id, action) {
     const msgDiv = document.getElementById("admin-action-msg");
+    if (!msgDiv) return;
+
     msgDiv.textContent = "Sende...";
-    msgDiv.className = "mt-2 text-sm text-gray-600";
+    msgDiv.className = "mt-3 text-sm text-center text-gray-600";
     try {
       const resp = await fetch(`/reports/${id}/${action}`, { method: "POST" });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.msg || "Fehler");
       msgDiv.textContent = data.msg;
-      msgDiv.className = "mt-2 text-sm text-green-600";
-      // refresh calendar to reflect status
-      loadCalendar();
+      msgDiv.className = "mt-3 text-sm text-center text-green-600";
+      // Close modal and refresh calendar after short delay
+      setTimeout(() => {
+        closeModal();
+        loadCalendar();
+      }, 1000);
     } catch (err) {
       msgDiv.textContent = err.message || "Aktion fehlgeschlagen.";
-      msgDiv.className = "mt-2 text-sm text-red-600";
+      msgDiv.className = "mt-3 text-sm text-center text-red-600";
     }
   }
 });

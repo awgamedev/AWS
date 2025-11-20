@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../user/user.model");
-const { ensureAuthenticated } = require("../../middleware/auth");
+const { ensureAuthenticated, checkRole } = require("../../middleware/auth");
 const path = require("path");
 const { renderModalContent } = require("./modal-utils");
 
@@ -208,5 +208,41 @@ router.get("/api/modal/report-edit", ensureAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Failed to load modal content" });
   }
 });
+
+/**
+ * GET /api/modal/report-details
+ * Returns HTML for the report details modal (admin view)
+ */
+router.get(
+  "/api/modal/report-details",
+  ensureAuthenticated,
+  checkRole("admin"),
+  async (req, res) => {
+    try {
+      const { reportId, user, type, status, startDate, endDate, description } =
+        req.query;
+      const viewsPath = path.join(__dirname, "../report/views");
+      const templatePath = path.join(viewsPath, "report_details_modal.ejs");
+      const template = require("fs").readFileSync(templatePath, "utf-8");
+      const ejs = require("ejs");
+
+      const html = ejs.render(template, {
+        reportId,
+        user,
+        type,
+        status,
+        startDate,
+        endDate,
+        description: description || "",
+        __: req.__,
+      });
+
+      res.json({ html });
+    } catch (error) {
+      req.logger.error("Error rendering report details modal:", error);
+      res.status(500).json({ error: "Failed to load modal content" });
+    }
+  }
+);
 
 module.exports = router;
