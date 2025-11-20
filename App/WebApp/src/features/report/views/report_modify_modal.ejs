@@ -4,7 +4,7 @@
   <div>
     <label class="block mb-1 text-sm font-medium text-gray-700" for="type">Typ</label>
     <select name="type" id="report-type" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-      <option value="">-- wählen --</option>
+      <!-- <option value="">-- wählen --</option> -->
       <% (types || ['vacation','illness']).forEach(function(t){ %>
         <option value="<%= t %>"><%= __('REPORT_TYPE_' + t.toUpperCase()) %></option>
       <% }) %>
