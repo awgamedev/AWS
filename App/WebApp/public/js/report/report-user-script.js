@@ -145,6 +145,10 @@ document.addEventListener("DOMContentLoaded", () => {
     createBtn.addEventListener("click", () => {
       openModalFromApi("Report anlegen", "/api/modal/report-create", () => {
         clearErrors();
+        // Initialize start and end date to current day
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("report-startDate").value = today;
+        document.getElementById("report-endDate").value = today;
       });
     });
   }
