@@ -42,7 +42,7 @@ const initModal = (__translator) => {
     >
       <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
       <div 
-        class="mx-2 bg-white rounded-lg shadow-xl transform transition-all sm:w-full sm:max-w-lg"
+        class="mx-2 sm:mx-4 bg-white rounded-lg shadow-xl transform transition-all w-full max-w-lg max-h-[90vh] overflow-y-auto"
         role="dialog" 
         aria-modal="true" 
         aria-labelledby="modal-title"
@@ -53,17 +53,17 @@ const initModal = (__translator) => {
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
       >
-        <div class="px-4 py-3 sm:px-6 flex justify-between items-center border-b">
-          <h3 class="text-lg font-medium text-gray-900" id="modal-title" x-text="title"></h3>
-          <button @click="closeModal()" type="button" class="text-gray-400 hover:text-gray-500">
+        <div class="px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center border-b sticky top-0 bg-white z-10">
+          <h3 class="text-base sm:text-lg font-medium text-gray-900 pr-2" id="modal-title" x-text="title"></h3>
+          <button @click="closeModal()" type="button" class="text-gray-400 hover:text-gray-500 p-1 touch-manipulation">
             <span class="sr-only">Close</span>
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <svg class="h-5 w-5 sm:h-6 sm:w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div class="p-6">
+        <div class="p-3 sm:p-4 md:p-6">
           <div x-html="contentHtml"></div>
         </div>
       </div>

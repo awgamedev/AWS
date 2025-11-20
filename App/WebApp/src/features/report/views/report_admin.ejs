@@ -1,4 +1,4 @@
-<div class="p-6">
+<div class="p-2 sm:p-4 md:p-6">
   <%
     const now = new Date();
     const currentMonth = (typeof selectedMonth !== 'undefined' && selectedMonth) ? selectedMonth : now.getMonth() + 1; // 1..12
@@ -22,23 +22,23 @@
     const months = (typeof monthOptions !== 'undefined' && monthOptions && monthOptions.length) ? monthOptions : fallbackMonthOptions;
     const years = (typeof yearOptions !== 'undefined' && yearOptions && yearOptions.length) ? yearOptions : fallbackYearOptions;
   %>
-  <div class="bg-white p-4 rounded-xl shadow mb-4">
-    <div class="text-sm font-semibold text-gray-700 mb-3">Zeitraum wählen:</div>
+  <div class="bg-white p-3 sm:p-4 rounded-lg sm:rounded-xl shadow mb-3 sm:mb-4">
+    <div class="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Zeitraum wählen:</div>
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-      <select id="month-input" class="flex-1 p-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <select id="month-input" class="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 touch-manipulation">
         <% months.forEach(m => { %>
           <option value="<%= m.value %>" <%= m.isSelected ? 'selected' : '' %>><%= m.name %></option>
         <% }) %>
       </select>
-      <select id="year-input" class="flex-1 sm:flex-none sm:w-32 p-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <select id="year-input" class="flex-1 sm:flex-none sm:w-32 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 touch-manipulation">
         <% years.forEach(y => { %>
           <option value="<%= y.value %>" <%= y.isSelected ? 'selected' : '' %>><%= y.value %></option>
         <% }) %>
       </select>
     </div>
   </div>
-  <div id="calendar" class="grid grid-cols-7 gap-2"></div>
-  <div id="report-details" class="mt-6"></div>
+  <div id="calendar" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
+  <div id="report-details" class="mt-4 sm:mt-6"></div>
   <script>
     // Translation data for client-side use
     window.reportTranslations = {

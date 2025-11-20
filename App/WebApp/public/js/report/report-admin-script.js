@@ -33,24 +33,43 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const daysInMonth = lastDay.getDate();
-    const startWeekday = firstDay.getDay(); // 0=So
+    const startWeekday = firstDay.getDay(); // 0=Sunday, 1=Monday, etc.
+    // Convert to Monday-based (0=Monday, 6=Sunday)
+    const startWeekdayMondayBased = startWeekday === 0 ? 6 : startWeekday - 1;
+    const mobile = isMobile();
 
     calendarDiv.innerHTML = "";
-    calendarDiv.classList.add("text-xs");
+    calendarDiv.classList.add(mobile ? "text-[10px]" : "text-xs");
+
+    // Add weekday headers (Monday first)
+    const weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    weekdays.forEach((day) => {
+      const header = document.createElement("div");
+      header.className = `text-center font-semibold p-1 bg-gray-100 border ${
+        mobile ? "text-[9px]" : "text-xs"
+      }`;
+      header.textContent = day;
+      calendarDiv.appendChild(header);
+    });
 
     // Empty cells before first day
-    for (let i = 0; i < startWeekday; i++) {
+    for (let i = 0; i < startWeekdayMondayBased; i++) {
       const emptyCell = document.createElement("div");
-      emptyCell.className = "border p-1 h-20 bg-gray-50";
+      emptyCell.className = `border p-1 bg-gray-50 ${mobile ? "h-16" : "h-20"}`;
       calendarDiv.appendChild(emptyCell);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateObj = new Date(year, month - 1, day);
       const cell = document.createElement("div");
-      cell.className = "border p-1 h-20 overflow-auto relative";
+      cell.className = `border p-1 overflow-auto relative ${
+        mobile ? "h-16" : "h-20"
+      }`;
+
       const label = document.createElement("div");
-      label.className = "text-gray-600 text-right text-[10px]";
+      label.className = `text-gray-600 text-right ${
+        mobile ? "text-[9px]" : "text-[10px]"
+      }`;
       label.textContent = day;
       cell.appendChild(label);
 
@@ -63,17 +82,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
       dayReports.forEach((r) => {
         const tag = document.createElement("div");
-        tag.className = `mt-1 px-1 rounded text-[10px] cursor-pointer ${
+        const statusClass =
           r.status === "approved"
             ? "bg-green-200"
             : r.status === "rejected"
             ? "bg-red-200"
-            : "bg-yellow-200"
-        }`;
+            : "bg-yellow-200";
+
+        tag.className = `mt-1 px-1 rounded cursor-pointer touch-manipulation ${
+          mobile ? "text-[9px] py-0.5" : "text-[10px]"
+        } ${statusClass}`;
+
         const translatedType =
           window.reportTranslations?.types[r.type] || r.type;
-        tag.textContent = `${r.user || "?"}: ${translatedType}`;
-        tag.title = r.description || "";
+
+        // On mobile, show abbreviated version
+        if (mobile) {
+          tag.textContent = `${(r.user || "?").substring(0, 3)}.`;
+          tag.title = `${r.user || "?"}: ${translatedType} - ${
+            r.description || ""
+          }`;
+        } else {
+          tag.textContent = `${r.user || "?"}: ${translatedType}`;
+          tag.title = r.description || "";
+        }
+
         tag.addEventListener("click", () => showDetails(r));
         cell.appendChild(tag);
       });
