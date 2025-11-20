@@ -9,8 +9,19 @@ const getPriorityColor = (priority) => {
     }
 };
 
+const getStatusLabel = (status) => {
+    switch (status) {
+      case "pending": return __("STATUS_PENDING");
+      case "in-progress": return __("STATUS_IN_PROGRESS");
+      case "completed": return __("STATUS_COMPLETED");
+      default: return status;
+    }
+};
+
 const createTaskTitle = __("CREATE_NEW_TASK");
 const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
+
+
 %>
 
 <div class="mb-3 md:mb-4">
@@ -79,7 +90,8 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
                                         data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
                                         title="<%= __("STATUS_TITLE") %>: <%= task.taskStatus %> - <%= __("CLICK_TO_EDIT") %>"
                                     >
-                                        <%= task.taskName %> (<%= task.assignedUsername %>)
+                                        <div><%= task.taskName %> (<%= task.assignedUsername %>)</div>
+                                        <div class="text-[10px] opacity-75 mt-0.5"><%= __("STATUS_TITLE") %>: <%= getStatusLabel(task.taskStatus) %></div>
                                     </div>
                                 <% }) %>
                             </td>
@@ -137,6 +149,9 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
                                             </div>
                                             <div class="text-xs mt-1 opacity-75">
                                                 <%= task.assignedUsername %>
+                                            </div>
+                                            <div class="text-xs mt-1 opacity-75">
+                                                <%= __("STATUS_TITLE") %>: <%= getStatusLabel(task.taskStatus) %>
                                             </div>
                                         </div>
                                     <% }) %>
