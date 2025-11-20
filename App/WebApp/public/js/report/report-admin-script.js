@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showDetails(r) {
     detailsDiv.innerHTML = `<div class="p-4 border rounded">
-      <h2 class="font-semibold mb-2">Report Details</h2>
+      <h2 class="font-semibold mb-2">Meldung-Details</h2>
       <p><strong>User:</strong> ${r.user}</p>
       <p><strong>Typ:</strong> ${r.type}</p>
       <p><strong>Status:</strong> ${r.status}</p>

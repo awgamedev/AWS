@@ -36,6 +36,30 @@ const showErrors = (errors) => {
     }
   });
 };
+
+// Date validation: adjust dates if they're out of order
+const setupDateValidation = () => {
+  const startDateInput = document.getElementById("report-startDate");
+  const endDateInput = document.getElementById("report-endDate");
+
+  if (startDateInput && endDateInput) {
+    startDateInput.addEventListener("change", () => {
+      if (startDateInput.value && endDateInput.value) {
+        if (startDateInput.value > endDateInput.value) {
+          endDateInput.value = startDateInput.value;
+        }
+      }
+    });
+
+    endDateInput.addEventListener("change", () => {
+      if (startDateInput.value && endDateInput.value) {
+        if (endDateInput.value < startDateInput.value) {
+          startDateInput.value = endDateInput.value;
+        }
+      }
+    });
+  }
+};
 // -------------------------------
 // Modal Handlers
 // -------------------------------
@@ -54,6 +78,7 @@ window.openEditReportModal = (id, type, startDate, endDate, description) => {
     `/api/modal/report-edit?reportId=${id}`,
     () => {
       fillEditForm({ id, type, startDate, endDate, description });
+      setupDateValidation();
     }
   );
 };
@@ -149,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("report-startDate").value = today;
         document.getElementById("report-endDate").value = today;
+        setupDateValidation();
       });
     });
   }
