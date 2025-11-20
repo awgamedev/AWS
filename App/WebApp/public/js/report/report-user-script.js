@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const createBtn = document.getElementById("open-report-modal");
   if (createBtn) {
     createBtn.addEventListener("click", () => {
-      openModalFromApi("Report anlegen", "/api/modal/report-create", () => {
+      openModalFromApi("Meldung anlegen", "/api/modal/report-create", () => {
         clearErrors();
         // Initialize start and end date to current day
         const today = new Date().toISOString().split("T")[0];

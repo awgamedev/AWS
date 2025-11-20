@@ -1,8 +1,8 @@
 <div class="p-4">
   <div class="space-y-2 mb-4">
     <p><strong><%= __('USER') %>:</strong> <span id="detail-user"><%= user %></span></p>
-    <p><strong><%= __('TYPE') %>:</strong> <span id="detail-type"><%= type %></span></p>
-    <p><strong><%= __('STATUS') %>:</strong> <span id="detail-status"><%= status %></span></p>
+    <p><strong><%= __('TYPE') %>:</strong> <span id="detail-type"><%= __('REPORT_TYPE_' + type.toUpperCase()) %></span></p>
+    <p><strong><%= __('STATUS') %>:</strong> <span id="detail-status"><%= __('REPORT_STATUS_' + status.toUpperCase()) %></span></p>
     <p><strong><%= __('FROM') %>:</strong> <span id="detail-start"><%= new Date(startDate).toLocaleDateString('de-DE') %></span></p>
     <p><strong><%= __('TO') %>:</strong> <span id="detail-end"><%= new Date(endDate).toLocaleDateString('de-DE') %></span></p>
     <p><strong><%= __('DESCRIPTION') %>:</strong> <span id="detail-description"><%= description || '' %></span></p>

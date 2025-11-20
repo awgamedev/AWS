@@ -70,7 +70,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ? "bg-red-200"
             : "bg-yellow-200"
         }`;
-        tag.textContent = `${r.user || "?"}: ${r.type}`;
+        const translatedType =
+          window.reportTranslations?.types[r.type] || r.type;
+        tag.textContent = `${r.user || "?"}: ${translatedType}`;
         tag.title = r.description || "";
         tag.addEventListener("click", () => showDetails(r));
         cell.appendChild(tag);

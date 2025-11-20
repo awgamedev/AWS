@@ -21,10 +21,10 @@
       <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
         <% (items || []).forEach(r => { %>
           <tr data-id="<%= r._id %>" data-type="<%= r.type %>" data-start="<%= new Date(r.startDate).toLocaleDateString('de-DE') %>" data-end="<%= new Date(r.endDate).toLocaleDateString('de-DE') %>" data-status="<%= r.status %>" data-description="<%= r.description || '' %>">
-            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Typ"><%= r.type %></td>
+            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Typ"><%= __('REPORT_TYPE_' + r.type.toUpperCase()) %></td>
             <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Start"><%= new Date(r.startDate).toLocaleDateString('de-DE') %></td>
             <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Ende"><%= new Date(r.endDate).toLocaleDateString('de-DE') %></td>
-            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Status"><%= r.status %></td>
+            <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Status"><%= __('REPORT_STATUS_' + r.status.toUpperCase()) %></td>
             <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Beschreibung"><%= r.description || '' %></td>
             <td class="px-6 py-3 text-right">
               <div class="flex justify-end gap-2">
@@ -48,5 +48,19 @@
     </table>
   </div>
 
+  <script>
+    // Translation data for client-side use
+    window.reportTranslations = {
+      types: {
+        vacation: "<%= __('REPORT_TYPE_VACATION') %>",
+        illness: "<%= __('REPORT_TYPE_ILLNESS') %>"
+      },
+      statuses: {
+        pending: "<%= __('REPORT_STATUS_PENDING') %>",
+        approved: "<%= __('REPORT_STATUS_APPROVED') %>",
+        rejected: "<%= __('REPORT_STATUS_REJECTED') %>"
+      }
+    };
+  </script>
   <script src="/js/report/report-user-script.js"></script>
 </div>

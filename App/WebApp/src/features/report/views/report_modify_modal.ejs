@@ -6,7 +6,7 @@
     <select name="type" id="report-type" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500">
       <option value="">-- wählen --</option>
       <% (types || ['vacation','illness']).forEach(function(t){ %>
-        <option value="<%= t %>"><%= t %></option>
+        <option value="<%= t %>"><%= __('REPORT_TYPE_' + t.toUpperCase()) %></option>
       <% }) %>
     </select>
     <p id="type-error" class="text-red-600 text-sm mt-1 hidden"></p>
@@ -36,7 +36,7 @@
   
   <div class="flex gap-2 justify-end">
     <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-      <% __("CANCEL") %>
+      <%= __("CANCEL") %>
     </button>
     <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
       <%= isEditing ? __('SAVE_BUTTON') : __('CREATE_BUTTON') %>

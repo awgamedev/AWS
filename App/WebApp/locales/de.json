@@ -156,5 +156,10 @@
 	"TO": "Bis",
 	"DESCRIPTION": "Beschreibung",
 	"APPROVE": "Genehmigen",
-	"REJECT": "Ablehnen"
+	"REJECT": "Ablehnen",
+	"REPORT_STATUS_PENDING": "Ausstehend",
+	"REPORT_STATUS_APPROVED": "Genehmigt",
+	"REPORT_STATUS_REJECTED": "Abgelehnt",
+	"REPORT_TYPE_VACATION": "Urlaub",
+	"REPORT_TYPE_ILLNESS": "Krankheit"
 }
