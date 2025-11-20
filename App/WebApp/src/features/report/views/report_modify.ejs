@@ -1,0 +1,41 @@
+<div class="p-6">
+	<h1 class="text-2xl font-semibold mb-4">
+		<%= isEditing ? __('REPORT_EDIT_TITLE') || 'Report bearbeiten' : __('REPORT_CREATE_TITLE') || 'Report anlegen' %>
+	</h1>
+	<form method="POST" action="<%= isEditing ? '/reports/modify' : '/reports/create' %>" class="space-y-4" id="report-modify-form">
+		<% if (isEditing && entityToModify && entityToModify._id) { %>
+			<input type="hidden" name="id" value="<%= entityToModify._id %>">
+		<% } %>
+		<div>
+			<label class="block mb-1" for="type">Typ</label>
+			<select name="type" id="type" class="border p-2 w-64">
+				<option value="">-- wählen --</option>
+				<% (types || ['vacation','illness']).forEach(function(t){ %>
+					<option value="<%= t %>" <%= entityToModify && entityToModify.type === t ? 'selected' : '' %>><%= t %></option>
+				<% }) %>
+			</select>
+			<% if (errors && errors.type) { %><p class="text-red-600 text-sm"><%= errors.type %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="startDate">Start</label>
+			<input type="date" name="startDate" id="startDate" class="border p-2" value="<%= entityToModify.startDate ? (new Date(entityToModify.startDate).toISOString().substring(0,10)) : '' %>" />
+			<% if (errors && errors.startDate) { %><p class="text-red-600 text-sm"><%= errors.startDate %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="endDate">Ende</label>
+			<input type="date" name="endDate" id="endDate" class="border p-2" value="<%= entityToModify.endDate ? (new Date(entityToModify.endDate).toISOString().substring(0,10)) : '' %>" />
+			<% if (errors && errors.endDate) { %><p class="text-red-600 text-sm"><%= errors.endDate %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="description">Beschreibung (optional)</label>
+			<textarea name="description" id="description" rows="3" class="border p-2 w-full"><%= entityToModify.description || '' %></textarea>
+		</div>
+		<% if (errors && errors.dateRange) { %><p class="text-red-600 text-sm"><%= errors.dateRange %></p><% } %>
+		<% if (errors && errors.overlap) { %><p class="text-red-600 text-sm"><%= errors.overlap %></p><% } %>
+		<% if (errors && errors.general) { %><p class="text-red-600 text-sm"><%= errors.general %></p><% } %>
+		<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+			<%= isEditing ? __('SAVE_BUTTON') || 'Speichern' : __('CREATE_BUTTON') || 'Anlegen' %>
+		</button>
+		<a href="/reports/my" class="ml-2 text-sm text-gray-600 underline">Zurück zur Liste</a>
+	</form>
+</div>

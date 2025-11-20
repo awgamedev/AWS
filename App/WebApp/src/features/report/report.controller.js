@@ -6,31 +6,26 @@ const { validateReportData } = require("./report.validator");
 
 // GET form for creating a report
 async function showCreateForm(req, res) {
-  const title = req.__("REPORT_CREATE_TITLE");
-  renderView(req, res, "report_user", title, {
+  const title = req.__("REPORT_CREATE_TITLE") || "Report anlegen";
+  renderView(req, res, "report_modify", title, {
     entityToModify: {},
     isEditing: false,
     errors: {},
     types: REPORT_TYPES,
-    myReports: [],
   });
 }
 
 // GET list of own reports
 async function listUserReports(req, res) {
-  const title = req.__("REPORT_MY_TITLE");
+  const title = req.__("REPORT_MY_TITLE") || "Meine Reports";
   try {
     const items = await Report.find({ userId: req.user.id })
       .sort({ startDate: 1 })
       .exec();
     renderView(req, res, "report_user", title, {
-      myReports: items.map((i) => i.toObject()),
-      entityToModify: {},
-      isListing: true,
-      isEditing: false,
+      items: items.map((i) => i.toObject()),
       types: REPORT_TYPES,
       statuses: REPORT_STATUSES,
-      errors: {},
     });
   } catch (err) {
     req.logger.error("Error listing reports", err);
@@ -45,7 +40,7 @@ async function createReport(req, res) {
   try {
     const validationErrors = await validateReportData(req, false);
     if (Object.keys(validationErrors).length > 0) {
-      return renderView(req, res, "report_user", title, {
+      return renderView(req, res, "report_modify", title, {
         entityToModify: { type, startDate, endDate, description },
         isEditing: false,
         errors: validationErrors,
@@ -68,6 +63,63 @@ async function createReport(req, res) {
   }
 }
 
+// GET form to edit an existing report
+async function showEditForm(req, res) {
+  const reportId = req.params.id;
+  const title = req.__("REPORT_EDIT_TITLE") || "Report bearbeiten";
+  try {
+    const entity = await Report.findById(reportId).exec();
+    if (!entity || entity.userId.toString() !== req.user.id.toString()) {
+      return renderErrorView(req, res, "REPORT_NOT_FOUND", 404);
+    }
+    if (entity.status !== "pending") {
+      return renderErrorView(req, res, "REPORT_NOT_EDITABLE", 400);
+    }
+    renderView(req, res, "report_modify", title, {
+      entityToModify: entity.toObject(),
+      isEditing: true,
+      errors: {},
+      types: REPORT_TYPES,
+    });
+  } catch (err) {
+    req.logger.error("Error loading report for edit", err);
+    return renderErrorView(req, res, "REPORT_EDIT_LOAD_ERROR", 500);
+  }
+}
+
+// POST modify existing report
+async function modifyReport(req, res) {
+  const { id, type, startDate, endDate, description } = req.body;
+  const title = req.__("REPORT_EDIT_TITLE") || "Report bearbeiten";
+  try {
+    const entity = await Report.findById(id).exec();
+    if (!entity || entity.userId.toString() !== req.user.id.toString()) {
+      return renderErrorView(req, res, "REPORT_NOT_FOUND", 404);
+    }
+    if (entity.status !== "pending") {
+      return renderErrorView(req, res, "REPORT_NOT_EDITABLE", 400);
+    }
+    const validationErrors = await validateReportData(req, true);
+    if (Object.keys(validationErrors).length > 0) {
+      return renderView(req, res, "report_modify", title, {
+        entityToModify: { id, type, startDate, endDate, description },
+        isEditing: true,
+        errors: validationErrors,
+        types: REPORT_TYPES,
+      });
+    }
+    entity.type = type;
+    entity.startDate = new Date(startDate);
+    entity.endDate = new Date(endDate);
+    entity.description = description;
+    await entity.save();
+    res.redirect("/reports/my");
+  } catch (err) {
+    req.logger.error("Error modifying report", err);
+    return renderErrorView(req, res, "REPORT_MODIFY_ERROR", 500, err.message);
+  }
+}
+
 // GET admin calendar view
 async function showAdminCalendar(req, res) {
   const title = req.__("REPORT_ADMIN_CALENDAR_TITLE") || "Reports Kalender";
@@ -77,11 +129,11 @@ async function showAdminCalendar(req, res) {
   });
 }
 
-// GET JSON list for calendar (?year=YYYY&month=MM)
+// GET JSON list for calendar
 async function listAllReportsJSON(req, res) {
   try {
     const year = parseInt(req.query.year, 10);
-    const month = parseInt(req.query.month, 10) - 1; // JS Date month index
+    const month = parseInt(req.query.month, 10) - 1;
     if (isNaN(year) || isNaN(month)) {
       return res.status(400).json({ msg: "Ungültige Parameter." });
     }
@@ -141,6 +193,8 @@ module.exports = {
   showCreateForm,
   listUserReports,
   createReport,
+  showEditForm,
+  modifyReport,
   showAdminCalendar,
   listAllReportsJSON,
   approveReport,

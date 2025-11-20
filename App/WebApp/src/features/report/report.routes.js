@@ -5,6 +5,8 @@ const {
   showCreateForm,
   listUserReports,
   createReport,
+  showEditForm,
+  modifyReport,
   showAdminCalendar,
   listAllReportsJSON,
   approveReport,
@@ -15,6 +17,8 @@ const {
 router.get("/reports/create", ensureAuthenticated, showCreateForm);
 router.post("/reports/create", ensureAuthenticated, createReport);
 router.get("/reports/my", ensureAuthenticated, listUserReports);
+router.get("/reports/modify/:id", ensureAuthenticated, showEditForm);
+router.post("/reports/modify", ensureAuthenticated, modifyReport);
 
 // Admin calendar view
 router.get(
