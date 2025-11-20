@@ -4,7 +4,24 @@ const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
 const INACTIVE_CLASSES = "text-gray-300";
 
 // Hole die Variablen, die über den 'include' Aufruf übergeben wurden
-const { href, icon, text, currentPath } = locals; 
+const { href, icon, text, currentPath, roles, user } = locals; 
+
+// Hilfsfunktion zur Überprüfung der Benutzerrolle
+const hasRole = (user, requiredRoles) => {
+    if (!user || !user.role) {
+        return false;
+    }
+    if (!requiredRoles) {
+        return true; // Keine Rolle erforderlich
+    }
+    const roleArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+    return roleArray.includes(user.role);
+};
+
+// Prüfe, ob der Benutzer die erforderliche Rolle hat
+if (!hasRole(user, roles)) {
+    return; // Nicht anzeigen, wenn Rolle nicht passt
+}
 
 // Hilfsfunktion zur Bestimmung der Klassen (hier wiederholt, um autonom zu sein)
 const getClasses = (href, currentPath) => {

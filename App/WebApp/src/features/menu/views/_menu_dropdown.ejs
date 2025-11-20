@@ -2,7 +2,24 @@
 const ACTIVE_CLASSES = "text-indigo-400 bg-gray-800";
 const INACTIVE_CLASSES = "text-gray-300";
 
-const { prefix, icon, text, subitems, currentPath } = locals;
+const { prefix, icon, text, subitems, currentPath, roles, user } = locals;
+
+// Hilfsfunktion zur Überprüfung der Benutzerrolle
+const hasRole = (user, requiredRoles) => {
+    if (!user || !user.role) {
+        return false;
+    }
+    if (!requiredRoles) {
+        return true; // Keine Rolle erforderlich
+    }
+    const roleArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+    return roleArray.includes(user.role);
+};
+
+// Prüfe, ob der Benutzer die erforderliche Rolle hat
+if (!hasRole(user, roles)) {
+    return; // Nicht anzeigen, wenn Rolle nicht passt
+}
 
 // Logik, um zu prüfen, ob das Dropdown beim Laden offen sein muss
 const isParentActive = currentPath.startsWith(prefix);

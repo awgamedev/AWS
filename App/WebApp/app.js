@@ -221,6 +221,8 @@ app.use((req, res, next) => {
   res.locals.userName = req.user ? req.user.username : "Gast";
   res.locals.userInitials = res.locals.userName.substring(0, 2).toUpperCase();
   res.locals.isLoggedIn = !!req.user;
+  res.locals.user = req.user || null; // Macht das vollständige User-Objekt verfügbar
+  res.locals.userRole = req.user ? req.user.role : null; // Macht die Benutzerrolle verfügbar
   res.locals.styles = res.locals.styles || ""; // Stellt sicher, dass 'styles' immer definiert ist
 
   next();

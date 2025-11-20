@@ -138,5 +138,6 @@
 	"PREVIOUS": "Vorherige",
 	"NEXT": "Nächste",
 	"THIS_WEEK": "Diese Woche",
-	"LOADING": "Lädt"
+	"LOADING": "Lädt",
+	"NO_TASKS": "Keine Aufgaben"
 }

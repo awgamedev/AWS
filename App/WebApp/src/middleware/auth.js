@@ -33,4 +33,25 @@ const checkRole = (requiredRole) => (req, res, next) => {
   res.status(403).send("🚫 Keine Berechtigung für diese Aktion.");
 };
 
-module.exports = { ensureAuthenticated, checkRole }; // Export, wenn in separater Datei
+/**
+ * Hilfsfunktion zur Überprüfung, ob ein Benutzer eine bestimmte Rolle hat
+ * @param {object} user - Das Benutzerobjekt (aus req.user)
+ * @param {string|array} requiredRoles - Die benötigte(n) Rolle(n) (z.B. 'admin' oder ['admin', 'moderator'])
+ * @returns {boolean} - True, wenn der Benutzer die Rolle hat
+ */
+const hasRole = (user, requiredRoles) => {
+  if (!user || !user.role) {
+    return false;
+  }
+
+  // Wenn keine Rolle erforderlich ist, gib true zurück
+  if (!requiredRoles) {
+    return true;
+  }
+
+  // Unterstützt sowohl einzelne Rollen als auch Arrays von Rollen
+  const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+  return roles.includes(user.role);
+};
+
+module.exports = { ensureAuthenticated, checkRole, hasRole }; // Export, wenn in separater Datei

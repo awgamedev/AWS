@@ -1,5 +1,6 @@
 <%
     currentPath = currentPath || '/';
+    // user wird automatisch aus res.locals bereitgestellt (siehe app.js)
 %>
 <nav class="p-4 space-y-1">
     
@@ -7,7 +8,9 @@
         href: '/', 
         icon: 'fas fa-home', 
         text: 'Dashboard',
-        currentPath: currentPath 
+        currentPath: currentPath,
+        user: user
+        // roles: undefined bedeutet: für alle sichtbar
     }) %>
 
     <%- include('_menu_dropdown', {
@@ -15,19 +18,24 @@
         icon: 'fa-solid fa-clock',
         text: 'Zeiterfassung',
         currentPath: currentPath,
+        user: user,
+        // roles: undefined bedeutet: für alle sichtbar
         subitems: [
             include('_menu_item', { 
                 href: '/time-tracking/stamping', 
                 icon: 'fa-solid fa-stamp', 
                 text: 'Stempeln',
-                currentPath: currentPath
+                currentPath: currentPath,
+                user: user
             }),
 
             include('_menu_item', { 
                 href: '/time-tracking/stamping-overview', 
                 icon: 'fa-solid fa-calendar', 
                 text: 'Monatsübersicht',
-                currentPath: currentPath 
+                currentPath: currentPath,
+                user: user,
+                roles: 'admin'
             })
         ]
     }) 
@@ -39,19 +47,23 @@
         icon: 'fa-solid fa-bars-progress',
         text: 'Aufgaben',
         currentPath: currentPath,
+        user: user,
+        // roles: undefined bedeutet: für alle sichtbar
         subitems: [
             include('_menu_item', { 
                 href: '/task/task-list', 
                 icon: 'fa-solid fa-chart-bar', 
                 text: 'Aufgabenplan',
-                currentPath: currentPath 
+                currentPath: currentPath,
+                user: user
             }),
 
             include('_menu_item', { 
                 href: '/task/task-backlog', 
                 icon: 'fa-solid fa-list-check', 
                 text: 'Alle Aufgaben',
-                currentPath: currentPath 
+                currentPath: currentPath,
+                user: user
             })
         ]
     }) 
@@ -61,7 +73,9 @@
         href: '/user/list', 
         icon: 'fa-solid fa-user', 
         text: 'Nutzerliste', 
-        currentPath: currentPath 
+        currentPath: currentPath,
+        user: user,
+        // roles: 'admin'
     }) %>
     
     <!-- <%- include('_menu_item', { 

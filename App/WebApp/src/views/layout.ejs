@@ -46,7 +46,7 @@
             </div> -->
 
             <!-- NEUE Menüeinträge: Werden über das EJS-Partial gerendert -->
-            <%- include('partials/menu', { currentPath: currentPath }) %>
+            <%- include('../features/menu/views/_menu', { currentPath: currentPath }) %>
         </aside>
 
         <!-- 2. Hauptinhalt und Kopfzeile (Main Content Area) -->
@@ -90,7 +90,7 @@
                         <div id="userMenuDropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right rounded-md shadow-xl bg-white ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                             <div class="py-1" role="none">
                                 <!-- Hier wird das Partial eingefügt! -->
-                                <%- include('partials/user_menu') %>
+                                <%- include('../features/menu/views/user_menu') %>
                             </div>
                         </div>
                     </div>
