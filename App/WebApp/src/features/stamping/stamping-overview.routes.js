@@ -38,6 +38,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
       username,
       totalHours: result.totalHours,
       dailyWork: result.dailyWork,
+      hoursByReason: result.hoursByReason,
     };
 
     totalMonthlyHours += result.totalHours;
@@ -52,6 +53,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
         username: user.username,
         totalHours: 0,
         dailyWork: {},
+        hoursByReason: {},
       };
     }
   });

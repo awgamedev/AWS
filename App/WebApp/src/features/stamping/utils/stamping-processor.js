@@ -8,6 +8,7 @@ const { round } = require("../../../utils/math-utils");
 const processStampings = (stampings) => {
   const dailyWork = {};
   let totalHours = 0;
+  const hoursByReason = {};
 
   stampings.sort((a, b) => a.date.getTime() - b.date.getTime());
 
@@ -29,6 +30,12 @@ const processStampings = (stampings) => {
       const timeOut = next.date;
       const workDurationMs = timeOut.getTime() - timeIn.getTime();
       const workDurationHours = workDurationMs / (1000 * 60 * 60);
+
+      const reason = current.stampingReason || "Keine Angabe";
+      if (!hoursByReason[reason]) {
+        hoursByReason[reason] = 0;
+      }
+      hoursByReason[reason] += workDurationHours;
 
       dailyWork[dateKey].pairs.push({
         inId: current._id.toString(),
@@ -73,9 +80,16 @@ const processStampings = (stampings) => {
     delete dailyWork[dateKey].totalTimeMs;
   });
 
+  // Round hours by reason
+  const roundedHoursByReason = {};
+  Object.keys(hoursByReason).forEach((reason) => {
+    roundedHoursByReason[reason] = round(hoursByReason[reason], 2);
+  });
+
   return {
     totalHours: round(totalHours, 2),
     dailyWork,
+    hoursByReason: roundedHoursByReason,
   };
 };
 

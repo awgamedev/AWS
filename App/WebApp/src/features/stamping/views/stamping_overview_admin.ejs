@@ -44,6 +44,20 @@
                     </div>
                 </div>
 
+                <% if (userData.hoursByReason && Object.keys(userData.hoursByReason).length > 0) { %>
+                    <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Stunden nach Grund:</h4>
+                        <div class="space-y-1">
+                            <% Object.keys(userData.hoursByReason).sort().forEach(reason => { %>
+                                <div class="flex justify-between items-center text-xs sm:text-sm">
+                                    <span class="text-gray-700"><%= reason %></span>
+                                    <span class="font-semibold text-blue-600"><%= userData.hoursByReason[reason] %> h</span>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+
                 <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tägliche Aufzeichnungen im <%= monthName %></h4>
                 
                 <div class="max-h-64 sm:max-h-40 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 -webkit-overflow-scrolling-touch">
