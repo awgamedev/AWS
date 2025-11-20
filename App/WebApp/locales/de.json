@@ -134,5 +134,9 @@
 	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "Ankunftszeit muss vor der Abgangszeit gesetzt werden.",
 	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Abgangszeit muss nach der Ankunftszeit liegen.",
 	"TASKS": "Aufgaben",
-	"TASK": "Aufgabe"
+	"TASK": "Aufgabe",
+	"PREVIOUS": "Vorherige",
+	"NEXT": "Nächste",
+	"THIS_WEEK": "Diese Woche",
+	"LOADING": "Lädt"
 }

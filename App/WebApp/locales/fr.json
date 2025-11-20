@@ -141,5 +141,9 @@
 	"Tasks": "Tasks",
 	"Task": "Task",
 	"TASKS": "TASKS",
-	"TASK": "TASK"
+	"TASK": "TASK",
+	"PREVIOUS": "PREVIOUS",
+	"NEXT": "NEXT",
+	"THIS_WEEK": "THIS_WEEK",
+	"LOADING": "LOADING"
 }

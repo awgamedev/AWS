@@ -10,6 +10,29 @@
     transform: scale(0.98);
 }
 
+/* Week Navigation Styles */
+#current-week-range {
+    min-width: 200px;
+}
+
+#week-offset-display {
+    min-height: 1rem;
+}
+
+/* Loading Overlay */
+#loading-overlay {
+    backdrop-filter: blur(2px);
+}
+
+/* Week navigation buttons */
+#prev-week, #next-week, #today-week {
+    transition: all 0.2s ease;
+}
+
+#prev-week:active, #next-week:active, #today-week:active {
+    transform: scale(0.95);
+}
+
 /* Mobile-specific optimizations */
 @media (max-width: 768px) {
     /* Improve readability on mobile */
