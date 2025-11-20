@@ -53,13 +53,20 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       daysOfWeek
     );
 
-    // Render view
-    renderView(req, res, "task_board", title, {
-      users,
-      tasksByDayAndUser,
-      daysOfWeek,
-      weekRange: formatWeekRange(startOfWeek),
-    });
+    // Render view with mobile-optimized styles
+    renderView(
+      req,
+      res,
+      "task_board",
+      title,
+      {
+        users,
+        tasksByDayAndUser,
+        daysOfWeek,
+        weekRange: formatWeekRange(startOfWeek),
+      },
+      '<link rel="stylesheet" href="/css/task-board.css">'
+    );
   } catch (error) {
     req.logger.error("Error while fetching task board:", error);
     return renderErrorView(req, res, "TASK_LOAD_ERROR", 500, error.message);

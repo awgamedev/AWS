@@ -204,9 +204,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Task items - open edit modal
+  // Task items - open edit modal with touch optimization
   document.querySelectorAll(".task-item").forEach((item) => {
+    // Prevent double-tap zoom on mobile
+    let lastTap = 0;
+
     item.addEventListener("click", (e) => {
+      // Prevent double-tap zoom on iOS
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 500 && tapLength > 0) {
+        e.preventDefault();
+      }
+      lastTap = currentTime;
+
       const data = e.currentTarget.dataset;
       openModalFromApi(
         `Aufgabe bearbeiten: ${data.taskName}`,
@@ -216,6 +227,21 @@ document.addEventListener("DOMContentLoaded", () => {
           setupDateValidation();
         }
       );
+    });
+
+    // Add visual feedback for touch
+    item.addEventListener("touchstart", (e) => {
+      e.currentTarget.style.opacity = "0.8";
+    });
+
+    item.addEventListener("touchend", (e) => {
+      setTimeout(() => {
+        e.currentTarget.style.opacity = "";
+      }, 100);
+    });
+
+    item.addEventListener("touchcancel", (e) => {
+      e.currentTarget.style.opacity = "";
     });
   });
 
@@ -239,4 +265,22 @@ document.addEventListener("DOMContentLoaded", () => {
       await handleDeleteTask();
     }
   });
+
+  // Mobile-specific optimizations
+  if (window.innerWidth <= 768) {
+    // Optimize scroll performance on mobile
+    const scrollContainers = document.querySelectorAll(
+      ".task-scroll-container"
+    );
+    scrollContainers.forEach((container) => {
+      container.style.webkitOverflowScrolling = "touch";
+    });
+
+    // Prevent pull-to-refresh on task items
+    document.querySelectorAll(".task-item").forEach((item) => {
+      item.addEventListener("touchmove", (e) => {
+        e.stopPropagation();
+      });
+    });
+  }
 });

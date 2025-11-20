@@ -1,0 +1,114 @@
+/* Task Board Mobile Optimizations */
+
+/* Base task item styles */
+.task-item {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-item:active {
+    transform: scale(0.98);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+    /* Improve readability on mobile */
+    .task-item {
+        font-size: 0.875rem;
+        line-height: 1.4;
+        min-height: 48px;
+        padding: 0.75rem !important;
+    }
+    
+    /* Better touch feedback */
+    .task-item:active {
+        opacity: 0.8;
+    }
+    
+    /* Optimize mobile card spacing */
+    .mobile-task-card {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Day header styling */
+    .mobile-day-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: white;
+    }
+    
+    /* Smooth scrolling on mobile */
+    .task-scroll-container {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    /* Optimize week range display */
+    .week-range-mobile {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+    
+    /* Button full width on small screens */
+    @media (max-width: 640px) {
+        #open-task-modal {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Slightly reduce table cell padding on tablets */
+    table td, table th {
+        padding: 0.5rem;
+    }
+    
+    .task-item {
+        font-size: 0.75rem;
+    }
+}
+
+/* Desktop hover effects */
+@media (min-width: 1025px) {
+    .task-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+}
+
+/* Accessibility improvements */
+.task-item:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* Loading state */
+.task-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Empty state */
+.empty-tasks {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #9ca3af;
+}
+
+/* Priority indicators - enhanced visibility on mobile */
+@media (max-width: 768px) {
+    .bg-red-100 {
+        border-left-width: 4px;
+    }
+    
+    .bg-yellow-100 {
+        border-left-width: 4px;
+    }
+    
+    .bg-green-100 {
+        border-left-width: 4px;
+    }
+}

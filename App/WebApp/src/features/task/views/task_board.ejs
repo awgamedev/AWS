@@ -13,16 +13,17 @@ const createTaskTitle = __("CREATE_NEW_TASK");
 const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
 %>
 
-<p class="text-lg text-gray-600 mb-2"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
-
-<div class="flex space-x-4 mb-2">
-    <button id="open-task-modal" class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center">
+<div class="mb-3 md:mb-4">
+    <p class="text-base md:text-lg text-gray-600 mb-3"><%= __("WEEK_VIEW") %>: <%= weekRange %></p>
+    
+    <button id="open-task-modal" class="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 flex items-center justify-center">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <%= __("CREATE_TASK_BUTTON") %>
     </button>
 </div>
 
-<div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+<!-- Desktop/Tablet View: Table Layout -->
+<div class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-lg">
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
             <tr class="bg-gray-100">
@@ -69,6 +70,67 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
             <% } %>
         </tbody>
     </table>
+</div>
+
+<!-- Mobile View: Card-based Layout -->
+<div class="md:hidden space-y-4">
+    <% if (users && users.length > 0) { %>
+        <% users.forEach(user => { %>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- User Header -->
+                <div class="bg-indigo-600 text-white px-4 py-3">
+                    <h3 class="font-bold text-lg"><%= user.username %></h3>
+                </div>
+                
+                <!-- Days and Tasks -->
+                <div class="divide-y divide-gray-200">
+                    <% daysOfWeek.forEach(dayName => { 
+                        const userId = user._id.toString();
+                        const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
+                    %>
+                        <div class="p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-700 text-sm"><%= dayName %></h4>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><%= dayTasks.length %> <%= dayTasks.length === 1 ? 'Task' : 'Tasks' %></span>
+                            </div>
+                            
+                            <% if (dayTasks.length > 0) { %>
+                                <div class="space-y-2">
+                                    <% dayTasks.forEach(task => { const statusColor = getPriorityColor(task.taskPriority); %>
+                                        <div 
+                                            class="task-item px-3 py-2 rounded-lg text-sm font-medium border cursor-pointer transition duration-100 <%= statusColor %>" 
+                                            data-task-id="<%= task._id %>"
+                                            data-user-id="<%= task.userId %>"
+                                            data-task-name="<%= task.taskName %>"
+                                            data-task-desc="<%= task.taskDescription || '' %>"
+                                            data-task-status="<%= task.taskStatus %>"
+                                            data-task-priority="<%= task.taskPriority %>"
+                                            data-start-date="<%= task.startDate.toISOString().substring(0, 10) %>"
+                                            data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
+                                        >
+                                            <div class="flex items-start justify-between">
+                                                <span class="flex-1"><%= task.taskName %></span>
+                                                <svg class="w-4 h-4 ml-2 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                            </div>
+                                            <div class="text-xs mt-1 opacity-75">
+                                                <%= task.assignedUsername %>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            <% } else { %>
+                                <p class="text-xs text-gray-400 italic">No tasks</p>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <p class="text-gray-500 italic"><%= __("NO_DATA_FOUND") %></p>
+        </div>
+    <% } %>
 </div>
 
 <script>

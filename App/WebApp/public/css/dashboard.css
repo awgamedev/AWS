@@ -9,7 +9,38 @@
 /* Table tweaks */
 table thead th { font-weight: 600; letter-spacing: .05em; }
 
+/* Mobile task board enhancements */
+@media (max-width: 768px) {
+  /* Improve tap targets for mobile */
+  .task-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Better spacing for mobile cards */
+  .task-board-mobile-card {
+    margin-bottom: 1rem;
+  }
+  
+  /* Optimize button touch targets */
+  button {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px){
   .dashboard-grid { grid-template-columns: repeat(1, minmax(0,1fr)); }
+  
+  /* Reduce padding on mobile for more content space */
+  main {
+    padding: 0.5rem !important;
+  }
 }
