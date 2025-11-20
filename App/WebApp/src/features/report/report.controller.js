@@ -53,10 +53,10 @@ async function createReportAPI(req, res) {
       status: "pending",
     });
     await newReport.save();
-    res.status(201).json({ msg: "Report erfolgreich angelegt." });
+    res.status(201).json({ msg: "Meldung erfolgreich angelegt." });
   } catch (err) {
     req.logger.error("Error creating report", err);
-    res.status(500).json({ msg: "Fehler beim Anlegen des Reports." });
+    res.status(500).json({ msg: "Fehler beim Anlegen der Meldung." });
   }
 }
 
@@ -67,12 +67,12 @@ async function updateReportAPI(req, res) {
   try {
     const entity = await Report.findById(reportId).exec();
     if (!entity || entity.userId.toString() !== req.user.id.toString()) {
-      return res.status(404).json({ msg: "Report nicht gefunden." });
+      return res.status(404).json({ msg: "Meldung nicht gefunden." });
     }
     if (entity.status !== "pending") {
       return res
         .status(400)
-        .json({ msg: "Report kann nicht bearbeitet werden." });
+        .json({ msg: "Meldung kann nicht bearbeitet werden." });
     }
     const validationErrors = await validateReportData(req, true);
     if (Object.keys(validationErrors).length > 0) {
@@ -86,10 +86,10 @@ async function updateReportAPI(req, res) {
     entity.endDate = new Date(endDate);
     entity.description = description;
     await entity.save();
-    res.json({ msg: "Report erfolgreich aktualisiert." });
+    res.json({ msg: "Meldung erfolgreich aktualisiert." });
   } catch (err) {
     req.logger.error("Error updating report", err);
-    res.status(500).json({ msg: "Fehler beim Aktualisieren des Reports." });
+    res.status(500).json({ msg: "Fehler beim Aktualisieren der Meldung." });
   }
 }
 
@@ -126,7 +126,7 @@ async function listAllReportsJSON(req, res) {
     });
   } catch (err) {
     req.logger.error("Error fetching reports for calendar", err);
-    res.status(500).json({ msg: "Serverfehler beim Laden der Reports." });
+    res.status(500).json({ msg: "Serverfehler beim Laden der Meldungen." });
   }
 }
 
@@ -134,12 +134,12 @@ async function listAllReportsJSON(req, res) {
 async function approveReport(req, res) {
   try {
     const item = await Report.findById(req.params.id);
-    if (!item) return res.status(404).json({ msg: "Report nicht gefunden." });
+    if (!item) return res.status(404).json({ msg: "Meldung nicht gefunden." });
     item.status = "approved";
     item.approvedBy = req.user.id;
     item.approvedAt = new Date();
     await item.save();
-    res.json({ msg: "Report genehmigt.", status: item.status });
+    res.json({ msg: "Meldung genehmigt.", status: item.status });
   } catch (err) {
     req.logger.error("Error approving report", err);
     res.status(500).json({ msg: "Serverfehler beim Genehmigen." });
@@ -150,12 +150,12 @@ async function approveReport(req, res) {
 async function rejectReport(req, res) {
   try {
     const item = await Report.findById(req.params.id);
-    if (!item) return res.status(404).json({ msg: "Report nicht gefunden." });
+    if (!item) return res.status(404).json({ msg: "Meldung nicht gefunden." });
     item.status = "rejected";
     item.approvedBy = req.user.id;
     item.approvedAt = new Date();
     await item.save();
-    res.json({ msg: "Report abgelehnt.", status: item.status });
+    res.json({ msg: "Meldung abgelehnt.", status: item.status });
   } catch (err) {
     req.logger.error("Error rejecting report", err);
     res.status(500).json({ msg: "Serverfehler beim Ablehnen." });
