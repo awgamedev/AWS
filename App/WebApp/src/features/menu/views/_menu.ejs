@@ -68,15 +68,6 @@
     }) 
     %>
 
-    <%- include('_menu_item', { 
-        href: '/user/list', 
-        icon: 'fa-solid fa-user', 
-        text: 'Nutzerliste', 
-        currentPath: currentPath,
-        user: user,
-        // roles: 'admin'
-    }) %>
-
     <%- include('_menu_dropdown', {
         prefix: '/reports',
         icon: 'fa-solid fa-file-medical',
@@ -107,6 +98,15 @@
                 roles: 'admin'
             })
         ]
+    }) %>
+
+    <%- include('_menu_item', { 
+        href: '/user/list', 
+        icon: 'fa-solid fa-user', 
+        text: 'Nutzerliste', 
+        currentPath: currentPath,
+        user: user,
+        // roles: 'admin'
     }) %>
     
     <!-- <%- include('_menu_item', { 
