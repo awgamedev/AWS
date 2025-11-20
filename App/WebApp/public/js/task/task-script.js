@@ -19,7 +19,7 @@ const setMessage = (el, type, text) => {
 // WEEK NAVIGATION
 // ============================================================================
 
-let currentWeekOffset = window.CURRENT_WEEK_OFFSET || 0;
+let currentWeekOffset = parseInt(window.CURRENT_WEEK_OFFSET) || 0;
 
 const showLoading = () => {
   const overlay = byId("loading-overlay");
@@ -46,64 +46,6 @@ const updateWeekDisplay = () => {
       }`;
     }
   }
-};
-
-const getPriorityColorClass = (priority) => {
-  switch (priority) {
-    case "high":
-      return "bg-red-100 text-red-800 border-red-400 hover:bg-red-200";
-    case "medium":
-      return "bg-yellow-100 text-yellow-800 border-yellow-400 hover:bg-yellow-200";
-    case "low":
-      return "bg-green-100 text-green-800 border-green-400 hover:bg-green-200";
-    default:
-      return "bg-gray-300 text-gray-800 border-gray-300 hover:bg-gray-400";
-  }
-};
-
-const renderTaskItem = (task) => {
-  const statusColor = getPriorityColorClass(task.taskPriority);
-  return `
-    <div 
-      class="task-item px-2 py-1 rounded-lg text-xs font-medium border my-1 cursor-pointer transition duration-100 ${statusColor}" 
-      data-task-id="${task._id}"
-      data-user-id="${task.userId || ""}"
-      data-task-name="${task.taskName}"
-      data-task-desc="${task.taskDescription || ""}"
-      data-task-status="${task.taskStatus}"
-      data-task-priority="${task.taskPriority}"
-      data-start-date="${task.startDate}"
-      data-end-date="${task.endDate || ""}"
-      title="Status: ${task.taskStatus} - Click to edit"
-    >
-      ${task.taskName} (${task.assignedUsername || "Unassigned"})
-    </div>
-  `;
-};
-
-const renderMobileTaskItem = (task) => {
-  const statusColor = getPriorityColorClass(task.taskPriority);
-  return `
-    <div 
-      class="task-item px-3 py-2 rounded-lg text-sm font-medium border cursor-pointer transition duration-100 ${statusColor}" 
-      data-task-id="${task._id}"
-      data-user-id="${task.userId || ""}"
-      data-task-name="${task.taskName}"
-      data-task-desc="${task.taskDescription || ""}"
-      data-task-status="${task.taskStatus}"
-      data-task-priority="${task.taskPriority}"
-      data-start-date="${task.startDate}"
-      data-end-date="${task.endDate || ""}"
-    >
-      <div class="flex items-start justify-between">
-        <span class="flex-1">${task.taskName}</span>
-        <svg class="w-4 h-4 ml-2 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-      </div>
-      <div class="text-xs mt-1 opacity-75">
-        ${task.assignedUsername || "Unassigned"}
-      </div>
-    </div>
-  `;
 };
 
 const reattachTaskListeners = () => {
@@ -155,11 +97,9 @@ const loadWeekData = async (offset) => {
     console.log("API Response:", response);
 
     if (response && response.ok && response.data) {
-      // The API function returns {ok, status, data} where data is the parsed JSON
-      // Our API endpoint returns {ok: true, data: {...}} so we need response.data.data
-      const weekData = response.data.data || response.data;
-      console.log("Week data received:", weekData);
-      updateTaskBoard(weekData);
+      const { html, weekRange, weekOffset } = response.data;
+      console.log("Week data received");
+      updateTaskBoard(html, weekRange);
       updateWeekDisplay();
 
       // Update URL without reload
@@ -187,89 +127,37 @@ const loadWeekData = async (offset) => {
   }
 };
 
-const updateTaskBoard = (data) => {
-  console.log("updateTaskBoard called with:", data);
-  const { users, tasksByDayAndUser, daysOfWeek, weekRange } = data;
-  console.log("Users:", users, "Days:", daysOfWeek);
+const updateTaskBoard = (html, weekRange) => {
+  console.log("updateTaskBoard called with rendered HTML");
 
   // Update week range display
   const weekRangeEl = byId("current-week-range");
   if (weekRangeEl) weekRangeEl.textContent = weekRange;
 
-  // Update desktop table
-  const desktopTable = document.querySelector(".hidden.md\\:block table tbody");
-  if (desktopTable && users && users.length > 0) {
-    desktopTable.innerHTML = users
-      .map((user) => {
-        const userId = user._id.toString();
-        const dayCells = daysOfWeek
-          .map((dayName) => {
-            const dayTasks = tasksByDayAndUser[userId]?.[dayName] || [];
-            const tasksHtml = dayTasks
-              .map((task) => renderTaskItem(task))
-              .join("");
-            return `<td class="p-2 border border-gray-200 align-top h-2">${tasksHtml}</td>`;
-          })
-          .join("");
+  // Find the content container (both desktop and mobile views)
+  const contentContainer = document.querySelector(".task-board-content");
+  if (contentContainer) {
+    contentContainer.innerHTML = html;
+  } else {
+    // Fallback: update both views separately
+    const desktopView = document.querySelector(".hidden.md\\:block");
+    const mobileView = document.querySelector(".md\\:hidden.space-y-4");
 
-        return `
-        <tr class="hover:bg-gray-50">
-          <td class="p-3 border border-gray-200 font-semibold sticky left-0 bg-white shadow-sm w-40">${user.username}</td>
-          ${dayCells}
-        </tr>
-      `;
-      })
-      .join("");
-  } else if (desktopTable) {
-    desktopTable.innerHTML =
-      '<tr><td colspan="8" class="text-center py-10 text-gray-500 italic">No data found</td></tr>';
-  }
+    // Create a temporary container to parse the HTML
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
 
-  // Update mobile view
-  const mobileView = document.querySelector(".md\\:hidden.space-y-4");
-  if (mobileView && users && users.length > 0) {
-    mobileView.innerHTML = users
-      .map((user) => {
-        const userId = user._id.toString();
-        const daysHtml = daysOfWeek
-          .map((dayName) => {
-            const dayTasks = tasksByDayAndUser[userId]?.[dayName] || [];
-            const tasksHtml =
-              dayTasks.length > 0
-                ? `<div class="space-y-2">${dayTasks
-                    .map((task) => renderMobileTaskItem(task))
-                    .join("")}</div>`
-                : '<p class="text-xs text-gray-400 italic">No tasks</p>';
+    // Extract desktop and mobile content
+    const newDesktopView = temp.querySelector(".hidden.md\\:block");
+    const newMobileView = temp.querySelector(".md\\:hidden");
 
-            return `
-          <div class="p-3">
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-700 text-sm">${dayName}</h4>
-              <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${
-                dayTasks.length
-              } ${dayTasks.length === 1 ? "Task" : "Tasks"}</span>
-            </div>
-            ${tasksHtml}
-          </div>
-        `;
-          })
-          .join("");
+    if (desktopView && newDesktopView) {
+      desktopView.innerHTML = newDesktopView.innerHTML;
+    }
 
-        return `
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div class="bg-indigo-600 text-white px-4 py-3">
-            <h3 class="font-bold text-lg">${user.username}</h3>
-          </div>
-          <div class="divide-y divide-gray-200">
-            ${daysHtml}
-          </div>
-        </div>
-      `;
-      })
-      .join("");
-  } else if (mobileView) {
-    mobileView.innerHTML =
-      '<div class="bg-white rounded-xl shadow-lg p-8 text-center"><p class="text-gray-500 italic">No data found</p></div>';
+    if (mobileView && newMobileView) {
+      mobileView.innerHTML = newMobileView.innerHTML;
+    }
   }
 
   // Reattach event listeners to new task items

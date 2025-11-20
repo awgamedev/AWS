@@ -81,7 +81,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
 });
 
 /**
- * API Route: Get week data for task board
+ * API Route: Get week data for task board (returns rendered HTML)
  */
 router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
   req.logger.info(
@@ -114,15 +114,32 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
       daysOfWeek
     );
 
+    // Render the partial view
+    const html = await new Promise((resolve, reject) => {
+      req.app.render(
+        "task_board_content",
+        {
+          users,
+          tasksByDayAndUser,
+          daysOfWeek,
+          __: req.__,
+        },
+        (err, html) => {
+          if (err) {
+            req.logger.error("Error rendering task_board_content:", err);
+            reject(err);
+          } else {
+            resolve(html);
+          }
+        }
+      );
+    });
+
     res.json({
       ok: true,
-      data: {
-        users,
-        tasksByDayAndUser,
-        daysOfWeek,
-        weekRange: formatWeekRange(startOfWeek),
-        weekOffset,
-      },
+      html,
+      weekRange: formatWeekRange(startOfWeek),
+      weekOffset,
     });
   } catch (error) {
     req.logger.error("Error fetching task board week data:", error);
