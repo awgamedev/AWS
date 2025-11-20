@@ -9,6 +9,7 @@ const {
   listAllReportsJSON,
   approveReport,
   rejectReport,
+  createReportByAdminAPI,
 } = require("./report.controller");
 
 // User routes
@@ -44,6 +45,14 @@ router.post(
   ensureAuthenticated,
   checkRole("admin"),
   rejectReport
+);
+
+// Admin create report for any user
+router.post(
+  "/api/reports/admin",
+  ensureAuthenticated,
+  checkRole("admin"),
+  createReportByAdminAPI
 );
 
 module.exports = router;

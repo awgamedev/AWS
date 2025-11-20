@@ -245,4 +245,38 @@ router.get(
   }
 );
 
+/**
+ * GET /api/modal/report-admin-create
+ * Returns HTML for the admin create report modal (admin can create report for any user)
+ */
+router.get(
+  "/api/modal/report-admin-create",
+  ensureAuthenticated,
+  checkRole("admin"),
+  async (req, res) => {
+    try {
+      const users = await User.find({}).select("_id username").lean();
+      const { REPORT_TYPES } = require("../report/report.model");
+      const viewsPath = path.join(__dirname, "../report/views");
+      const templatePath = path.join(
+        viewsPath,
+        "report_admin_create_modal.ejs"
+      );
+      const template = require("fs").readFileSync(templatePath, "utf-8");
+      const ejs = require("ejs");
+
+      const html = ejs.render(template, {
+        users,
+        types: REPORT_TYPES,
+        __: req.__,
+      });
+
+      res.json({ html });
+    } catch (error) {
+      req.logger.error("Error rendering admin create report modal:", error);
+      res.status(500).json({ error: "Failed to load modal content" });
+    }
+  }
+);
+
 module.exports = router;

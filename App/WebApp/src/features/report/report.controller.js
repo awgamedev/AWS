@@ -2,7 +2,10 @@ const Report = require("./report.model");
 const reportRepository = require("./report.repository");
 const { REPORT_TYPES, REPORT_STATUSES } = require("./report.model");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
-const { validateReportData } = require("./report.validator");
+const {
+  validateReportData,
+  validateAdminReportData,
+} = require("./report.validator");
 
 // GET form for creating a report
 async function showCreateForm(req, res) {
@@ -162,6 +165,33 @@ async function rejectReport(req, res) {
   }
 }
 
+// POST create report by admin for any user (API)
+async function createReportByAdminAPI(req, res) {
+  const { userId, type, startDate, endDate, description } = req.body;
+  try {
+    const validationErrors = await validateAdminReportData(req);
+    if (Object.keys(validationErrors).length > 0) {
+      return res.status(400).json({
+        msg: "Validierungsfehler",
+        errors: validationErrors,
+      });
+    }
+    const newReport = new Report({
+      userId,
+      type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      description,
+      status: "pending",
+    });
+    await newReport.save();
+    res.status(201).json({ msg: "Meldung erfolgreich angelegt." });
+  } catch (err) {
+    req.logger.error("Error creating report by admin", err);
+    res.status(500).json({ msg: "Fehler beim Anlegen der Meldung." });
+  }
+}
+
 module.exports = {
   listUserReports,
   createReportAPI,
@@ -170,4 +200,5 @@ module.exports = {
   listAllReportsJSON,
   approveReport,
   rejectReport,
+  createReportByAdminAPI,
 };

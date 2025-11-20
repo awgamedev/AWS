@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const monthInput = document.getElementById("month-input");
   const calendarDiv = document.getElementById("calendar");
   const detailsDiv = document.getElementById("report-details");
+  const createBtn = document.getElementById("create-report-btn");
 
   if (monthInput) monthInput.addEventListener("change", loadCalendar);
   if (yearInput) yearInput.addEventListener("change", loadCalendar);
+  if (createBtn) createBtn.addEventListener("click", openCreateModal);
   loadCalendar(); // initial
 
   async function loadCalendar() {
@@ -168,5 +170,105 @@ document.addEventListener("DOMContentLoaded", () => {
       msgDiv.textContent = err.message || "Aktion fehlgeschlagen.";
       msgDiv.className = "mt-3 text-sm text-center text-red-600";
     }
+  }
+
+  function openCreateModal() {
+    openModalFromApi(
+      "Meldung erstellen",
+      "/api/modal/report-admin-create",
+      () => {
+        setupCreateForm();
+      }
+    );
+  }
+
+  function setupCreateForm() {
+    const form = document.getElementById("admin-report-form");
+    if (!form) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFormErrors();
+
+      const formData = new FormData(form);
+      const data = {
+        userId: formData.get("userId"),
+        type: formData.get("type"),
+        startDate: formData.get("startDate"),
+        endDate: formData.get("endDate"),
+        description: formData.get("description"),
+      };
+
+      const msgDiv = document.getElementById("admin-report-form-message");
+      if (msgDiv) {
+        msgDiv.textContent = "Sende...";
+        msgDiv.className = "text-sm font-medium text-center text-gray-600";
+        msgDiv.classList.remove("hidden");
+      }
+
+      try {
+        const resp = await fetch("/api/reports/admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await resp.json();
+
+        if (!resp.ok) {
+          if (result.errors) {
+            displayFormErrors(result.errors);
+          }
+          if (msgDiv) {
+            msgDiv.textContent = result.msg || "Fehler beim Erstellen.";
+            msgDiv.className = "text-sm font-medium text-center text-red-600";
+          }
+          return;
+        }
+
+        if (msgDiv) {
+          msgDiv.textContent = result.msg || "Erfolgreich erstellt.";
+          msgDiv.className = "text-sm font-medium text-center text-green-600";
+        }
+
+        setTimeout(() => {
+          closeModal();
+          loadCalendar();
+        }, 1000);
+      } catch (err) {
+        if (msgDiv) {
+          msgDiv.textContent = err.message || "Fehler beim Erstellen.";
+          msgDiv.className = "text-sm font-medium text-center text-red-600";
+        }
+      }
+    });
+  }
+
+  function clearFormErrors() {
+    const errorFields = [
+      "userId",
+      "type",
+      "startDate",
+      "endDate",
+      "dateRange",
+      "overlap",
+      "general",
+    ];
+    errorFields.forEach((field) => {
+      const el = document.getElementById(`${field}-error`);
+      if (el) {
+        el.textContent = "";
+        el.classList.add("hidden");
+      }
+    });
+  }
+
+  function displayFormErrors(errors) {
+    Object.keys(errors).forEach((key) => {
+      const el = document.getElementById(`${key}-error`);
+      if (el) {
+        el.textContent = errors[key];
+        el.classList.remove("hidden");
+      }
+    });
   }
 });

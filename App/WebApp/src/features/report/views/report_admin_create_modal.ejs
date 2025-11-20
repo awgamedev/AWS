@@ -1,0 +1,53 @@
+<form method="POST" id="admin-report-form" class="space-y-4">
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="userId">Benutzer</label>
+    <select name="userId" id="admin-report-userId" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+      <option value="">-- Benutzer wählen --</option>
+      <% (users || []).forEach(function(u){ %>
+        <option value="<%= u._id %>"><%= u.username %></option>
+      <% }) %>
+    </select>
+    <p id="userId-error" class="text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+  
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="type">Typ</label>
+    <select name="type" id="admin-report-type" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+      <% (types || ['vacation','illness']).forEach(function(t){ %>
+        <option value="<%= t %>"><%= __('REPORT_TYPE_' + t.toUpperCase()) %></option>
+      <% }) %>
+    </select>
+    <p id="type-error" class="text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+  
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="startDate">Start</label>
+    <input type="date" name="startDate" id="admin-report-startDate" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+    <p id="startDate-error" class="text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+  
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="endDate">Ende</label>
+    <input type="date" name="endDate" id="admin-report-endDate" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+    <p id="endDate-error" class="text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+  
+  <div>
+    <label class="block mb-1 text-sm font-medium text-gray-700" for="description">Beschreibung (optional)</label>
+    <textarea name="description" id="admin-report-description" rows="3" class="border border-gray-300 p-2 w-full rounded-md focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+  </div>
+  
+  <p id="dateRange-error" class="text-red-600 text-sm hidden"></p>
+  <p id="overlap-error" class="text-red-600 text-sm hidden"></p>
+  <p id="general-error" class="text-red-600 text-sm hidden"></p>
+  <p id="admin-report-form-message" class="text-sm font-medium text-center hidden"></p>
+  
+  <div class="flex gap-2 justify-end">
+    <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+      <%= __("CANCEL") %>
+    </button>
+    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+      <%= __('CREATE_BUTTON') %>
+    </button>
+  </div>
+</form>
