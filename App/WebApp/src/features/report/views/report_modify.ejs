@@ -1,6 +1,6 @@
 <div class="p-6">
 	<h1 class="text-2xl font-semibold mb-4">
-		<%= isEditing ? __('REPORT_EDIT_TITLE') || 'Report bearbeiten' : __('REPORT_CREATE_TITLE') || 'Report anlegen' %>
+		<%= isEditing ? __('REPORT_EDIT_TITLE') : __('REPORT_CREATE_TITLE') %>
 	</h1>
 	<form method="POST" action="<%= isEditing ? '/reports/modify' : '/reports/create' %>" class="space-y-4" id="report-modify-form">
 		<% if (isEditing && entityToModify && entityToModify._id) { %>
@@ -34,7 +34,7 @@
 		<% if (errors && errors.overlap) { %><p class="text-red-600 text-sm"><%= errors.overlap %></p><% } %>
 		<% if (errors && errors.general) { %><p class="text-red-600 text-sm"><%= errors.general %></p><% } %>
 		<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
-			<%= isEditing ? __('SAVE_BUTTON') || 'Speichern' : __('CREATE_BUTTON') || 'Anlegen' %>
+			<%= isEditing ? __('SAVE_BUTTON') || 'Speichern' : __('CREATE_BUTTON') %>
 		</button>
 		<a href="/reports/my" class="ml-2 text-sm text-gray-600 underline">Zurück zur Liste</a>
 	</form>

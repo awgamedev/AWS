@@ -41,7 +41,6 @@
     }) 
     %>
     
-
     <%- include('_menu_dropdown', {
         prefix: '/task',
         icon: 'fa-solid fa-bars-progress',
@@ -81,21 +80,21 @@
     <%- include('_menu_dropdown', {
         prefix: '/reports',
         icon: 'fa-solid fa-file-medical',
-        text: 'Reports',
+        text: 'Meldungen',
         currentPath: currentPath,
         user: user,
         subitems: [
             include('_menu_item', {
                 href: '/reports/create',
                 icon: 'fa-solid fa-plus',
-                text: 'Report erstellen',
+                text: 'Meldung erstellen',
                 currentPath: currentPath,
                 user: user
             }),
             include('_menu_item', {
                 href: '/reports/my',
                 icon: 'fa-solid fa-folder',
-                text: 'Meine Reports',
+                text: 'Meine Meldungen',
                 currentPath: currentPath,
                 user: user
             }),

@@ -1,9 +1,8 @@
 <div class="p-6">
-  <h1 class="text-2xl font-semibold mb-4"><%= __('REPORT_ADMIN_CALENDAR_TITLE') || 'Reports Kalender' %></h1>
   <div class="flex items-center space-x-2 mb-4">
     <input type="number" id="year-input" class="border p-2 w-24" value="<%= new Date().getFullYear() %>" />
     <input type="number" id="month-input" class="border p-2 w-20" value="<%= new Date().getMonth()+1 %>" min="1" max="12" />
-    <button id="load-calendar" class="bg-blue-600 text-white px-4 py-2 rounded">Laden</button>
+    <button id="load-calendar" class="bg-blue-600 text-white px-4 py-2 rounded"><%= __('LOAD_BUTTON') %></button>
   </div>
   <div id="calendar" class="grid grid-cols-7 gap-2"></div>
   <div id="report-details" class="mt-6"></div>
