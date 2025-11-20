@@ -6,7 +6,7 @@ const { validateReportData } = require("./report.validator");
 
 // GET form for creating a report
 async function showCreateForm(req, res) {
-  const title = req.__("REPORT_CREATE_TITLE") || "Report anlegen";
+  const title = req.__("REPORT_CREATE_TITLE");
   renderView(req, res, "report_modify", title, {
     entityToModify: {},
     isEditing: false,
@@ -17,7 +17,7 @@ async function showCreateForm(req, res) {
 
 // GET list of own reports
 async function listUserReports(req, res) {
-  const title = req.__("REPORT_MY_TITLE") || "Meine Reports";
+  const title = req.__("REPORT_MY_TITLE");
   try {
     const items = await Report.find({ userId: req.user.id })
       .sort({ startDate: 1 })
@@ -33,18 +33,15 @@ async function listUserReports(req, res) {
   }
 }
 
-// POST create report
-async function createReport(req, res) {
+// POST create report (API)
+async function createReportAPI(req, res) {
   const { type, startDate, endDate, description } = req.body;
-  const title = req.__("REPORT_CREATE_TITLE") || "Report anlegen";
   try {
     const validationErrors = await validateReportData(req, false);
     if (Object.keys(validationErrors).length > 0) {
-      return renderView(req, res, "report_modify", title, {
-        entityToModify: { type, startDate, endDate, description },
-        isEditing: false,
+      return res.status(400).json({
+        msg: "Validierungsfehler",
         errors: validationErrors,
-        types: REPORT_TYPES,
       });
     }
     const newReport = new Report({
@@ -56,56 +53,32 @@ async function createReport(req, res) {
       status: "pending",
     });
     await newReport.save();
-    res.redirect("/reports/my");
+    res.status(201).json({ msg: "Report erfolgreich angelegt." });
   } catch (err) {
     req.logger.error("Error creating report", err);
-    return renderErrorView(req, res, "REPORT_CREATE_ERROR", 500, err.message);
+    res.status(500).json({ msg: "Fehler beim Anlegen des Reports." });
   }
 }
 
-// GET form to edit an existing report
-async function showEditForm(req, res) {
+// PUT update existing report (API)
+async function updateReportAPI(req, res) {
   const reportId = req.params.id;
-  const title = req.__("REPORT_EDIT_TITLE") || "Report bearbeiten";
+  const { type, startDate, endDate, description } = req.body;
   try {
     const entity = await Report.findById(reportId).exec();
     if (!entity || entity.userId.toString() !== req.user.id.toString()) {
-      return renderErrorView(req, res, "REPORT_NOT_FOUND", 404);
+      return res.status(404).json({ msg: "Report nicht gefunden." });
     }
     if (entity.status !== "pending") {
-      return renderErrorView(req, res, "REPORT_NOT_EDITABLE", 400);
-    }
-    renderView(req, res, "report_modify", title, {
-      entityToModify: entity.toObject(),
-      isEditing: true,
-      errors: {},
-      types: REPORT_TYPES,
-    });
-  } catch (err) {
-    req.logger.error("Error loading report for edit", err);
-    return renderErrorView(req, res, "REPORT_EDIT_LOAD_ERROR", 500);
-  }
-}
-
-// POST modify existing report
-async function modifyReport(req, res) {
-  const { id, type, startDate, endDate, description } = req.body;
-  const title = req.__("REPORT_EDIT_TITLE") || "Report bearbeiten";
-  try {
-    const entity = await Report.findById(id).exec();
-    if (!entity || entity.userId.toString() !== req.user.id.toString()) {
-      return renderErrorView(req, res, "REPORT_NOT_FOUND", 404);
-    }
-    if (entity.status !== "pending") {
-      return renderErrorView(req, res, "REPORT_NOT_EDITABLE", 400);
+      return res
+        .status(400)
+        .json({ msg: "Report kann nicht bearbeitet werden." });
     }
     const validationErrors = await validateReportData(req, true);
     if (Object.keys(validationErrors).length > 0) {
-      return renderView(req, res, "report_modify", title, {
-        entityToModify: { id, type, startDate, endDate, description },
-        isEditing: true,
+      return res.status(400).json({
+        msg: "Validierungsfehler",
         errors: validationErrors,
-        types: REPORT_TYPES,
       });
     }
     entity.type = type;
@@ -113,16 +86,16 @@ async function modifyReport(req, res) {
     entity.endDate = new Date(endDate);
     entity.description = description;
     await entity.save();
-    res.redirect("/reports/my");
+    res.json({ msg: "Report erfolgreich aktualisiert." });
   } catch (err) {
-    req.logger.error("Error modifying report", err);
-    return renderErrorView(req, res, "REPORT_MODIFY_ERROR", 500, err.message);
+    req.logger.error("Error updating report", err);
+    res.status(500).json({ msg: "Fehler beim Aktualisieren des Reports." });
   }
 }
 
 // GET admin calendar view
 async function showAdminCalendar(req, res) {
-  const title = req.__("REPORT_ADMIN_CALENDAR_TITLE") || "Reports Kalender";
+  const title = req.__("REPORT_ADMIN_CALENDAR_TITLE");
   renderView(req, res, "report_admin", title, {
     statuses: REPORT_STATUSES,
     types: REPORT_TYPES,
@@ -190,11 +163,9 @@ async function rejectReport(req, res) {
 }
 
 module.exports = {
-  showCreateForm,
   listUserReports,
-  createReport,
-  showEditForm,
-  modifyReport,
+  createReportAPI,
+  updateReportAPI,
   showAdminCalendar,
   listAllReportsJSON,
   approveReport,

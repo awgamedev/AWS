@@ -152,4 +152,61 @@ router.get(
   }
 );
 
+/**
+ * GET /api/modal/report-create
+ * Returns HTML for the create report modal
+ */
+router.get(
+  "/api/modal/report-create",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { REPORT_TYPES } = require("../report/report.model");
+      const viewsPath = path.join(__dirname, "../report/views");
+      const templatePath = path.join(viewsPath, "report_modify_modal.ejs");
+      const template = require("fs").readFileSync(templatePath, "utf-8");
+      const ejs = require("ejs");
+
+      const html = ejs.render(template, {
+        types: REPORT_TYPES,
+        isEditing: false,
+        reportId: null,
+        __: req.__,
+      });
+
+      res.json({ html });
+    } catch (error) {
+      req.logger.error("Error rendering create report modal:", error);
+      res.status(500).json({ error: "Failed to load modal content" });
+    }
+  }
+);
+
+/**
+ * GET /api/modal/report-edit
+ * Returns HTML for the edit report modal
+ */
+router.get("/api/modal/report-edit", ensureAuthenticated, async (req, res) => {
+  try {
+    const { reportId } = req.query;
+    const { REPORT_TYPES } = require("../report/report.model");
+    const viewsPath = path.join(__dirname, "../report/views");
+    const templatePath = path.join(viewsPath, "report_modify_modal.ejs");
+    const template = require("fs").readFileSync(templatePath, "utf-8");
+    const ejs = require("ejs");
+
+    const html = ejs.render(template, {
+      types: REPORT_TYPES,
+      isEditing: true,
+      reportId,
+      __: req.__,
+    });
+
+    res.json({ html });
+  } catch (error) {
+    req.logger.error("Error rendering edit report modal:", error);
+    res.status(500).json({ error: "Failed to load modal content" });
+  }
+});
+
 module.exports = router;

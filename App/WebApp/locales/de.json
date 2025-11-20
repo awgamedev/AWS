@@ -148,5 +148,6 @@
 	"REPORT_SEARCH_PLACEHOLDER": "Suche Meldungen...",
 	"CREATE_BUTTON": "Anlegen",
 	"SAVE_BUTTON": "Speichern",
-	"LOAD_BUTTON": "Laden"
+	"LOAD_BUTTON": "Laden",
+	"ERROR_REPORT_OVERLAP": "Es gibt bereits eine Meldung in diesem Zeitraum."
 }

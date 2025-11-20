@@ -1,10 +1,9 @@
 <div class="p-6">
-  <h1 class="text-2xl font-semibold mb-4"><%= __('REPORT_LIST_TITLE') || 'Meine Reports' %></h1>
   <div class="relative flex mb-4 gap-2">
     <input type="text" id="reportSearch" placeholder="<%= __('REPORT_SEARCH_PLACEHOLDER') || 'Suchen...' %>" class="w-full px-4 py-2 border border-gray-300 shadow-sm rounded-l-md focus:ring-indigo-500 focus:border-indigo-500 z-10">
-    <a href="/reports/create" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-r-md -ml-px z-20">
+    <button id="open-report-modal" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-r-md -ml-px z-20">
       <span class="fas fa-plus"></span>
-    </a>
+    </button>
   </div>
 
   <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg relative max-h-96 overflow-y-auto overflow-x-auto">
@@ -30,10 +29,16 @@
             <td class="px-6 py-3 text-right">
               <div class="flex justify-end gap-2">
                 <% if (r.status === 'pending') { %>
-                  <a href="/reports/modify/<%= r._id %>" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                  <button 
+                    class="edit-report-btn inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
+                    data-id="<%= r._id %>"
+                    data-type="<%= r.type %>"
+                    data-start="<%= new Date(r.startDate).toISOString().substring(0,10) %>"
+                    data-end="<%= new Date(r.endDate).toISOString().substring(0,10) %>"
+                    data-description="<%= r.description || '' %>">
                     <span>✏️</span>
                     <span class="ml-1"><%= __('EDIT_BUTTON') || 'Bearbeiten' %></span>
-                  </a>
+                  </button>
                 <% } %>
               </div>
             </td>

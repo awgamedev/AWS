@@ -2,11 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { ensureAuthenticated, checkRole } = require("../../middleware/auth");
 const {
-  showCreateForm,
   listUserReports,
-  createReport,
-  showEditForm,
-  modifyReport,
+  createReportAPI,
+  updateReportAPI,
   showAdminCalendar,
   listAllReportsJSON,
   approveReport,
@@ -14,11 +12,11 @@ const {
 } = require("./report.controller");
 
 // User routes
-router.get("/reports/create", ensureAuthenticated, showCreateForm);
-router.post("/reports/create", ensureAuthenticated, createReport);
 router.get("/reports/my", ensureAuthenticated, listUserReports);
-router.get("/reports/modify/:id", ensureAuthenticated, showEditForm);
-router.post("/reports/modify", ensureAuthenticated, modifyReport);
+
+// API routes
+router.post("/api/reports", ensureAuthenticated, createReportAPI);
+router.put("/api/reports/:id", ensureAuthenticated, updateReportAPI);
 
 // Admin calendar view
 router.get(
