@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const yearInput = document.getElementById("year-input");
   const monthInput = document.getElementById("month-input");
-  const loadBtn = document.getElementById("load-calendar");
   const calendarDiv = document.getElementById("calendar");
   const detailsDiv = document.getElementById("report-details");
 
-  loadBtn.addEventListener("click", loadCalendar);
+  if (monthInput) monthInput.addEventListener("change", loadCalendar);
+  if (yearInput) yearInput.addEventListener("change", loadCalendar);
   loadCalendar(); // initial
 
   async function loadCalendar() {
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     openModalFromApi(
-      "Meldung-Details",
+      "Meldungsdetails",
       `/api/modal/report-details?${params.toString()}`,
       () => {
         // Setup action buttons

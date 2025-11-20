@@ -1,8 +1,41 @@
 <div class="p-6">
-  <div class="flex items-center space-x-2 mb-4">
-    <input type="number" id="year-input" class="border p-2 w-24" value="<%= new Date().getFullYear() %>" />
-    <input type="number" id="month-input" class="border p-2 w-20" value="<%= new Date().getMonth()+1 %>" min="1" max="12" />
-    <button id="load-calendar" class="bg-blue-600 text-white px-4 py-2 rounded"><%= __('LOAD_BUTTON') %></button>
+  <%
+    const now = new Date();
+    const currentMonth = (typeof selectedMonth !== 'undefined' && selectedMonth) ? selectedMonth : now.getMonth() + 1; // 1..12
+    const currentYear = (typeof selectedYear !== 'undefined' && selectedYear) ? selectedYear : now.getFullYear();
+    const fallbackMonthOptions = Array.from({ length: 12 }, (_, i) => {
+      const value = i + 1;
+      return {
+        value,
+        name: new Date(2000, i, 1).toLocaleString('de-DE', { month: 'long' }),
+        isSelected: value === Number(currentMonth)
+      };
+    });
+    // Provide a small year window around current year if server did not supply options
+    const fallbackYearOptions = Array.from({ length: 7 }, (_, i) => {
+      const value = currentYear - 3 + i;
+      return {
+        value,
+        isSelected: value === Number(currentYear)
+      };
+    });
+    const months = (typeof monthOptions !== 'undefined' && monthOptions && monthOptions.length) ? monthOptions : fallbackMonthOptions;
+    const years = (typeof yearOptions !== 'undefined' && yearOptions && yearOptions.length) ? yearOptions : fallbackYearOptions;
+  %>
+  <div class="bg-white p-4 rounded-xl shadow mb-4">
+    <div class="text-sm font-semibold text-gray-700 mb-3">Zeitraum wählen:</div>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      <select id="month-input" class="flex-1 p-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <% months.forEach(m => { %>
+          <option value="<%= m.value %>" <%= m.isSelected ? 'selected' : '' %>><%= m.name %></option>
+        <% }) %>
+      </select>
+      <select id="year-input" class="flex-1 sm:flex-none sm:w-32 p-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <% years.forEach(y => { %>
+          <option value="<%= y.value %>" <%= y.isSelected ? 'selected' : '' %>><%= y.value %></option>
+        <% }) %>
+      </select>
+    </div>
   </div>
   <div id="calendar" class="grid grid-cols-7 gap-2"></div>
   <div id="report-details" class="mt-6"></div>
