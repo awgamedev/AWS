@@ -26,7 +26,7 @@ const validateUserData = async (req, isEdit, username, password, email) => {
 
   if (!email) {
     errors.email = req.__("ERROR_EMAIL_REQUIRED");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     errors.email = req.__("ERROR_EMAIL_INVALID");
   }
 

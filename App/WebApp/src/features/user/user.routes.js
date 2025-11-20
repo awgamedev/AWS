@@ -41,6 +41,7 @@ router.post("/user/create", ensureAuthenticated, async (req, res) => {
     // Validate user data and get field-specific errors
     const validationErrors = await validateUserData(
       req,
+      false,
       username,
       password,
       email
