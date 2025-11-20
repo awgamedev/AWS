@@ -132,5 +132,7 @@
 	"ERROR_DATE_REQUIRED": "Datum ist erforderlich.",
 	"ERROR_ARRIVE_TIME_REQUIRED": "Ankunftszeit ist erforderlich.",
 	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "Ankunftszeit muss vor der Abgangszeit gesetzt werden.",
-	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Abgangszeit muss nach der Ankunftszeit liegen."
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Abgangszeit muss nach der Ankunftszeit liegen.",
+	"TASKS": "Aufgaben",
+	"TASK": "Aufgabe"
 }

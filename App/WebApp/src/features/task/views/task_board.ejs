@@ -91,7 +91,7 @@ const unassignedTasksTitle = __("UNASSIGNED_TASKS_BUTTON");
                         <div class="p-3">
                             <div class="flex items-center justify-between mb-2">
                                 <h4 class="font-semibold text-gray-700 text-sm"><%= dayName %></h4>
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><%= dayTasks.length %> <%= dayTasks.length === 1 ? 'Task' : 'Tasks' %></span>
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><%= dayTasks.length %> <%= dayTasks.length === 1 ? __("TASK") : __("TASKS") %></span>
                             </div>
                             
                             <% if (dayTasks.length > 0) { %>

@@ -137,5 +137,9 @@
 	"ERROR_DATE_REQUIRED": "La date est requise.",
 	"ERROR_ARRIVE_TIME_REQUIRED": "L'heure d'arrivée est requise.",
 	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "L'heure d'arrivée doit être définie avant l'heure de départ.",
-	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "L'heure de départ doit être après l'heure d'arrivée."
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "L'heure de départ doit être après l'heure d'arrivée.",
+	"Tasks": "Tasks",
+	"Task": "Task",
+	"TASKS": "TASKS",
+	"TASK": "TASK"
 }

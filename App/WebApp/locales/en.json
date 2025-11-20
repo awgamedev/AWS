@@ -138,5 +138,9 @@
 	"ERROR_DATE_REQUIRED": "Date is required.",
 	"ERROR_ARRIVE_TIME_REQUIRED": "Arrive time is required.",
 	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "Arrive time must be set before leave time.",
-	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Leave time must be after arrive time."
+	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Leave time must be after arrive time.",
+	"Tasks": "Tasks",
+	"Task": "Task",
+	"TASKS": "TASKS",
+	"TASK": "TASK"
 }
