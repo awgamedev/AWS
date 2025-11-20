@@ -1,0 +1,63 @@
+<div class="p-6">
+	<% const myReportsSafe = typeof myReports !== 'undefined' && Array.isArray(myReports) ? myReports : []; %>
+	<% const isEditingSafe = typeof isEditing !== 'undefined' ? isEditing : false; %>
+	<h1 class="text-2xl font-semibold mb-4"><%= isEditingSafe ? __('REPORT_EDIT_TITLE') : __('REPORT_CREATE_TITLE') %></h1>
+
+	<form method="POST" action="/reports/create" class="space-y-4" id="report-create-form">
+		<div>
+			<label class="block mb-1" for="type">Typ</label>
+			<select name="type" id="type" class="border p-2 w-64">
+				<option value="">-- wählen --</option>
+				<% (types || ['vacation','illness']).forEach(function(t){ %>
+					<option value="<%= t %>" <%= entityToModify && entityToModify.type === t ? 'selected' : '' %>><%= t %></option>
+				<% }) %>
+			</select>
+			<% if (errors && errors.type) { %><p class="text-red-600 text-sm"><%= errors.type %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="startDate">Start</label>
+			<input type="date" name="startDate" id="startDate" class="border p-2" value="<%= entityToModify.startDate || '' %>" />
+			<% if (errors && errors.startDate) { %><p class="text-red-600 text-sm"><%= errors.startDate %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="endDate">Ende</label>
+			<input type="date" name="endDate" id="endDate" class="border p-2" value="<%= entityToModify.endDate || '' %>" />
+			<% if (errors && errors.endDate) { %><p class="text-red-600 text-sm"><%= errors.endDate %></p><% } %>
+		</div>
+		<div>
+			<label class="block mb-1" for="description">Beschreibung (optional)</label>
+			<textarea name="description" id="description" rows="3" class="border p-2 w-full"><%= entityToModify.description || '' %></textarea>
+		</div>
+		<% if (errors && errors.dateRange) { %><p class="text-red-600 text-sm"><%= errors.dateRange %></p><% } %>
+		<% if (errors && errors.overlap) { %><p class="text-red-600 text-sm"><%= errors.overlap %></p><% } %>
+		<% if (errors && errors.general) { %><p class="text-red-600 text-sm"><%= errors.general %></p><% } %>
+		<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Absenden</button>
+	</form>
+
+	<% if (myReportsSafe.length) { %>
+		<hr class="my-6" />
+		<h2 class="text-xl font-semibold mb-2">Meine Reports</h2>
+		<table class="border-collapse w-full text-sm">
+			<thead>
+				<tr class="bg-gray-100">
+					<th class="border p-2">Typ</th>
+					<th class="border p-2">Start</th>
+					<th class="border p-2">Ende</th>
+					<th class="border p-2">Status</th>
+					<th class="border p-2">Beschreibung</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% myReportsSafe.forEach(function(r){ %>
+					<tr>
+						<td class="border p-2"><%= r.type %></td>
+						<td class="border p-2"><%= new Date(r.startDate).toLocaleDateString('de-DE') %></td>
+						<td class="border p-2"><%= new Date(r.endDate).toLocaleDateString('de-DE') %></td>
+						<td class="border p-2"><%= r.status %></td>
+						<td class="border p-2"><%= r.description || '' %></td>
+					</tr>
+				<% }) %>
+			</tbody>
+		</table>
+	<% } %>
+</div>

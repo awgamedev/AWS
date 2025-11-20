@@ -77,6 +77,38 @@
         user: user,
         // roles: 'admin'
     }) %>
+
+    <%- include('_menu_dropdown', {
+        prefix: '/reports',
+        icon: 'fa-solid fa-file-medical',
+        text: 'Reports',
+        currentPath: currentPath,
+        user: user,
+        subitems: [
+            include('_menu_item', {
+                href: '/reports/create',
+                icon: 'fa-solid fa-plus',
+                text: 'Report erstellen',
+                currentPath: currentPath,
+                user: user
+            }),
+            include('_menu_item', {
+                href: '/reports/my',
+                icon: 'fa-solid fa-folder',
+                text: 'Meine Reports',
+                currentPath: currentPath,
+                user: user
+            }),
+            include('_menu_item', {
+                href: '/reports/admin',
+                icon: 'fa-solid fa-calendar-days',
+                text: 'Kalender',
+                currentPath: currentPath,
+                user: user,
+                roles: 'admin'
+            })
+        ]
+    }) %>
     
     <!-- <%- include('_menu_item', { 
         href: '/settings', 
