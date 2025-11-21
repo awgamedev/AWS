@@ -182,5 +182,7 @@
 	"DAYS_PER_YEAR": "Tage/Jahr",
 	"REMAINING": "verbleibend",
 	"PROFILE_UPDATED_SUCCESS": "Profil erfolgreich aktualisiert",
-	"SICK_DAYS_TAKEN": "Krankheitstage genommen"
+	"SICK_DAYS_TAKEN": "Krankheitstage genommen",
+	"TOTAL": "Insgesamt",
+	"DAYS": "Tage"
 }

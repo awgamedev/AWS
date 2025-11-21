@@ -6,6 +6,7 @@ const {
   validateReportData,
   validateAdminReportData,
 } = require("./report.validator");
+const userProfileRepository = require("../user-profile/user-profile.repository");
 
 // GET form for creating a report
 async function showCreateForm(req, res) {
@@ -25,10 +26,24 @@ async function listUserReports(req, res) {
     const items = await Report.find({ userId: req.user.id })
       .sort({ startDate: 1 })
       .exec();
+
+    // Get user profile and calculate vacation days
+    const userProfile = await userProfileRepository.getOrCreate(req.user.id);
+    const vacationDaysUsed = await reportRepository.getVacationDaysUsed(
+      req.user.id
+    );
+    const vacationDaysTotal = userProfile.vacationDaysPerYear || 20;
+    const vacationDaysRemaining = Math.max(
+      0,
+      vacationDaysTotal - vacationDaysUsed
+    );
+
     renderView(req, res, "report_user", title, {
       items: items.map((i) => i.toObject()),
       types: REPORT_TYPES,
       statuses: REPORT_STATUSES,
+      userProfile,
+      vacationDaysRemaining,
     });
   } catch (err) {
     req.logger.error("Error listing reports", err);
