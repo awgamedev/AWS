@@ -70,7 +70,8 @@ async function validateReportData(req, isEdit = false) {
     end
   ) {
     try {
-      const requestedDays = reportRepository.calculateBusinessDays(start, end);
+      // Use inclusive calendar days (vacation counts weekends)
+      const requestedDays = reportRepository.calculateInclusiveDays(start, end);
       const profile = await userProfileRepository.findByUserId(req.user.id);
       const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
       // Include both approved and pending to prevent exceeding allowance with multiple pending requests
@@ -80,8 +81,13 @@ async function validateReportData(req, isEdit = false) {
         ["approved", "pending"]
       );
       const remaining = Math.max(0, totalVacation - usedVacation);
+      req.logger.info(
+        `[Vacation Validation] requestedDays=${requestedDays}, usedVacation=${usedVacation}, remaining=${remaining}, total=${totalVacation}`
+      );
       if (requestedDays > remaining) {
-        errors.vacationDaysRemaining = req.__("ERROR_NOT_ENOUGH_VACATION_DAYS");
+        errors.vacationDaysRemaining =
+          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
+          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
       }
     } catch (err) {
       req.logger.error("Fehler bei Urlaubs-Tage-Prüfung", err);
@@ -165,7 +171,8 @@ async function validateAdminReportData(req) {
     end
   ) {
     try {
-      const requestedDays = reportRepository.calculateBusinessDays(start, end);
+      // Use inclusive calendar days (vacation counts weekends)
+      const requestedDays = reportRepository.calculateInclusiveDays(start, end);
       const profile = await userProfileRepository.findByUserId(userId);
       const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
       // Include both approved and pending requests for admin validation
@@ -175,8 +182,13 @@ async function validateAdminReportData(req) {
         ["approved", "pending"]
       );
       const remaining = Math.max(0, totalVacation - usedVacation);
+      req.logger.info(
+        `[Vacation Validation Admin] requestedDays=${requestedDays}, usedVacation=${usedVacation}, remaining=${remaining}, total=${totalVacation}`
+      );
       if (requestedDays > remaining) {
-        errors.vacationDaysRemaining = req.__("ERROR_NOT_ENOUGH_VACATION_DAYS");
+        errors.vacationDaysRemaining =
+          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
+          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
       }
     } catch (err) {
       req.logger.error("Fehler bei Urlaubs-Tage-Prüfung (Admin)", err);

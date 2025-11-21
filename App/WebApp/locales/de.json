@@ -186,5 +186,8 @@
 	"TOTAL": "Insgesamt",
 	"DAYS": "Tage",
 	"ERROR_NOT_ENOUGH_VACATION_DAYS": "Nicht genügend verbleibende Urlaubstage.",
-	"ERROR_REPORT_RANGE": "Das Enddatum muss hinter dem Startdatum liegen."
+	"ERROR_REPORT_RANGE": "Das Enddatum muss hinter dem Startdatum liegen.",
+	"USED": "Verplant",
+	"SICK_DAYS_REQUIRED": "SICK_DAYS_REQUIRED",
+	"INVALID_PROFILE_DATA": "INVALID_PROFILE_DATA"
 }

@@ -24,8 +24,11 @@ class UserProfileController {
       const user = await userRepository.findById(userId);
 
       // Calculate used vacation and sick days for current year
+      // Include pending + approved to show all requested days
       const vacationDaysUsed = await reportRepository.getVacationDaysUsed(
-        userId
+        userId,
+        null,
+        ["approved", "pending"]
       );
       const sickDaysUsed = await reportRepository.getSickDaysUsed(userId);
 

@@ -8,14 +8,20 @@
     <div class="space-y-2">
       <div class="flex justify-between items-center text-sm">
         <span class="text-gray-600"><%= __('TOTAL') || 'Total' %>:</span>
-        <span class="font-medium text-gray-800"><%= userProfile && userProfile.vacationDaysPerYear ? userProfile.vacationDaysPerYear : 20 %> <%= __('DAYS') || 'days' %></span>
+        <span class="font-medium text-gray-800"><%= userProfile && userProfile.vacationDaysPerYear ? userProfile.vacationDaysPerYear : 20 %> <%= __('DAYS') %></span>
       </div>
-      <div class="flex items-center gap-2">
-        <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-          <div class="bg-green-500 h-full rounded-full" style="width: <%= Math.max(0, Math.min(100, (vacationDaysRemaining / (userProfile && userProfile.vacationDaysPerYear || 20)) * 100)) %>%"></div>
+      <% const totalVacation = (userProfile && userProfile.vacationDaysPerYear) ? userProfile.vacationDaysPerYear : 20; %>
+      <% const usedVacation = typeof vacationDaysUsed !== 'undefined' ? vacationDaysUsed : (totalVacation - vacationDaysRemaining); %>
+      <% const remainingVacation = Math.max(0, totalVacation - usedVacation); %>
+      <% const barColorClass = remainingVacation > 5 ? 'bg-green-500' : (remainingVacation > 2 ? 'bg-yellow-500' : 'bg-red-500'); %>
+      <% const widthPercent = Math.max(0, Math.min(100, (usedVacation / totalVacation) * 100)); %>
+      <% const widthStyle = `width:${widthPercent}%`; %>
+      <div class="flex items-center gap-2" aria-label="Urlaubstage Fortschritt">
+        <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden" aria-hidden="true">
+          <div class="h-full rounded-full <%= barColorClass %>" data-progress-bar data-width="<%= widthPercent %>"></div>
         </div>
-        <span class="text-xs font-semibold <%= vacationDaysRemaining > 5 ? 'text-green-600' : vacationDaysRemaining > 2 ? 'text-yellow-600' : 'text-red-600' %>">
-          <%= vacationDaysRemaining %> <%= __('REMAINING') %>
+        <span class="text-xs font-semibold text-gray-700">
+          <%= usedVacation %>/<%= totalVacation %> <%= __('USED') || 'genutzt' %> · <%= remainingVacation %> <%= __('REMAINING') %>
         </span>
       </div>
     </div>
@@ -83,6 +89,13 @@
         rejected: "<%= __('REPORT_STATUS_REJECTED') %>"
       }
     };
+    // Apply dynamic widths to progress bars after DOM loads
+    document.querySelectorAll('[data-progress-bar]').forEach(el => {
+      const w = el.getAttribute('data-width');
+      if (w !== null) {
+        el.style.width = w + '%';
+      }
+    });
   </script>
   <script src="/js/report/report-user-script.js"></script>
 </div>

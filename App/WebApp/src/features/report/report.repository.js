@@ -62,6 +62,25 @@ class ReportRepository extends BaseRepository {
   }
 
   /**
+   * Calculates inclusive calendar days between two dates (inclusive), counting weekends.
+   * @param {Date} startDate
+   * @param {Date} endDate
+   * @returns {number} Total calendar days including weekends
+   */
+  calculateInclusiveDays(startDate, endDate) {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    // Normalize to midnight to avoid DST/timezone issues
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    if (end < start) return 0;
+    const diffMs = end.getTime() - start.getTime();
+    // diff in days + 1 (inclusive)
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+  }
+
+  /**
    * Gets the total vacation days used/requested by a user in the given year.
    * By default only approved reports are counted; pass additional statuses
    * (e.g. ["approved", "pending"]) to include pending requests in validation.
@@ -96,7 +115,8 @@ class ReportRepository extends BaseRepository {
       const rangeStart =
         report.startDate > startOfYear ? report.startDate : startOfYear;
       const rangeEnd = report.endDate < endOfYear ? report.endDate : endOfYear;
-      totalDays += this.calculateBusinessDays(rangeStart, rangeEnd);
+      // Vacation should count calendar days including weekends as requested
+      totalDays += this.calculateInclusiveDays(rangeStart, rangeEnd);
     }
 
     return totalDays;

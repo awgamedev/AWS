@@ -29,8 +29,11 @@ async function listUserReports(req, res) {
 
     // Get user profile and calculate vacation days
     const userProfile = await userProfileRepository.getOrCreate(req.user.id);
+    // Include pending + approved for consistency with validation
     const vacationDaysUsed = await reportRepository.getVacationDaysUsed(
-      req.user.id
+      req.user.id,
+      null,
+      ["approved", "pending"]
     );
     const vacationDaysTotal = userProfile.vacationDaysPerYear || 20;
     const vacationDaysRemaining = Math.max(
@@ -43,6 +46,7 @@ async function listUserReports(req, res) {
       types: REPORT_TYPES,
       statuses: REPORT_STATUSES,
       userProfile,
+      vacationDaysUsed,
       vacationDaysRemaining,
     });
   } catch (err) {
