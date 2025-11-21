@@ -262,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "endDate",
       "dateRange",
       "overlap",
+      "vacationDaysRemaining",
       "general",
     ];
     errorFields.forEach((field) => {

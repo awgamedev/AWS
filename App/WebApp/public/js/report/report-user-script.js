@@ -15,15 +15,21 @@ const setMessage = (el, type, text) => {
 };
 
 const clearErrors = () => {
-  ["type", "startDate", "endDate", "dateRange", "overlap", "general"].forEach(
-    (id) => {
-      const el = document.getElementById(`${id}-error`);
-      if (el) {
-        el.textContent = "";
-        el.classList.add("hidden");
-      }
+  [
+    "type",
+    "startDate",
+    "endDate",
+    "dateRange",
+    "overlap",
+    "vacationDaysRemaining",
+    "general",
+  ].forEach((id) => {
+    const el = document.getElementById(`${id}-error`);
+    if (el) {
+      el.textContent = "";
+      el.classList.add("hidden");
     }
-  );
+  });
 };
 
 const showErrors = (errors) => {

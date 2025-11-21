@@ -15,17 +15,15 @@ async function validateReportData(req, isEdit = false) {
 
   // Validate type
   if (!type || !REPORT_TYPES.includes(type)) {
-    errors.type = req.__("ERROR_INVALID_REPORT_TYPE") || "Ungültiger Typ.";
+    errors.type = req.__("ERROR_INVALID_REPORT_TYPE");
   }
 
   // Validate dates
   if (!startDate) {
-    errors.startDate =
-      req.__("ERROR_REPORT_START_REQUIRED") || "Startdatum erforderlich.";
+    errors.startDate = req.__("ERROR_REPORT_START_REQUIRED");
   }
   if (!endDate) {
-    errors.endDate =
-      req.__("ERROR_REPORT_END_REQUIRED") || "Enddatum erforderlich.";
+    errors.endDate = req.__("ERROR_REPORT_END_REQUIRED");
   }
 
   let start = null;
@@ -34,9 +32,7 @@ async function validateReportData(req, isEdit = false) {
   if (endDate) end = new Date(endDate);
 
   if (start && end && end < start) {
-    errors.dateRange =
-      req.__("ERROR_REPORT_RANGE") ||
-      "Enddatum muss nach dem Startdatum liegen.";
+    errors.dateRange = req.__("ERROR_REPORT_RANGE");
   }
 
   // Overlap check only if dates valid so far
@@ -55,14 +51,11 @@ async function validateReportData(req, isEdit = false) {
         isEdit ? id : null
       );
       if (overlapping.length > 0) {
-        errors.overlap =
-          req.__("ERROR_REPORT_OVERLAP") ||
-          "Zeitraum überschneidet sich mit einem bestehenden Report.";
+        errors.overlap = req.__("ERROR_REPORT_OVERLAP");
       }
     } catch (err) {
       req.logger.error("Fehler bei Overlap-Prüfung", err);
-      errors.general =
-        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+      errors.general = req.__("ERROR_REPORT_VALIDATION");
     }
   }
 
@@ -88,14 +81,11 @@ async function validateReportData(req, isEdit = false) {
       );
       const remaining = Math.max(0, totalVacation - usedVacation);
       if (requestedDays > remaining) {
-        errors.vacationDaysRemaining =
-          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
-          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
+        errors.vacationDaysRemaining = req.__("ERROR_NOT_ENOUGH_VACATION_DAYS");
       }
     } catch (err) {
       req.logger.error("Fehler bei Urlaubs-Tage-Prüfung", err);
-      errors.general =
-        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+      errors.general = req.__("ERROR_REPORT_VALIDATION");
     }
   }
 
@@ -113,22 +103,20 @@ async function validateAdminReportData(req) {
 
   // Validate userId
   if (!userId) {
-    errors.userId = req.__("ERROR_USER_REQUIRED") || "Benutzer erforderlich.";
+    errors.userId = req.__("ERROR_USER_REQUIRED");
   }
 
   // Validate type
   if (!type || !REPORT_TYPES.includes(type)) {
-    errors.type = req.__("ERROR_INVALID_REPORT_TYPE") || "Ungültiger Typ.";
+    errors.type = req.__("ERROR_INVALID_REPORT_TYPE");
   }
 
   // Validate dates
   if (!startDate) {
-    errors.startDate =
-      req.__("ERROR_REPORT_START_REQUIRED") || "Startdatum erforderlich.";
+    errors.startDate = req.__("ERROR_REPORT_START_REQUIRED");
   }
   if (!endDate) {
-    errors.endDate =
-      req.__("ERROR_REPORT_END_REQUIRED") || "Enddatum erforderlich.";
+    errors.endDate = req.__("ERROR_REPORT_END_REQUIRED");
   }
 
   let start = null;
@@ -137,9 +125,7 @@ async function validateAdminReportData(req) {
   if (endDate) end = new Date(endDate);
 
   if (start && end && end < start) {
-    errors.dateRange =
-      req.__("ERROR_REPORT_RANGE") ||
-      "Enddatum muss nach dem Startdatum liegen.";
+    errors.dateRange = req.__("ERROR_REPORT_RANGE");
   }
 
   // Overlap check only if dates and userId are valid
@@ -159,14 +145,11 @@ async function validateAdminReportData(req) {
         null
       );
       if (overlapping.length > 0) {
-        errors.overlap =
-          req.__("ERROR_REPORT_OVERLAP") ||
-          "Zeitraum überschneidet sich mit einem bestehenden Report.";
+        errors.overlap = req.__("ERROR_REPORT_OVERLAP");
       }
     } catch (err) {
       req.logger.error("Fehler bei Overlap-Prüfung", err);
-      errors.general =
-        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+      errors.general = req.__("ERROR_REPORT_VALIDATION");
     }
   }
 
@@ -193,14 +176,11 @@ async function validateAdminReportData(req) {
       );
       const remaining = Math.max(0, totalVacation - usedVacation);
       if (requestedDays > remaining) {
-        errors.vacationDaysRemaining =
-          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
-          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
+        errors.vacationDaysRemaining = req.__("ERROR_NOT_ENOUGH_VACATION_DAYS");
       }
     } catch (err) {
       req.logger.error("Fehler bei Urlaubs-Tage-Prüfung (Admin)", err);
-      errors.general =
-        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+      errors.general = req.__("ERROR_REPORT_VALIDATION");
     }
   }
 
