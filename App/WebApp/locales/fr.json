@@ -193,7 +193,9 @@
 	"SICK_DAYS": "SICK_DAYS",
 	"DAILY_PAUSE_HELP": "DAILY_PAUSE_HELP",
 	"SAVE_CHANGES": "SAVE_CHANGES",
-	"PROFILE_PICTURE_UPDATED": "PROFILE_PICTURE_UPDATED",
-	"EDIT_WORK_SETTINGS": "EDIT_WORK_SETTINGS",
-	"EDIT": "EDIT"
+	"PROFILE_PICTURE_UPDATED": "Photo de profil mise à jour avec succès",
+	"EDIT_WORK_SETTINGS": "Modifier les paramètres de travail",
+	"EDIT": "Modifier",
+	"DAYS_PER_YEAR": "jours/an",
+	"REMAINING": "restant"
 }

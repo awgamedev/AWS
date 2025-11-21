@@ -178,5 +178,7 @@
 	"SAVE_CHANGES": "Änderungen speichern",
 	"PROFILE_PICTURE_UPDATED": "Profilbild aktualisiert",
 	"EDIT": "Bearbeiten",
-	"EDIT_WORK_SETTINGS": "EDIT_WORK_SETTINGS"
+	"EDIT_WORK_SETTINGS": "Arbeitseinstellungen bearbeiten",
+	"DAYS_PER_YEAR": "Tage/Jahr",
+	"REMAINING": "verbleibend"
 }

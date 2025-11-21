@@ -1,5 +1,6 @@
 const userProfileRepository = require("./user-profile.repository");
 const UserRepository = require("../user/user.repository");
+const reportRepository = require("../report/report.repository");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const { validateUserProfileData } = require("./user-profile.validator");
 
@@ -22,11 +23,30 @@ class UserProfileController {
       const userProfile = await userProfileRepository.getOrCreate(userId);
       const user = await userRepository.findById(userId);
 
+      // Calculate used vacation and sick days for current year
+      const vacationDaysUsed = await reportRepository.getVacationDaysUsed(
+        userId
+      );
+      const sickDaysUsed = await reportRepository.getSickDaysUsed(userId);
+
+      // Calculate remaining days
+      const vacationDaysTotal = userProfile.vacationDaysPerYear || 20;
+      const sickDaysTotal = userProfile.sickDaysPerYear || 10;
+      const vacationDaysRemaining = Math.max(
+        0,
+        vacationDaysTotal - vacationDaysUsed
+      );
+      const sickDaysRemaining = Math.max(0, sickDaysTotal - sickDaysUsed);
+
       const title = req.__("USER_PROFILE_TITLE") || "User Profile";
 
       renderView(req, res, "user-profile", title, {
         user,
         userProfile,
+        vacationDaysUsed,
+        sickDaysUsed,
+        vacationDaysRemaining,
+        sickDaysRemaining,
       });
     } catch (error) {
       req.logger.error("Error loading user profile:", error);
