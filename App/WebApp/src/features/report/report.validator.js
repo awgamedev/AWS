@@ -1,5 +1,6 @@
 const Report = require("./report.model");
 const reportRepository = require("./report.repository");
+const userProfileRepository = require("../user-profile/user-profile.repository");
 const { REPORT_TYPES } = require("./report.model");
 
 /**
@@ -60,6 +61,36 @@ async function validateReportData(req, isEdit = false) {
       }
     } catch (err) {
       req.logger.error("Fehler bei Overlap-Prüfung", err);
+      errors.general =
+        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+    }
+  }
+
+  // Check remaining vacation days if creating a vacation report
+  if (
+    !errors.startDate &&
+    !errors.endDate &&
+    !errors.dateRange &&
+    !errors.overlap &&
+    type === "vacation" &&
+    start &&
+    end
+  ) {
+    try {
+      const requestedDays = reportRepository.calculateBusinessDays(start, end);
+      const profile = await userProfileRepository.findByUserId(req.user.id);
+      const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
+      const usedVacation = await reportRepository.getVacationDaysUsed(
+        req.user.id
+      );
+      const remaining = Math.max(0, totalVacation - usedVacation);
+      if (requestedDays > remaining) {
+        errors.vacationDaysRemaining =
+          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
+          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
+      }
+    } catch (err) {
+      req.logger.error("Fehler bei Urlaubs-Tage-Prüfung", err);
       errors.general =
         req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
     }
@@ -131,6 +162,35 @@ async function validateAdminReportData(req) {
       }
     } catch (err) {
       req.logger.error("Fehler bei Overlap-Prüfung", err);
+      errors.general =
+        req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
+    }
+  }
+
+  // Check remaining vacation days for admin-created vacation reports
+  if (
+    !errors.userId &&
+    !errors.startDate &&
+    !errors.endDate &&
+    !errors.dateRange &&
+    !errors.overlap &&
+    type === "vacation" &&
+    start &&
+    end
+  ) {
+    try {
+      const requestedDays = reportRepository.calculateBusinessDays(start, end);
+      const profile = await userProfileRepository.findByUserId(userId);
+      const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
+      const usedVacation = await reportRepository.getVacationDaysUsed(userId);
+      const remaining = Math.max(0, totalVacation - usedVacation);
+      if (requestedDays > remaining) {
+        errors.vacationDaysRemaining =
+          req.__("ERROR_NOT_ENOUGH_VACATION_DAYS") ||
+          `Nicht genügend Urlaubstage verfügbar. Verfügbar: ${remaining}, benötigt: ${requestedDays}.`;
+      }
+    } catch (err) {
+      req.logger.error("Fehler bei Urlaubs-Tage-Prüfung (Admin)", err);
       errors.general =
         req.__("ERROR_REPORT_VALIDATION") || "Validierungsfehler.";
     }
