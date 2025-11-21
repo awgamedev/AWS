@@ -80,7 +80,7 @@ const fillEditForm = (data) => {
 
 window.openEditReportModal = (id, type, startDate, endDate, description) => {
   openModalFromApi(
-    "Report bearbeiten",
+    "Meldung bearbeiten",
     `/api/modal/report-edit?reportId=${id}`,
     () => {
       fillEditForm({ id, type, startDate, endDate, description });
