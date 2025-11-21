@@ -1,23 +1,19 @@
+<% 
+const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case "high": return '<img class="w-4 h-4" src="/img/priority/high.png" alt="High Priority" />';
+      case "medium": return '<img class="w-4 h-4" src="/img/priority/medium.png" alt="Medium Priority"/>';
+      case "low": return '<img class="w-4 h-4" src="/img/priority/low.png" alt="Low Priority"/>';
+    //   default: return '<svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"></circle></svg>';
+    }
+};
+%>
+
 <div class="bg-white p-6 rounded-xl shadow-2xl">
     <ul class="divide-y divide-gray-100">
         <% if (allTasks.length > 0) { %>
             <% allTasks.forEach(function(task) { %>
-                <%
-                    let priorityClass = '';
-                    switch (task.taskPriority) {
-                        case 'high':
-                            priorityClass = 'bg-red-100 text-red-800';
-                            break;
-                        case 'medium':
-                            priorityClass = 'bg-yellow-100 text-yellow-800';
-                            break;
-                        case 'low':
-                        default:
-                            priorityClass = 'bg-green-100 text-green-800';
-                            break;
-                    }
-                %>
-                
+
                 <li class="p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex justify-between items-center"
                     data-task-id="<%= task._id %>"
                     data-task-name="<%= task.taskName %>"
@@ -30,8 +26,8 @@
                     </div>
                     
                     <div class="flex items-center space-x-4 flex-shrink-0">
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium <%= priorityClass %>">
-                            <%= task.taskPriority.charAt(0).toUpperCase() + task.taskPriority.slice(1) %>
+                        <span>
+                            <%- getPriorityIcon(task.taskPriority) %>
                         </span>
                         <span class="text-sm text-gray-500"><%= task.dateStr %></span>
                         <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
