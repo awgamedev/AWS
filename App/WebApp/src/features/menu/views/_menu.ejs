@@ -101,6 +101,14 @@
         user: user,
         // roles: 'admin'
     }) %>
+
+    <%- include('_menu_item', { 
+        href: '/profile', 
+        icon: 'fa-solid fa-user-circle', 
+        text: 'Profil', 
+        currentPath: currentPath,
+        user: user
+    }) %>
     
     <!-- <%- include('_menu_item', { 
         href: '/settings', 

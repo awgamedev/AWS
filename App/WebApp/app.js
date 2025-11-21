@@ -196,8 +196,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // --- Middleware and Configuration ---
 // Add middleware to parse URL-encoded form data (needed for HTML forms)
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // To handle JSON payloads
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "10mb" })); // To handle JSON payloads (increased for image uploads)
 
 // NEU: Session-Konfiguration (MUSS vor passport.session() erfolgen)
 app.use(

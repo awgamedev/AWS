@@ -161,5 +161,20 @@
 	"REPORT_STATUS_APPROVED": "Genehmigt",
 	"REPORT_STATUS_REJECTED": "Abgelehnt",
 	"REPORT_TYPE_VACATION": "Urlaub",
-	"REPORT_TYPE_ILLNESS": "Krankheit"
+	"REPORT_TYPE_ILLNESS": "Krankheit",
+	"USER_PROFILE_TITLE": "Nutzerprofil",
+	"USER_PROFILE_SUBTITLE": "Verwalte deine persönlichen Daten und Einstellungen",
+	"EDIT_PROFILE": "Profil bearbeiten",
+	"ACCOUNT_INFORMATION": "Accountinformationen",
+	"USERNAME": "Benutzername",
+	"EMAIL": "E-Mail",
+	"ROLE": "Rolle",
+	"MEMBER_SINCE": "Mitglied seit",
+	"WORK_SETTINGS": "Arbeits-Einstellungen",
+	"DAILY_PAUSE": "Tägliche Pause",
+	"VACATION_DAYS": "Urlaubstage",
+	"SICK_DAYS": "Krankheitstage",
+	"DAILY_PAUSE_HELP": "Tägliche Pause in Minuten (z.B. 30 für eine halbe Stunde)",
+	"SAVE_CHANGES": "Änderungen speichern",
+	"PROFILE_PICTURE_UPDATED": "PROFILE_PICTURE_UPDATED"
 }

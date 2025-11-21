@@ -20,7 +20,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     role: {
-      // Für die Autorisierung (z.B. 'user', 'admin')
       type: String,
       default: "user",
       enum: ["user", "admin"],
