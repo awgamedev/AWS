@@ -198,5 +198,6 @@
 	"EDIT_WORK_SETTINGS": "Edit Work Settings",
 	"EDIT": "Edit",
 	"DAYS_PER_YEAR": "days/year",
-	"REMAINING": "remaining"
+	"REMAINING": "remaining",
+	"PROFILE_UPDATED_SUCCESS": "PROFILE_UPDATED_SUCCESS"
 }

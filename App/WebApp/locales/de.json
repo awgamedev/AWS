@@ -180,5 +180,6 @@
 	"EDIT": "Bearbeiten",
 	"EDIT_WORK_SETTINGS": "Arbeitseinstellungen bearbeiten",
 	"DAYS_PER_YEAR": "Tage/Jahr",
-	"REMAINING": "verbleibend"
+	"REMAINING": "verbleibend",
+	"PROFILE_UPDATED_SUCCESS": "PROFILE_UPDATED_SUCCESS"
 }

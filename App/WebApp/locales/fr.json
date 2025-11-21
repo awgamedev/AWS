@@ -197,5 +197,6 @@
 	"EDIT_WORK_SETTINGS": "Modifier les paramètres de travail",
 	"EDIT": "Modifier",
 	"DAYS_PER_YEAR": "jours/an",
-	"REMAINING": "restant"
+	"REMAINING": "restant",
+	"PROFILE_UPDATED_SUCCESS": "PROFILE_UPDATED_SUCCESS"
 }
