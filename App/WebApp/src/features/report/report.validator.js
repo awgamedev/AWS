@@ -80,8 +80,11 @@ async function validateReportData(req, isEdit = false) {
       const requestedDays = reportRepository.calculateBusinessDays(start, end);
       const profile = await userProfileRepository.findByUserId(req.user.id);
       const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
+      // Include both approved and pending to prevent exceeding allowance with multiple pending requests
       const usedVacation = await reportRepository.getVacationDaysUsed(
-        req.user.id
+        req.user.id,
+        null,
+        ["approved", "pending"]
       );
       const remaining = Math.max(0, totalVacation - usedVacation);
       if (requestedDays > remaining) {
@@ -182,7 +185,12 @@ async function validateAdminReportData(req) {
       const requestedDays = reportRepository.calculateBusinessDays(start, end);
       const profile = await userProfileRepository.findByUserId(userId);
       const totalVacation = (profile && profile.vacationDaysPerYear) || 20;
-      const usedVacation = await reportRepository.getVacationDaysUsed(userId);
+      // Include both approved and pending requests for admin validation
+      const usedVacation = await reportRepository.getVacationDaysUsed(
+        userId,
+        null,
+        ["approved", "pending"]
+      );
       const remaining = Math.max(0, totalVacation - usedVacation);
       if (requestedDays > remaining) {
         errors.vacationDaysRemaining =

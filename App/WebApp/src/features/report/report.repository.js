@@ -62,22 +62,30 @@ class ReportRepository extends BaseRepository {
   }
 
   /**
-   * Gets the total vacation days used by a user in the current year.
-   * Only counts approved vacation reports.
+   * Gets the total vacation days used/requested by a user in the given year.
+   * By default only approved reports are counted; pass additional statuses
+   * (e.g. ["approved", "pending"]) to include pending requests in validation.
    * @param {string} userId
-   * @param {number} year - Optional year, defaults to current year
-   * @returns {Promise<number>} Total vacation days used
+   * @param {number|null} year - Optional year, defaults to current year
+   * @param {string[]} statuses - Statuses to include (default: ["approved"])
+   * @returns {Promise<number>} Total vacation days matching the statuses
    */
-  async getVacationDaysUsed(userId, year = null) {
+  async getVacationDaysUsed(userId, year = null, statuses = ["approved"]) {
     const currentYear = year || new Date().getFullYear();
     const startOfYear = new Date(currentYear, 0, 1);
     const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59);
+
+    const statusFilter = Array.isArray(statuses)
+      ? statuses.length === 1
+        ? statuses[0]
+        : { $in: statuses }
+      : "approved";
 
     const reports = await this.model
       .find({
         userId,
         type: "vacation",
-        status: "approved",
+        status: statusFilter,
         startDate: { $lte: endOfYear },
         endDate: { $gte: startOfYear },
       })

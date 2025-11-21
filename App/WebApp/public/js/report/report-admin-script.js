@@ -77,9 +77,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Reports covering this day
       const dayReports = reports.filter((r) => {
-        return (
-          new Date(r.startDate) <= dateObj && new Date(r.endDate) >= dateObj
+        // Normalize dates to local midnight for accurate comparison
+        const reportStart = new Date(r.startDate);
+        const reportEnd = new Date(r.endDate);
+        const localStart = new Date(
+          reportStart.getFullYear(),
+          reportStart.getMonth(),
+          reportStart.getDate()
         );
+        const localEnd = new Date(
+          reportEnd.getFullYear(),
+          reportEnd.getMonth(),
+          reportEnd.getDate()
+        );
+        return localStart <= dateObj && localEnd >= dateObj;
       });
 
       dayReports.forEach((r) => {
