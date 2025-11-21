@@ -176,5 +176,7 @@
 	"SICK_DAYS": "Krankheitstage",
 	"DAILY_PAUSE_HELP": "Tägliche Pause in Minuten (z.B. 30 für eine halbe Stunde)",
 	"SAVE_CHANGES": "Änderungen speichern",
-	"PROFILE_PICTURE_UPDATED": "PROFILE_PICTURE_UPDATED"
+	"PROFILE_PICTURE_UPDATED": "Profilbild aktualisiert",
+	"EDIT": "Bearbeiten",
+	"EDIT_WORK_SETTINGS": "EDIT_WORK_SETTINGS"
 }
