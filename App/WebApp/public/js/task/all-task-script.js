@@ -82,6 +82,39 @@ const fillEditForm = (data) => {
 // FORM HANDLERS
 // ============================================================================
 
+const handleCreateTask = async (form) => {
+  const msg = byId("task-form-message");
+  setMessage(msg, "info", "Aufgabe wird gespeichert...");
+
+  try {
+    const payload = toTaskPayload(form);
+    const { ok, data } = await api("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      setMessage(
+        msg,
+        "success",
+        data.msg || "Aufgabe erfolgreich gespeichert!"
+      );
+      form.reset();
+      reloadAfter();
+    } else {
+      setMessage(
+        msg,
+        "error",
+        data.msg || "Fehler beim Speichern der Aufgabe."
+      );
+    }
+  } catch (err) {
+    console.error("Create task error:", err);
+    setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
+  }
+};
+
 const handleUpdateTask = async (form) => {
   const msg = byId("edit-task-form-message");
   const taskId = byId("edit-taskId")?.value;
@@ -159,6 +192,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize modal component
   initModal();
 
+  // Open Create Task Modal
+  const createBtn = byId("open-create-task-modal");
+  if (createBtn) {
+    createBtn.addEventListener("click", () => {
+      openModalFromApi(
+        window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
+        "/api/modal/task-create",
+        setupDateValidation
+      );
+    });
+  }
+
   // Attach event listeners to task items
   document.querySelectorAll(".task-item").forEach((item) => {
     item.addEventListener("click", (e) => {
@@ -178,7 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("submit", async (e) => {
     const form = e.target;
 
-    if (form.id === "edit-task-form") {
+    if (form.id === "create-task-form") {
+      e.preventDefault();
+      await handleCreateTask(form);
+    } else if (form.id === "edit-task-form") {
       e.preventDefault();
       await handleUpdateTask(form);
     }
