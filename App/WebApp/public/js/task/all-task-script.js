@@ -1,83 +1,194 @@
-const modal = document.getElementById("assign-modal");
-const taskIdInput = document.getElementById("modal-task-id");
-const taskNameSpan = document.getElementById("modal-task-name");
-const userSelect = document.getElementById("user-select");
-const form = document.getElementById("assign-form");
-const messageDiv = document.getElementById("modal-message");
-const assignBtn = document.getElementById("assign-btn");
+// ============================================================================
+// UTILITIES
+// ============================================================================
 
-function openAssignModal(taskId, taskName) {
-  taskIdInput.value = taskId;
-  taskNameSpan.textContent = taskName;
-  userSelect.value = ""; // Auswahl zurücksetzen
-  messageDiv.textContent = "";
-  messageDiv.classList.add("hidden");
-  assignBtn.disabled = false;
-  assignBtn.textContent = "Task zuweisen";
-  modal.classList.remove("hidden");
-  modal.classList.add("flex"); // Zeigt das Modal an
-}
+const setMessage = (el, type, text) => {
+  if (!el) return;
+  const color =
+    type === "success"
+      ? "text-green-600"
+      : type === "error"
+      ? "text-red-600"
+      : "text-yellow-600";
 
-function closeAssignModal() {
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
+  el.textContent = text;
+  el.className = `mb-4 text-sm font-medium text-center ${color} block`;
+};
 
-// Schließe das Modal, wenn außerhalb geklickt wird
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    closeAssignModal();
-  }
-});
+const clearMessage = (el) => {
+  if (!el) return;
+  el.textContent = "";
+  el.className = "mb-4 text-sm font-medium text-center hidden";
+};
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+const toTaskPayload = (form) => {
+  const data = Object.fromEntries(new FormData(form).entries());
+  if (data.userId === "") data.userId = null;
+  return data;
+};
 
-  const taskId = taskIdInput.value;
-  const userId = userSelect.value;
+// ============================================================================
+// DATE VALIDATION
+// ============================================================================
 
-  if (!userId) {
-    alert("Bitte wähle einen Mitarbeiter aus.");
+const setupDateValidation = () => {
+  const startDateInput = byId("edit-startDate");
+  const endDateInput = byId("edit-endDate");
+
+  if (!startDateInput || !endDateInput) return;
+
+  const today = getTodayISO();
+  if (startDateInput.value === "") startDateInput.value = today;
+  if (endDateInput.value === "") endDateInput.value = today;
+
+  const validateDates = () => {
+    const start = new Date(startDateInput.value);
+    const end = new Date(endDateInput.value);
+
+    if (startDateInput.value && endDateInput.value && start > end) {
+      endDateInput.value = startDateInput.value;
+    }
+  };
+
+  startDateInput.addEventListener("change", validateDates);
+  endDateInput.addEventListener("change", validateDates);
+};
+
+// ============================================================================
+// MODAL HANDLERS
+// ============================================================================
+
+const fillEditForm = (data) => {
+  const fieldMap = {
+    "edit-taskId": data.taskId,
+    "edit-taskName": data.taskName,
+    "edit-taskStatus": data.taskStatus,
+    "edit-taskPriority": data.taskPriority,
+    "edit-userId": data.userId || "",
+    "edit-taskDescription": data.taskDesc,
+    "edit-startDate": data.startDate,
+    "edit-endDate": data.endDate,
+  };
+
+  Object.entries(fieldMap).forEach(([id, value]) => {
+    const el = byId(id);
+    if (el && value !== undefined) el.value = value;
+  });
+
+  clearMessage(byId("edit-task-form-message"));
+};
+
+// ============================================================================
+// FORM HANDLERS
+// ============================================================================
+
+const handleUpdateTask = async (form) => {
+  const msg = byId("edit-task-form-message");
+  const taskId = byId("edit-taskId")?.value;
+
+  if (!taskId) {
+    setMessage(msg, "error", "Fehler: Aufgaben-ID nicht gefunden.");
     return;
   }
 
-  messageDiv.classList.remove("hidden", "text-green-600", "text-red-600");
-  messageDiv.classList.add("text-blue-600");
-  messageDiv.textContent = "Zuweisung wird verarbeitet...";
-  assignBtn.disabled = true;
-  assignBtn.textContent = "Wird zugewiesen...";
+  setMessage(msg, "info", "Änderungen werden gespeichert...");
 
   try {
-    const response = await fetch("/task-backlog/assign", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ taskId, userId }),
+    const payload = toTaskPayload(form);
+    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      messageDiv.classList.replace("text-blue-600", "text-green-600");
-      messageDiv.textContent = data.msg || "Task erfolgreich zugewiesen!";
-
-      // Modal nach kurzer Verzögerung schließen und Seite neu laden
-      setTimeout(() => {
-        closeAssignModal();
-        window.location.reload();
-      }, 1500);
+    if (ok) {
+      setMessage(
+        msg,
+        "success",
+        data.msg || "Aufgabe erfolgreich aktualisiert!"
+      );
+      reloadAfter();
     } else {
-      messageDiv.classList.replace("text-blue-600", "text-red-600");
-      messageDiv.textContent = data.msg || "Fehler bei der Zuweisung.";
-      assignBtn.disabled = false;
-      assignBtn.textContent = "Erneut versuchen";
+      setMessage(
+        msg,
+        "error",
+        data.msg || "Fehler beim Aktualisieren der Aufgabe."
+      );
     }
-  } catch (error) {
-    console.error("Fetch Fehler:", error);
-    messageDiv.classList.replace("text-blue-600", "text-red-600");
-    messageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
-    assignBtn.disabled = false;
-    assignBtn.textContent = "Erneut versuchen";
+  } catch (err) {
+    console.error("Update task error:", err);
+    setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
   }
+};
+
+const handleDeleteTask = async () => {
+  const msg = byId("edit-task-form-message");
+  const taskId = byId("edit-taskId")?.value;
+
+  if (
+    !taskId ||
+    !confirm("Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?")
+  ) {
+    return;
+  }
+
+  setMessage(msg, "info", "Aufgabe wird gelöscht...");
+
+  try {
+    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+      method: "DELETE",
+    });
+
+    if (ok) {
+      setMessage(msg, "success", data.msg || "Aufgabe erfolgreich gelöscht!");
+      reloadAfter();
+    } else {
+      setMessage(msg, "error", data.msg || "Fehler beim Löschen der Aufgabe.");
+    }
+  } catch (err) {
+    console.error("Delete task error:", err);
+    setMessage(msg, "error", "Netzwerkfehler beim Löschversuch.");
+  }
+};
+
+// ============================================================================
+// EVENT LISTENERS
+// ============================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize modal component
+  initModal();
+
+  // Attach event listeners to task items
+  document.querySelectorAll(".task-item").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      const data = e.currentTarget.dataset;
+      openModalFromApi(
+        `Aufgabe bearbeiten: ${data.taskName}`,
+        "/api/modal/task-edit",
+        () => {
+          fillEditForm(data);
+          setupDateValidation();
+        }
+      );
+    });
+  });
+
+  // Form submissions (delegated)
+  document.addEventListener("submit", async (e) => {
+    const form = e.target;
+
+    if (form.id === "edit-task-form") {
+      e.preventDefault();
+      await handleUpdateTask(form);
+    }
+  });
+
+  // Delete button (delegated)
+  document.addEventListener("click", async (e) => {
+    if (e.target.id === "delete-task-btn") {
+      e.preventDefault();
+      await handleDeleteTask();
+    }
+  });
 });
