@@ -181,5 +181,6 @@
 	"EDIT_WORK_SETTINGS": "Arbeitseinstellungen bearbeiten",
 	"DAYS_PER_YEAR": "Tage/Jahr",
 	"REMAINING": "verbleibend",
-	"PROFILE_UPDATED_SUCCESS": "PROFILE_UPDATED_SUCCESS"
+	"PROFILE_UPDATED_SUCCESS": "Profil erfolgreich aktualisiert",
+	"SICK_DAYS_TAKEN": "Krankheitstage genommen"
 }
