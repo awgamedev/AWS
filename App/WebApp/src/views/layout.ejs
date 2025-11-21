@@ -79,8 +79,12 @@
                                 <%= userName %>
                             </span>
                             <!-- Avatar/Initialen -->
-                            <div class="w-10 h-10 rounded-full <%= isLoggedIn ? 'bg-indigo-600' : 'bg-gray-400' %> flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300">
-                                <%= userInitials %>
+                            <div class="w-10 h-10 rounded-full <%= isLoggedIn ? 'bg-indigo-600' : 'bg-gray-400' %> flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden">
+                                <% if (userProfile && userProfile.profilePictureBase64) { %>
+                                    <img src="<%= userProfile.profilePictureBase64 %>" alt="Avatar" class="w-full h-full object-cover">
+                                <% } else { %>
+                                    <%= userInitials %>
+                                <% } %>
                             </div>
                             <!-- Pfeil-Icon für Dropdown -->
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>

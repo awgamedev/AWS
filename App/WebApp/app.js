@@ -17,6 +17,7 @@ const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
 const favicon = require("serve-favicon");
 const flash = require("connect-flash");
+const userProfileRepository = require("./src/features/user-profile/user-profile.repository");
 
 // --- Router Auto-Discovery Konfiguration ---
 const featuresDir = path.join(__dirname, "src", "features"); // Suchpfad ist src/features
@@ -226,6 +227,24 @@ app.use((req, res, next) => {
   res.locals.styles = res.locals.styles || ""; // Stellt sicher, dass 'styles' immer definiert ist
 
   next();
+});
+// Lädt (falls eingeloggt) das UserProfile und stellt es im Layout bereit
+app.use(async (req, res, next) => {
+  if (!req.user) {
+    return next();
+  }
+  try {
+    const userProfile = await userProfileRepository.findByUserId(req.user.id);
+    res.locals.userProfile = userProfile || null;
+    res.locals.userProfilePictureBase64 =
+      userProfile?.profilePictureBase64 || null;
+  } catch (e) {
+    if (req.logger) {
+      req.logger.error("Error loading user profile for layout:", e);
+    }
+  } finally {
+    next();
+  }
 });
 // ---------------------------------------------------
 
