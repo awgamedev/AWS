@@ -1,6 +1,4 @@
 <div class="bg-white p-6 rounded-xl shadow-2xl">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Offene Tasks</h2>
-    
     <ul class="divide-y divide-gray-100">
         <% if (allTasks.length > 0) { %>
             <% allTasks.forEach(function(task) { %>
@@ -27,7 +25,7 @@
                     
                     <div class="flex-grow">
                         <p class="text-lg font-semibold text-gray-800"><%= task.taskName %></p>
-                        <p class="text-sm text-gray-500 mt-1"><%= task.taskDescription || "Keine Beschreibung" %></p>
+                        <p class="text-sm text-gray-500 mt-1"><%= task.taskDescription || __("NO_DESCRIPTION") %></p>
                         <p class="text-sm text-gray-500 mt-1"><%= task.assignedUsername %></p>
                     </div>
                     
@@ -41,7 +39,7 @@
                 </li>
             <% }); %>
         <% } else { %>
-            <li class="p-4 text-center text-gray-500">Glückwunsch! Alle Tasks sind zugewiesen.</li>
+            <li class="p-4 text-center text-gray-500"><%= __("ALL_TASKS_ASSIGNED") %></li>
         <% } %>
     </ul>
 </div>

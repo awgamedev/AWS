@@ -224,6 +224,7 @@ app.use((req, res, next) => {
   res.locals.isLoggedIn = !!req.user;
   res.locals.user = req.user || null; // Macht das vollständige User-Objekt verfügbar
   res.locals.userRole = req.user ? req.user.role : null; // Macht die Benutzerrolle verfügbar
+  res.locals.userProfile = res.locals.userProfile || null; // Initialisiert userProfile, damit es immer definiert ist
   res.locals.styles = res.locals.styles || ""; // Stellt sicher, dass 'styles' immer definiert ist
 
   next();
