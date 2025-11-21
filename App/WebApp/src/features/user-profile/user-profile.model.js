@@ -19,11 +19,6 @@ const UserProfileSchema = new mongoose.Schema({
     required: true,
     default: 20,
   },
-  sickDaysPerYear: {
-    type: Number,
-    required: true,
-    default: 10,
-  },
 });
 
 module.exports = mongoose.model("UserProfile", UserProfileSchema);

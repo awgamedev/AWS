@@ -111,11 +111,7 @@
           <div class="flex justify-between py-2">
             <span class="text-sm text-gray-600"><%= __('SICK_DAYS_TAKEN') || 'Sick Days Taken' %></span>
             <span class="text-sm font-medium text-gray-800">
-              <%= typeof sickDaysTaken !== 'undefined'
-                ? sickDaysTaken
-                : (typeof userProfile !== 'undefined' && typeof sickDaysRemaining !== 'undefined' && userProfile && userProfile.sickDaysPerYear
-                    ? (userProfile.sickDaysPerYear - sickDaysRemaining)
-                    : 0) %>
+              <%= typeof sickDaysUsed !== 'undefined' ? sickDaysUsed : 0 %>
             </span>
           </div>
         </div>

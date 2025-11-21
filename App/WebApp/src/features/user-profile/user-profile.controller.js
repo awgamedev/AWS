@@ -34,12 +34,10 @@ class UserProfileController {
 
       // Calculate remaining days
       const vacationDaysTotal = userProfile.vacationDaysPerYear || 20;
-      const sickDaysTotal = userProfile.sickDaysPerYear || 10;
       const vacationDaysRemaining = Math.max(
         0,
         vacationDaysTotal - vacationDaysUsed
       );
-      const sickDaysRemaining = Math.max(0, sickDaysTotal - sickDaysUsed);
 
       const title = req.__("USER_PROFILE_TITLE") || "User Profile";
 
@@ -49,7 +47,6 @@ class UserProfileController {
         vacationDaysUsed,
         sickDaysUsed,
         vacationDaysRemaining,
-        sickDaysRemaining,
       });
     } catch (error) {
       req.logger.error("Error loading user profile:", error);
@@ -71,8 +68,7 @@ class UserProfileController {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { pauseInMinutesPerDay, vacationDaysPerYear, sickDaysPerYear } =
-        req.body;
+      const { pauseInMinutesPerDay, vacationDaysPerYear } = req.body;
 
       // Validate the profile data
       const validationErrors = await validateUserProfileData(req);
@@ -89,7 +85,6 @@ class UserProfileController {
       // Prepare update data
       const updateData = {
         vacationDaysPerYear: parseInt(vacationDaysPerYear),
-        sickDaysPerYear: parseInt(sickDaysPerYear),
       };
 
       // Only include pauseInMinutesPerDay if provided

@@ -9,8 +9,7 @@
  */
 async function validateUserProfileData(req) {
   const errors = {};
-  const { pauseInMinutesPerDay, vacationDaysPerYear, sickDaysPerYear } =
-    req.body;
+  const { pauseInMinutesPerDay, vacationDaysPerYear } = req.body;
 
   // Validate pauseInMinutesPerDay (optional field)
   if (
@@ -36,18 +35,6 @@ async function validateUserProfileData(req) {
       errors.vacationDaysPerYear =
         req.__("INVALID_VACATION_DAYS") ||
         "Vacation days must be between 0 and 365.";
-    }
-  }
-
-  // Validate sickDaysPerYear (required field)
-  if (!sickDaysPerYear || sickDaysPerYear === "") {
-    errors.sickDaysPerYear =
-      req.__("SICK_DAYS_REQUIRED") || "Sick days per year is required.";
-  } else {
-    const sickValue = parseInt(sickDaysPerYear);
-    if (isNaN(sickValue) || sickValue < 0 || sickValue > 365) {
-      errors.sickDaysPerYear =
-        req.__("INVALID_SICK_DAYS") || "Sick days must be between 0 and 365.";
     }
   }
 
