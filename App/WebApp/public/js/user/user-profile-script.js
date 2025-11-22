@@ -29,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize profile picture upload
   initializeProfilePictureUpload();
 
+  // Initialize avatar toggle functionality
+  initializeAvatarToggle();
+
   // -------------------------------
   // Modal Functions
   // -------------------------------
@@ -116,6 +119,22 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error updating profile:", error);
       showErrors({ general: "An error occurred while updating the profile." });
+    }
+  }
+
+  // -------------------------------
+  // Avatar Toggle Functions
+  // -------------------------------
+  function initializeAvatarToggle() {
+    const profileAvatar = document.getElementById("profile-avatar");
+    const avatarActionButtons = document.querySelectorAll(".avatar-action-btn");
+
+    if (profileAvatar && avatarActionButtons.length > 0) {
+      profileAvatar.addEventListener("click", () => {
+        avatarActionButtons.forEach((btn) => {
+          btn.classList.toggle("hidden");
+        });
+      });
     }
   }
 

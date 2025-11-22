@@ -1,12 +1,4 @@
 <div class="max-w-5xl mx-auto space-y-6">
-  <!-- Page Header -->
-  <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800"><%= __('USER_PROFILE_TITLE') %></h1>
-      <p class="text-sm text-gray-500 mt-1"><%= __('USER_PROFILE_SUBTITLE') %></p>
-    </div>
-  </section>
-
   <!-- Profile Card -->
   <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
     <!-- Profile Header with Avatar -->
@@ -16,18 +8,18 @@
         <div class="flex items-end gap-4">
           <!-- Avatar -->
           <div class="relative">
-            <div class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+            <div id="profile-avatar" class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer">
               <% if (userProfile && userProfile.profilePictureBase64) { %>
                 <img src="<%= userProfile.profilePictureBase64 %>" alt="Profile Picture" class="w-full h-full object-cover">
               <% } else { %>
                 <span class="text-4xl font-bold text-gray-400"><%= user.username.substring(0, 2).toUpperCase() %></span>
               <% } %>
             </div>
-            <button id="upload-avatar-btn" class="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 shadow-lg transition">
+            <button id="upload-avatar-btn" class="avatar-action-btn hidden absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 shadow-lg transition">
               <i class="fas fa-camera"></i>
             </button>
             <% if (userProfile && userProfile.profilePictureBase64) { %>
-            <button id="remove-avatar-btn" class="absolute bottom-0 left-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 shadow-lg transition" aria-label="<%= __('REMOVE_PROFILE_PICTURE') || 'Remove profile picture' %>">
+            <button id="remove-avatar-btn" class="avatar-action-btn hidden absolute bottom-0 left-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 shadow-lg transition" aria-label="<%= __('REMOVE_PROFILE_PICTURE') || 'Remove profile picture' %>">
               <i class="fas fa-trash"></i>
             </button>
             <% } %>
