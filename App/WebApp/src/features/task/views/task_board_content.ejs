@@ -44,6 +44,26 @@ const getTaskArrows = (task, dayName, daysOfWeek) => {
     
     return arrows;
 };
+
+// Helper to check if a day is today
+const isToday = (dayName, daysOfWeek) => {
+    const today = new Date();
+    const firstDayOfWeek = typeof startOfWeek === 'string' ? new Date(startOfWeek) : new Date(startOfWeek.getTime());
+    const lastDayOfWeek = typeof endOfWeek === 'string' ? new Date(endOfWeek) : new Date(endOfWeek.getTime());
+    
+    // Check if today is within the current week
+    if (today < firstDayOfWeek || today > lastDayOfWeek) {
+        return false;
+    }
+    
+    const dayIndex = daysOfWeek.indexOf(dayName);
+    const dayDate = new Date(firstDayOfWeek);
+    dayDate.setDate(dayDate.getDate() + dayIndex);
+    
+    return today.getFullYear() === dayDate.getFullYear() &&
+           today.getMonth() === dayDate.getMonth() &&
+           today.getDate() === dayDate.getDate();
+};
 %>
 
 <!-- Desktop/Tablet View: Table Layout -->
@@ -52,8 +72,10 @@ const getTaskArrows = (task, dayName, daysOfWeek) => {
         <thead>
             <tr class="bg-gray-100">
                 <th class="px-4 py-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 shadow-sm" style="min-width: 180px; max-width: 200px;"><%= __("EMPLOYEE_HEADER") %></th>
-                <% daysOfWeek.forEach(day => { %>
-                    <th class="px-4 py-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider" style="min-width: 200px;"><%= day %></th>
+                <% daysOfWeek.forEach(day => { 
+                    const todayColumn = isToday(day, daysOfWeek);
+                %>
+                    <th class="px-4 py-3 border border-gray-200 text-left text-sm font-medium uppercase tracking-wider <%= todayColumn ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600' %>" style="min-width: 200px;"><%= day %></th>
                 <% }) %>
             </tr>
         </thead>
@@ -78,8 +100,9 @@ const getTaskArrows = (task, dayName, daysOfWeek) => {
                         <% daysOfWeek.forEach(dayName => { 
                             const userId = user._id.toString();
                             const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
+                            const todayColumn = isToday(dayName, daysOfWeek);
                         %>
-                            <td class="px-3 py-2 border border-gray-200 align-top task-cell-container <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>" 
+                            <td class="px-3 py-2 border border-gray-200 align-top task-cell-container <%= todayColumn ? 'bg-indigo-50' : '' %> <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>" 
                                 style="min-width: 200px;"
                                 data-user-id="<%= userId %>"
                                 data-day-name="<%= dayName %>">
@@ -181,12 +204,13 @@ const getTaskArrows = (task, dayName, daysOfWeek) => {
                     <% daysOfWeek.forEach(dayName => { 
                         const userId = user._id.toString();
                         const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
+                        const todayColumn = isToday(dayName, daysOfWeek);
                     %>
-                        <div class="p-3 task-cell-mobile <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>"
+                        <div class="p-3 task-cell-mobile <%= todayColumn ? 'bg-indigo-50' : '' %> <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>"
                              data-user-id="<%= userId %>"
                              data-day-name="<%= dayName %>">
                             <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-700 text-sm"><%= dayName %></h4>
+                                <h4 class="font-semibold text-sm <%= todayColumn ? 'text-indigo-800' : 'text-gray-700' %>"><%= dayName %></h4>
                                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><%= dayTasks.length %> <%= dayTasks.length === 1 ? __("TASK") : __("TASKS") %></span>
                             </div>
                             
