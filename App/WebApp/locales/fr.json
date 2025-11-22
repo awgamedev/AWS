@@ -216,8 +216,10 @@
 	"End": "End",
 	"Status": "Status",
 	"Description": "Description",
-	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR"
-	,"REMOVE_PROFILE_PICTURE": "Supprimer la photo de profil"
-	,"PROFILE_PICTURE_REMOVED": "Photo de profil supprimée avec succès."
-	,"PROFILE_PICTURE_REMOVE_ERROR": "Erreur lors de la suppression de la photo de profil."
+	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR",
+	"REMOVE_PROFILE_PICTURE": "Supprimer la photo de profil",
+	"PROFILE_PICTURE_REMOVED": "Photo de profil supprimée avec succès.",
+	"PROFILE_PICTURE_REMOVE_ERROR": "Erreur lors de la suppression de la photo de profil.",
+	"ILLNESS_REPORTS": "ILLNESS_REPORTS",
+	"VACATION_AND_ILLNESS_REPORTS": "VACATION_AND_ILLNESS_REPORTS"
 }

@@ -217,8 +217,10 @@
 	"End": "End",
 	"Status": "Status",
 	"Description": "Description",
-	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR"
-	,"REMOVE_PROFILE_PICTURE": "Remove profile picture"
-	,"PROFILE_PICTURE_REMOVED": "Profile picture removed successfully."
-	,"PROFILE_PICTURE_REMOVE_ERROR": "Error removing profile picture."
+	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR",
+	"REMOVE_PROFILE_PICTURE": "Remove profile picture",
+	"PROFILE_PICTURE_REMOVED": "Profile picture removed successfully.",
+	"PROFILE_PICTURE_REMOVE_ERROR": "Error removing profile picture.",
+	"ILLNESS_REPORTS": "ILLNESS_REPORTS",
+	"VACATION_AND_ILLNESS_REPORTS": "VACATION_AND_ILLNESS_REPORTS"
 }

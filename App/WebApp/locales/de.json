@@ -165,7 +165,7 @@
 	"USER_PROFILE_TITLE": "Nutzerprofil",
 	"USER_PROFILE_SUBTITLE": "Verwalte deine persönlichen Daten und Einstellungen",
 	"EDIT_PROFILE": "Profil bearbeiten",
-	"ACCOUNT_INFORMATION": "Accountinformationen",
+	"ACCOUNT_INFORMATION": "Nutzerkonto Informationen",
 	"USERNAME": "Benutzername",
 	"EMAIL": "E-Mail",
 	"ROLE": "Rolle",
@@ -194,13 +194,14 @@
 	"SELECT_PERIOD": "Zeitraum wählen:",
 	"SWITCH_TO_LIST_VIEW": "Zur Listenansicht wechseln",
 	"SWITCH_TO_CALENDAR_VIEW": "Zur Kalenderansicht wechseln",
-	"Type": "Type",
+	"Type": "Typ",
 	"Start": "Start",
-	"End": "End",
+	"End": "Ende",
 	"Status": "Status",
-	"Description": "Description",
-	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR"
-	,"REMOVE_PROFILE_PICTURE": "Profilbild entfernen"
-	,"PROFILE_PICTURE_REMOVED": "Profilbild erfolgreich entfernt."
-	,"PROFILE_PICTURE_REMOVE_ERROR": "Fehler beim Entfernen des Profilbilds."
+	"Description": "Beschreibung",
+	"PROFILE_PICTURE_ERROR": "Fehler beim Hochladen des Profilbilds.",
+	"REMOVE_PROFILE_PICTURE": "Profilbild entfernen",
+	"PROFILE_PICTURE_REMOVED": "Profilbild erfolgreich entfernt.",
+	"PROFILE_PICTURE_REMOVE_ERROR": "Fehler beim Entfernen des Profilbilds.",
+	"VACATION_AND_ILLNESS_REPORTS": "Urlaubs- und Krankmeldungen"
 }

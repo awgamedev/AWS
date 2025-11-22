@@ -143,32 +143,35 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize modal
   initModal();
 
-  // Search functionality
-  const searchInput = document.getElementById("reportSearch");
-  const tbody = document.getElementById("reportTableBody");
-  if (searchInput && tbody) {
-    searchInput.addEventListener("input", () => {
-      const term = searchInput.value.trim().toLowerCase();
-      const rows = tbody.querySelectorAll("tr");
-      rows.forEach((row) => {
-        const haystack = [
-          row.dataset.type,
-          row.dataset.start,
-          row.dataset.end,
-          row.dataset.status,
-          row.dataset.description,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!term || haystack.includes(term)) {
-          row.classList.remove("hidden");
-        } else {
-          row.classList.add("hidden");
-        }
+  // Generic search binding (supports multiple report tables)
+  const bindSearch = (inputId, tbodyId) => {
+    const searchInput = document.getElementById(inputId);
+    const tbody = document.getElementById(tbodyId);
+    if (searchInput && tbody) {
+      searchInput.addEventListener("input", () => {
+        const term = searchInput.value.trim().toLowerCase();
+        const rows = tbody.querySelectorAll("tr");
+        rows.forEach((row) => {
+          const haystack = [
+            row.dataset.type,
+            row.dataset.start,
+            row.dataset.end,
+            row.dataset.status,
+            row.dataset.description,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          if (!term || haystack.includes(term)) {
+            row.classList.remove("hidden");
+          } else {
+            row.classList.add("hidden");
+          }
+        });
       });
-    });
-  }
+    }
+  };
+  bindSearch("reportSearch", "reportTableBody");
 
   // Create report button
   const createBtn = document.getElementById("open-report-modal");
