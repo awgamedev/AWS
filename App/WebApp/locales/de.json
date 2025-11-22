@@ -190,5 +190,7 @@
 	"USED": "Verplant",
 	"TASK_ASSIGNED_SUCCESS": "Aufgabe erfolgreich zugewiesen",
 	"ALL_TASKS": "Alle Aufgaben",
-	"NO_DESCRIPTION": "Keine Beschreibung"
+	"NO_DESCRIPTION": "Keine Beschreibung",
+	"SELECT_PERIOD": "Zeitraum wählen:",
+	"SWITCH_TO_LIST_VIEW": "Zur Listenansicht wechseln"
 }

@@ -23,11 +23,16 @@
     const years = (typeof yearOptions !== 'undefined' && yearOptions && yearOptions.length) ? yearOptions : fallbackYearOptions;
   %>
   <div class="bg-white p-3 sm:p-4 rounded-lg sm:rounded-xl shadow mb-3 sm:mb-4">
-    <div class="flex justify-between items-center mb-2 sm:mb-3">
-      <div class="text-xs sm:text-sm font-semibold text-gray-700">Zeitraum wählen:</div>
-      <button id="create-report-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation">
-        <%= __('CREATE_BUTTON') || 'Erstellen' %>
-      </button>
+    <div class="flex items-center mb-2 sm:mb-3">
+      <div class="text-xs sm:text-sm font-semibold text-gray-700"><%= __('SELECT_PERIOD') %></div>
+      <div class="ml-auto flex items-center gap-2 sm:gap-3 flex-nowrap">
+        <button id="switch-to-tist-view" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation">
+          <%= __('SWITCH_TO_LIST_VIEW') %>
+        </button>
+        <button id="create-report-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation">
+          <%= __('CREATE_BUTTON') %>
+        </button>
+      </div>
     </div>
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
       <select id="month-input" class="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 touch-manipulation">
