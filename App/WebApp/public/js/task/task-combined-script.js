@@ -303,22 +303,24 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
   menu.style.top = `${y}px`;
   menu.style.minWidth = "200px";
 
+  const t = window.taskTranslations || {};
+
   const priorities = [
     {
       value: "high",
-      label: "High",
+      label: t.contextMenuPriorityHigh,
       icon: "fa-exclamation-circle",
       color: "text-red-600",
     },
     {
       value: "medium",
-      label: "Medium",
+      label: t.contextMenuPriorityMedium,
       icon: "fa-exclamation-triangle",
       color: "text-yellow-600",
     },
     {
       value: "low",
-      label: "Low",
+      label: t.contextMenuPriorityLow,
       icon: "fa-info-circle",
       color: "text-green-600",
     },
@@ -334,7 +336,9 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
     
     <!-- Priority submenu -->
     <div class="px-1">
-      <div class="px-3 py-2 text-xs font-semibold text-gray-500 mt-1">Change Priority</div>
+      <div class="px-3 py-2 text-xs font-semibold text-gray-500 mt-1">${
+        t.contextMenuChangePriority || "Change Priority"
+      }</div>
   `;
 
   priorities.forEach((priority) => {
@@ -365,7 +369,7 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
       class="context-menu-item w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-600 rounded flex items-center gap-2 transition"
       data-action="delete">
       <i class="fas fa-trash"></i>
-      <span>Delete Task</span>
+      <span>${t.contextMenuDeleteTask || "Delete Task"}</span>
     </button>
   `;
 
@@ -428,7 +432,7 @@ const handleContextMenuDelete = async () => {
 
   const t = window.taskTranslations || {};
   const confirmMessage =
-    t.confirmDelete ||
+    t.confirmDeleteTask ||
     "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?";
 
   if (!confirm(confirmMessage)) {

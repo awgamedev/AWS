@@ -278,5 +278,11 @@
 	"TEMPLATE_DELETE_ERROR": "Fehler beim Löschen der Vorlage.",
 	"TEMPLATE_LOAD_ERROR": "Fehler beim Laden der Vorlagen.",
 	"INVALID_TEMPLATE_ID": "Ungültige Vorlagen-ID.",
-	"TEMPLATE_NOT_FOUND": "Vorlage nicht gefunden."
+	"TEMPLATE_NOT_FOUND": "Vorlage nicht gefunden.",
+	"CONTEXT_MENU_CHANGE_PRIORITY": "Priorität ändern",
+	"CONTEXT_MENU_DELETE_TASK": "Aufgabe löschen",
+	"CONTEXT_MENU_PRIORITY_HIGH": "Hoch",
+	"CONTEXT_MENU_PRIORITY_MEDIUM": "Mittel",
+	"CONTEXT_MENU_PRIORITY_LOW": "Niedrig",
+	"CONFIRM_DELETE_TASK": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?"
 }
