@@ -252,5 +252,11 @@
 	"ERROR_VACATION_DAYS_INVALID": "Vacation days must be a valid positive number",
 	"USER_DETAILS_UPDATE_ERROR": "Error updating user details",
 	"USER_PROFILE_UPDATED": "User profile updated successfully",
-	"USER_PROFILE_UPDATE_ERROR": "Error updating user profile"
+	"USER_PROFILE_UPDATE_ERROR": "Error updating user profile",
+	"UPLOAD_PICTURE_BUTTON": "Upload Picture",
+	"PROFILE_PICTURE_ADMIN_NOTE": "Profile picture changes are saved immediately",
+	"NO_IMAGE_PROVIDED": "No image provided",
+	"INVALID_IMAGE_FORMAT": "Invalid image format"
+,
+	"BACK_TO_LIST_BUTTON": "Back to List"
 }

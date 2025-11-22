@@ -69,7 +69,8 @@ class UserProfileController {
    */
   async uploadProfilePicture(req, res) {
     try {
-      const userId = req.user.id;
+      // Allow admin to upload for other users, otherwise use current user
+      const userId = req.body.userId || req.user.id;
       const { imageBase64 } = req.body;
 
       if (!imageBase64) {
@@ -111,7 +112,8 @@ class UserProfileController {
    */
   async removeProfilePicture(req, res) {
     try {
-      const userId = req.user.id;
+      // Allow admin to remove for other users, otherwise use current user
+      const userId = req.body.userId || req.user.id;
       await userProfileRepository.removeProfilePicture(userId);
       return res.json({
         success: true,

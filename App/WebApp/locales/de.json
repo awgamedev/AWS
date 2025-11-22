@@ -231,5 +231,11 @@
 	"ERROR_VACATION_DAYS_INVALID": "Urlaubstage müssen eine gültige positive Zahl sein",
 	"USER_DETAILS_UPDATE_ERROR": "Fehler beim Aktualisieren der Benutzerdetails",
 	"USER_PROFILE_UPDATED": "Benutzerprofil erfolgreich aktualisiert",
-	"USER_PROFILE_UPDATE_ERROR": "Fehler beim Aktualisieren des Benutzerprofils"
+	"USER_PROFILE_UPDATE_ERROR": "Fehler beim Aktualisieren des Benutzerprofils",
+	"UPLOAD_PICTURE_BUTTON": "Bild hochladen",
+	"PROFILE_PICTURE_ADMIN_NOTE": "Profilbildänderungen werden sofort gespeichert",
+	"NO_IMAGE_PROVIDED": "Kein Bild bereitgestellt",
+	"INVALID_IMAGE_FORMAT": "Ungültiges Bildformat"
+,
+	"BACK_TO_LIST_BUTTON": "Zurück zur Liste"
 }

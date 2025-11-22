@@ -251,5 +251,11 @@
 	"ERROR_VACATION_DAYS_INVALID": "Les jours de vacances doivent être un nombre positif valide",
 	"USER_DETAILS_UPDATE_ERROR": "Erreur lors de la mise à jour des détails de l'utilisateur",
 	"USER_PROFILE_UPDATED": "Profil utilisateur mis à jour avec succès",
-	"USER_PROFILE_UPDATE_ERROR": "Erreur lors de la mise à jour du profil utilisateur"
+	"USER_PROFILE_UPDATE_ERROR": "Erreur lors de la mise à jour du profil utilisateur",
+	"UPLOAD_PICTURE_BUTTON": "Télécharger une photo",
+	"PROFILE_PICTURE_ADMIN_NOTE": "Les modifications de la photo de profil sont enregistrées immédiatement",
+	"NO_IMAGE_PROVIDED": "Aucune image fournie",
+	"INVALID_IMAGE_FORMAT": "Format d'image invalide"
+,
+	"BACK_TO_LIST_BUTTON": "Retour à la liste"
 }

@@ -121,7 +121,7 @@ class UserController {
 
       await userProfileRepository.updateByUserId(userId, profileUpdateData);
 
-      res.redirect("/user/list");
+      res.redirect(`/user/details/${userId}`);
     } catch (err) {
       req.logger.error("Error updating user details:", err);
       return renderErrorView(

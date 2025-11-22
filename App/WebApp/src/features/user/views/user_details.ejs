@@ -1,8 +1,14 @@
 <div class="bg-white shadow overflow-hidden sm:rounded-lg">
     <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            <%= __('USER_DETAILS_HEADER') %>
-        </h3>
+        <div class="flex items-center justify-between gap-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <%= __('USER_DETAILS_HEADER') %>
+            </h3>
+            <a href="/user/list" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <span class="fas fa-arrow-left mr-2"></span>
+                <%= __('BACK_TO_LIST_BUTTON') || __('USER_LIST_TITLE') %>
+            </a>
+        </div>
         <p class="mt-1 max-w-2xl text-sm text-gray-500">
             <%= __('USER_DETAILS_DESCRIPTION') %>
         </p>
@@ -85,7 +91,7 @@
                             <%= __('CREATED_AT_LABEL') %>
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900">
-                            <%= new Date(user.createdAt).toLocaleDateString() %>
+                            <%= new Date(user.createdAt).toLocaleDateString("de-DE") %>
                         </dd>
                     </div>
 
@@ -95,7 +101,7 @@
                             <%= __('UPDATED_AT_LABEL') %>
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900">
-                            <%= new Date(user.updatedAt).toLocaleDateString() %>
+                            <%= new Date(user.updatedAt).toLocaleDateString("de-DE") %>
                         </dd>
                     </div>
                 </dl>
@@ -111,16 +117,31 @@
                             <%= __('PROFILE_PICTURE_LABEL') %>
                         </dt>
                         <dd>
-                            <% if (userProfile && userProfile.profilePictureBase64) { %>
-                                <img src="<%= userProfile.profilePictureBase64 %>" 
-                                     alt="<%= __('PROFILE_PICTURE_ALT') %>" 
-                                     class="h-32 w-32 rounded-full object-cover border-2 border-gray-300">
-                            <% } else { %>
-                                <div class="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
-                                    <span class="text-4xl text-gray-400">👤</span>
+                            <div class="flex items-start gap-4">
+                                <div class="relative">
+                                    <div id="profile-avatar" class="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                                        <% if (userProfile && userProfile.profilePictureBase64) { %>
+                                            <img src="<%= userProfile.profilePictureBase64 %>" alt="<%= __('PROFILE_PICTURE_ALT') %>" class="w-full h-full object-cover">
+                                        <% } else { %>
+                                            <span class="text-4xl font-bold text-gray-400"><%= user.username.substring(0, 2).toUpperCase() %></span>
+                                        <% } %>
+                                    </div>
+                                    <input type="file" id="avatar-input" accept="image/*" class="hidden">
                                 </div>
-                            <% } %>
-                            <p class="mt-2 text-xs text-gray-500"><%= __('PROFILE_PICTURE_NOTE') %></p>
+                                <div class="flex flex-col gap-2 mt-2">
+                                    <button type="button" id="upload-avatar-btn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                                        <i class="fas fa-camera mr-2"></i>
+                                        <%= __('UPLOAD_PICTURE_BUTTON') || 'Upload Picture' %>
+                                    </button>
+                                    <% if (userProfile && userProfile.profilePictureBase64) { %>
+                                    <button type="button" id="remove-avatar-btn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+                                        <i class="fas fa-trash mr-2"></i>
+                                        <%= __('REMOVE_PROFILE_PICTURE') %>
+                                    </button>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500"><%= __('PROFILE_PICTURE_ADMIN_NOTE') || 'Profile picture changes are saved immediately' %></p>
                         </dd>
                     </div>
 
@@ -166,11 +187,7 @@
         </div>
 
         <!-- Form Actions -->
-        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
-            <a href="/user/list" 
-               class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <%= __('CANCEL_BUTTON') %>
-            </a>
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
             <button type="submit" 
                     class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <%= __('SAVE_BUTTON') %>
@@ -178,3 +195,109 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadBtn = document.getElementById('upload-avatar-btn');
+    const removeBtn = document.getElementById('remove-avatar-btn');
+    const avatarInput = document.getElementById('avatar-input');
+    const profileAvatar = document.getElementById('profile-avatar');
+    const userId = '<%= user._id %>';
+
+    // Upload button click
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', function() {
+            avatarInput.click();
+        });
+    }
+
+    // Handle file selection
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            // Read and convert to base64
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageBase64 = event.target.result;
+
+                // Send to server
+                fetch('/profile/upload-picture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageBase64: imageBase64, userId: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the avatar display
+                        profileAvatar.innerHTML = `<img src="${imageBase64}" alt="Profile Picture" class="w-full h-full object-cover">`;
+                        
+                        // Show remove button if not already visible
+                        if (removeBtn) {
+                            removeBtn.style.display = 'inline-flex';
+                        } else {
+                            location.reload(); // Reload to show remove button
+                        }
+                        
+                        alert(data.msg || 'Profile picture updated successfully');
+                    } else {
+                        alert(data.msg || 'Error uploading profile picture');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Network error uploading profile picture');
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Remove button click
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            if (!confirm('Are you sure you want to remove the profile picture?')) {
+                return;
+            }
+
+            fetch('/profile/remove-picture', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the avatar display with initials
+                    const username = '<%= user.username %>';
+                    const initials = username.substring(0, 2).toUpperCase();
+                    profileAvatar.innerHTML = `<span class="text-4xl font-bold text-gray-400">${initials}</span>`;
+                    
+                    // Hide remove button
+                    removeBtn.style.display = 'none';
+                    
+                    alert(data.msg || 'Profile picture removed successfully');
+                } else {
+                    alert(data.msg || 'Error removing profile picture');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Network error removing profile picture');
+            });
+        });
+    }
+});
+</script>
