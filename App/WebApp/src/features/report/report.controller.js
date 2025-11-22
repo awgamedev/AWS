@@ -152,6 +152,50 @@ async function listAllReportsJSON(req, res) {
   }
 }
 
+// GET HTML list (partial) for list view
+async function listAllReportsHTML(req, res) {
+  try {
+    const year = parseInt(req.query.year, 10);
+    const month = parseInt(req.query.month, 10) - 1; // 0-based
+    if (isNaN(year) || isNaN(month)) {
+      return res
+        .status(400)
+        .send(
+          "<div class='p-2 text-red-600 text-sm'>Ungültige Parameter.</div>"
+        );
+    }
+    const rangeStart = new Date(year, month, 1);
+    const rangeEnd = new Date(year, month + 1, 0, 23, 59, 59, 999);
+    const reports = await reportRepository.findInRange(rangeStart, rangeEnd);
+    const items = reports.map((r) => ({
+      id: r.id,
+      user: r.userId && r.userId.username ? r.userId.username : null,
+      type: r.type,
+      status: r.status,
+      startDate: r.startDate,
+      endDate: r.endDate,
+      description: r.description || "",
+    }));
+    // Render partial without layout
+    req.app.render("report_admin_list", { items, __: req.__ }, (err, html) => {
+      if (err) {
+        req.logger.error("Error rendering report_admin_list", err);
+        return res
+          .status(500)
+          .send(
+            "<div class='p-2 text-red-600 text-sm'>Rendering Fehler.</div>"
+          );
+      }
+      res.send(html);
+    });
+  } catch (err) {
+    req.logger.error("Error fetching reports for list view", err);
+    res
+      .status(500)
+      .send("<div class='p-2 text-red-600 text-sm'>Serverfehler.</div>");
+  }
+}
+
 // POST approve
 async function approveReport(req, res) {
   try {
@@ -217,6 +261,7 @@ module.exports = {
   updateReportAPI,
   showAdminCalendar,
   listAllReportsJSON,
+  listAllReportsHTML,
   approveReport,
   rejectReport,
   createReportByAdminAPI,

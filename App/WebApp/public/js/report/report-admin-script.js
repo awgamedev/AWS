@@ -8,15 +8,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const calendarDiv = document.getElementById("calendar");
   const detailsDiv = document.getElementById("report-details");
   const createBtn = document.getElementById("create-report-btn");
+  const switchBtn = document.getElementById("switch-to-list-view");
+  let currentView = "calendar"; // 'calendar' | 'list'
 
   if (monthInput) monthInput.addEventListener("change", loadCalendar);
   if (yearInput) yearInput.addEventListener("change", loadCalendar);
   if (createBtn) createBtn.addEventListener("click", openCreateModal);
+  if (switchBtn) switchBtn.addEventListener("click", toggleView);
   loadCalendar(); // initial
+
+  // -------------------------------
+  // View Toggle
+  // -------------------------------
+  async function toggleView() {
+    if (currentView === "calendar") {
+      await loadListView();
+      currentView = "list";
+      if (switchBtn && window.reportTranslations?.viewSwitch) {
+        switchBtn.textContent = window.reportTranslations.viewSwitch.calendar;
+      }
+    } else {
+      loadCalendar();
+      currentView = "calendar";
+      if (switchBtn && window.reportTranslations?.viewSwitch) {
+        switchBtn.textContent = window.reportTranslations.viewSwitch.list;
+      }
+    }
+  }
 
   async function loadCalendar() {
     const year = yearInput.value;
     const month = monthInput.value; // 1..12
+    // Reset container classes for calendar layout
+    calendarDiv.className = "grid grid-cols-7 gap-1 sm:gap-2";
     calendarDiv.innerHTML = "Lade...";
     detailsDiv.innerHTML = "";
     try {
@@ -29,6 +53,46 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       calendarDiv.textContent = err.message || "Fehler beim Laden.";
     }
+  }
+
+  // Load list view HTML partial
+  async function loadListView() {
+    const year = yearInput.value;
+    const month = monthInput.value; // 1..12
+    // Apply list container styling similar to user list
+    calendarDiv.className =
+      "shadow overflow-hidden border-b border-gray-200 sm:rounded-lg relative max-h-96 overflow-y-auto overflow-x-auto";
+    calendarDiv.innerHTML = "Lade...";
+    detailsDiv.innerHTML = "";
+    try {
+      const resp = await fetch(
+        `/reports/admin/list-view?year=${year}&month=${month}`
+      );
+      const html = await resp.text();
+      if (!resp.ok) throw new Error("Fehler");
+      calendarDiv.innerHTML = html;
+      attachListItemHandlers();
+    } catch (err) {
+      calendarDiv.textContent = err.message || "Fehler beim Laden.";
+    }
+  }
+
+  function attachListItemHandlers() {
+    const rows = calendarDiv.querySelectorAll(".report-list-row");
+    rows.forEach((row) => {
+      row.addEventListener("click", () => {
+        const r = {
+          id: row.getAttribute("data-id"),
+          user: row.getAttribute("data-user"),
+          type: row.getAttribute("data-type"),
+          status: row.getAttribute("data-status"),
+          startDate: row.getAttribute("data-start"),
+          endDate: row.getAttribute("data-end"),
+          description: row.getAttribute("data-description") || "",
+        };
+        showDetails(r);
+      });
+    });
   }
 
   function renderCalendar(year, month, reports) {

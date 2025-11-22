@@ -7,6 +7,7 @@ const {
   updateReportAPI,
   showAdminCalendar,
   listAllReportsJSON,
+  listAllReportsHTML,
   approveReport,
   rejectReport,
   createReportByAdminAPI,
@@ -31,6 +32,12 @@ router.get(
   ensureAuthenticated,
   checkRole("admin"),
   listAllReportsJSON
+);
+router.get(
+  "/reports/admin/list-view",
+  ensureAuthenticated,
+  checkRole("admin"),
+  listAllReportsHTML
 );
 
 // Admin actions
