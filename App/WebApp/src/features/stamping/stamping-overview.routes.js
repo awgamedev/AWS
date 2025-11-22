@@ -39,6 +39,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
       totalHours: result.totalHours,
       dailyWork: result.dailyWork,
       hoursByReason: result.hoursByReason,
+      userInitials: username.substring(0, 2).toUpperCase(),
     };
 
     totalMonthlyHours += result.totalHours;
@@ -54,6 +55,7 @@ const buildUserOverviewData = (stampingsByUser, allUsers) => {
         totalHours: 0,
         dailyWork: {},
         hoursByReason: {},
+        userInitials: user.username.substring(0, 2).toUpperCase(),
       };
     }
   });
@@ -78,6 +80,14 @@ router.get(
 
     try {
       const allUsers = await User.find({}).select("_id username").exec();
+
+      // Load user profiles for profile pictures
+      const UserProfile = require("../user-profile/user-profile.model");
+      const userProfiles = await UserProfile.find({}).lean();
+      const profileMap = {};
+      userProfiles.forEach((profile) => {
+        profileMap[profile.userId.toString()] = profile;
+      });
 
       const allStampings = await Stamping.find({
         date: { $gte: startDate, $lte: endDate },
@@ -109,6 +119,7 @@ router.get(
           monthOptions: generateMonthOptions(year, month),
           yearOptions: generateYearOptions(currentDate.getFullYear(), year),
           formatDate,
+          profileMap,
         }
       );
     } catch (error) {
