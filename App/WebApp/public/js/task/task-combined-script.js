@@ -412,6 +412,12 @@ const initDragAndDrop = () => {
     // Highlight original
     dragState.taskElement.style.opacity = "0.3";
 
+    // Disable text selection and interactions during drag
+    document.body.style.userSelect = "none";
+    document.body.style.webkitUserSelect = "none";
+    document.body.style.msUserSelect = "none";
+    document.body.style.cursor = "grabbing";
+
     // Add CSS for drop zones
     const style = document.createElement("style");
     style.id = "drag-drop-styles";
@@ -419,6 +425,9 @@ const initDragAndDrop = () => {
       .drag-over {
         background-color: rgba(79, 70, 229, 0.1) !important;
         border: 2px dashed #4f46e5 !important;
+      }
+      * {
+        cursor: grabbing !important;
       }
     `;
     document.head.appendChild(style);
@@ -438,6 +447,13 @@ const initDragAndDrop = () => {
     if (dragState.taskElement) {
       dragState.taskElement.style.opacity = "";
     }
+
+    // Re-enable text selection and restore cursor
+    document.body.style.userSelect = "";
+    document.body.style.webkitUserSelect = "";
+    document.body.style.msUserSelect = "";
+    document.body.style.cursor = "";
+
     const style = document.getElementById("drag-drop-styles");
     if (style) style.remove();
   }
