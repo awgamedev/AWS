@@ -142,6 +142,9 @@ const updateTaskBoard = (html, weekRange) => {
 
   // Reattach event listeners to new task items
   reattachTaskListeners();
+
+  // Reinitialize hover highlighting for multi-day tasks
+  initTaskHoverHighlight();
 };
 
 // ============================================================================
@@ -195,6 +198,36 @@ const loadListView = async (offset = currentWeekOffset) => {
 // ============================================================================
 // TASK ITEM LISTENERS
 // ============================================================================
+
+const initTaskHoverHighlight = () => {
+  const taskItems = document.querySelectorAll(".task-item");
+
+  taskItems.forEach((item) => {
+    item.addEventListener("mouseenter", (e) => {
+      const taskId = e.currentTarget.dataset.taskId;
+      if (!taskId) return;
+
+      // Highlight all task items with the same taskId
+      document
+        .querySelectorAll(`.task-item[data-task-id="${taskId}"]`)
+        .forEach((relatedItem) => {
+          relatedItem.classList.add("task-highlight");
+        });
+    });
+
+    item.addEventListener("mouseleave", (e) => {
+      const taskId = e.currentTarget.dataset.taskId;
+      if (!taskId) return;
+
+      // Remove highlight from all task items with the same taskId
+      document
+        .querySelectorAll(`.task-item[data-task-id="${taskId}"]`)
+        .forEach((relatedItem) => {
+          relatedItem.classList.remove("task-highlight");
+        });
+    });
+  });
+};
 
 const reattachTaskListeners = () => {
   // Task item click handlers (for editing existing tasks)
@@ -977,6 +1010,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize task item listeners
   reattachTaskListeners();
+
+  // Initialize hover highlighting for multi-day tasks
+  initTaskHoverHighlight();
 
   // Form submissions (delegated)
   document.addEventListener("submit", async (e) => {
