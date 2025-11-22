@@ -465,15 +465,26 @@ const showMoveConfirmation = (targetCell) => {
     newEndDate = newEndDateObj.toISOString().substring(0, 10);
   }
 
-  // Get user names
-  const oldUserSelect = document.querySelector(
-    `#userId option[value="${taskData.userId}"]`
-  );
-  const newUserSelect = document.querySelector(
-    `#userId option[value="${newUserId}"]`
-  );
-  const oldUserName = oldUserSelect ? oldUserSelect.textContent : "Unassigned";
-  const newUserName = newUserSelect ? newUserSelect.textContent : "Unassigned";
+  // Get user names from the board cells
+  const oldUserCell = dragState.startCell
+    ?.closest("tr")
+    ?.querySelector("td:first-child span.font-semibold");
+  const newUserCell = targetCell
+    ?.closest("tr")
+    ?.querySelector("td:first-child span.font-semibold");
+
+  // For mobile view
+  const oldUserMobile = dragState.startCell
+    ?.closest(".bg-white.rounded-xl")
+    ?.querySelector("h3.font-bold");
+  const newUserMobile = targetCell
+    ?.closest(".bg-white.rounded-xl")
+    ?.querySelector("h3.font-bold");
+
+  const oldUserName =
+    oldUserCell?.textContent || oldUserMobile?.textContent || "Unassigned";
+  const newUserName =
+    newUserCell?.textContent || newUserMobile?.textContent || "Unassigned";
 
   // Build confirmation message
   const changes = [];
