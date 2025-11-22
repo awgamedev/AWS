@@ -66,6 +66,18 @@ class UserProfileRepository {
       throw new Error(`Error updating profile picture: ${error.message}`);
     }
   }
+
+  async removeProfilePicture(userId) {
+    try {
+      return await UserProfile.findOneAndUpdate(
+        { userId },
+        { $unset: { profilePictureBase64: "" } },
+        { new: true, runValidators: true }
+      ).lean();
+    } catch (error) {
+      throw new Error(`Error removing profile picture: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new UserProfileRepository();

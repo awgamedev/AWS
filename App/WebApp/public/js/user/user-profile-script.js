@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorsContainer = document.getElementById(ERRORS_ID);
   const uploadAvatarBtn = document.getElementById("upload-avatar-btn");
   const avatarInput = document.getElementById("avatar-input");
+  const removeAvatarBtn = document.getElementById("remove-avatar-btn");
 
   // Initialize modal functionality
   initializeModal();
@@ -131,6 +132,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (avatarInput) {
       avatarInput.addEventListener("change", handleFileSelect);
     }
+
+    if (removeAvatarBtn) {
+      removeAvatarBtn.addEventListener("click", async () => {
+        const confirmed = window.confirm(
+          "Are you sure you want to remove your profile picture?"
+        );
+        if (!confirmed) return;
+        await removeProfilePicture();
+      });
+    }
   }
 
   async function handleFileSelect(e) {
@@ -190,6 +201,31 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error uploading profile picture:", error);
       alert("An error occurred while uploading the profile picture.");
+    }
+  }
+
+  async function removeProfilePicture() {
+    try {
+      const response = await fetch("/profile/remove-picture", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        showSuccess(result.msg || "Profile picture removed.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        alert(result.msg || "Failed to remove profile picture.");
+      }
+    } catch (error) {
+      console.error("Error removing profile picture:", error);
+      alert("An error occurred while removing the profile picture.");
     }
   }
 

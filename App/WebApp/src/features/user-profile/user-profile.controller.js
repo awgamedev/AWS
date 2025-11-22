@@ -109,6 +109,33 @@ class UserProfileController {
       });
     }
   }
+
+  /**
+   * Remove profile picture
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async removeProfilePicture(req, res) {
+    try {
+      const userId = req.user.id;
+      await userProfileRepository.removeProfilePicture(userId);
+      return res.json({
+        success: true,
+        msg:
+          req.__("PROFILE_PICTURE_REMOVED") ||
+          "Profile picture removed successfully.",
+      });
+    } catch (error) {
+      req.logger.error("Error removing profile picture:", error);
+      return res.status(500).json({
+        success: false,
+        msg:
+          req.__("PROFILE_PICTURE_REMOVE_ERROR") ||
+          "Error removing profile picture.",
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UserProfileController();

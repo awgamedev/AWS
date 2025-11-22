@@ -18,6 +18,11 @@ router.post("/profile/upload-picture", ensureAuthenticated, (req, res) => {
   userProfileController.uploadProfilePicture(req, res);
 });
 
+// Remove profile picture (POST /profile/remove-picture)
+router.post("/profile/remove-picture", ensureAuthenticated, (req, res) => {
+  userProfileController.removeProfilePicture(req, res);
+});
+
 // Profile editing routes removed per request (no update/upload endpoints)
 
 module.exports = router;
