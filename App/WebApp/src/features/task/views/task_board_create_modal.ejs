@@ -11,12 +11,12 @@ const generateTaskOptions = (users, priorityList, __) => {
 };
 
 const { userOptions, priorityOptions } = generateTaskOptions(users, ["low","medium","high"], __);
-const fieldClass = "mt-1 block w-full border border-gray-300 rounded-md bg-white shadow-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
-const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppercase";
+const fieldClass = "mt-0 sm:mt-1 block w-full border border-gray-300 rounded-md bg-white shadow-sm px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition leading-tight";
+const labelClass = "block text-[10px] sm:text-xs font-semibold tracking-wide text-gray-600 uppercase leading-tight";
 %>
 
-<form id="create-task-form" class="space-y-4">
-    <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-6">
+<form id="create-task-form" class="space-y-3 sm:space-y-4">
+    <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-4 sm:space-y-6">
         <!-- Template Selector (new addition) -->
         <div>
             <label for="templateSelector" class="<%= labelClass %>"><%= __("USE_TEMPLATE_LABEL") || "Use Template" %></label>
@@ -26,7 +26,7 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
         </div>
 
         <!-- Top grouping: Name spans full width -->
-        <div class="grid gap-6 md:grid-cols-3">
+        <div class="grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-3">
             <div class="md:col-span-3">
                 <label for="taskName" class="<%= labelClass %>"><%= __("TASK_NAME_LABEL") %> *</label>
                 <input type="text" id="taskName" name="taskName" required autocomplete="off" maxlength="120" placeholder="" class="<%= fieldClass %>" autofocus>
@@ -44,7 +44,7 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
                     <%- priorityOptions %>
                 </select>
             </div>
-            <div class="grid grid-cols-2 gap-6 md:col-span-3">
+            <div class="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 md:col-span-3">
                 <div>
                     <label for="startDate" class="<%= labelClass %>"><%= __("START_DATE_LABEL") %> *</label>
                     <input type="date" id="startDate" name="startDate" required class="<%= fieldClass %>">
@@ -65,8 +65,8 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
         <div id="task-form-message" class="hidden text-sm font-medium text-center px-3 py-2 rounded-md"></div>
     </div>
 
-    <div class="flex items-center justify-end gap-3 pt-2">
-        <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    <div class="flex items-center justify-end gap-3 pt-1 sm:pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3.5 py-1.5 sm:px-5 sm:py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             <span><%= __("SAVE_TASK_BUTTON") %></span>
         </button>
     </div>
