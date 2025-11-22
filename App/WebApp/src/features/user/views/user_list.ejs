@@ -24,6 +24,11 @@
                     <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<%= __('ROLE_LABEL') %>"><%= item.role %></td>
                     <td class="px-6 py-3 text-right">
                         <div class="flex justify-end gap-2">
+                            <a href="/user/details/<%= item._id %>" 
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                                <span>👁️</span>
+                                <span class="ml-1"><%= __('DETAILS_BUTTON') %></span>
+                            </a>
                             <a href="/modify-user/<%= item._id %>" 
                                 class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
                                 <span>✏️</span>

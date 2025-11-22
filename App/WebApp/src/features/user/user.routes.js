@@ -5,6 +5,7 @@ const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const { hashPassword } = require("../../utils/password-utils");
 const { validateUserData } = require("./user.validations");
+const userController = require("./user.controller");
 
 // 1. Display user list (GET /user/list)
 router.get("/user/list", ensureAuthenticated, async (req, res) => {
@@ -168,6 +169,16 @@ router.post("/user/list/delete/:id", ensureAuthenticated, async (req, res) => {
     req.logger.error("Error deleting user:", err);
     return renderErrorView(req, res, "USER_DELETE_ERROR", 500);
   }
+});
+
+// 6. Display user details page (GET /user/details/:id)
+router.get("/user/details/:id", ensureAuthenticated, (req, res) => {
+  userController.showUserDetails(req, res);
+});
+
+// 7. Update user details (POST /user/details/:id)
+router.post("/user/details/:id", ensureAuthenticated, (req, res) => {
+  userController.updateUserDetails(req, res);
 });
 
 module.exports = router;

@@ -126,6 +126,61 @@ class UserProfileController {
       });
     }
   }
+
+  /**
+   * Admin: Update user profile settings
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updateUserProfile(req, res) {
+    try {
+      const userId = req.params.userId;
+      const { pauseInMinutesPerDay, vacationDaysPerYear } = req.body;
+
+      // Validate profile data
+      const { validateProfileData } = require("./user-profile.validator");
+      const validationErrors = await validateProfileData(
+        req,
+        pauseInMinutesPerDay,
+        vacationDaysPerYear
+      );
+
+      if (Object.keys(validationErrors).length > 0) {
+        return res.status(400).json({
+          success: false,
+          errors: validationErrors,
+        });
+      }
+
+      // Prepare update data
+      const profileUpdateData = {
+        vacationDaysPerYear: parseInt(vacationDaysPerYear) || 20,
+      };
+
+      // Only set pauseInMinutesPerDay if provided
+      if (pauseInMinutesPerDay !== "" && pauseInMinutesPerDay !== null) {
+        profileUpdateData.pauseInMinutesPerDay =
+          parseInt(pauseInMinutesPerDay) || null;
+      } else {
+        profileUpdateData.pauseInMinutesPerDay = null;
+      }
+
+      // Update profile
+      await userProfileRepository.updateByUserId(userId, profileUpdateData);
+
+      return res.json({
+        success: true,
+        msg: req.__("USER_PROFILE_UPDATED"),
+      });
+    } catch (error) {
+      req.logger.error("Error updating user profile:", error);
+      return res.status(500).json({
+        success: false,
+        msg: req.__("USER_PROFILE_UPDATE_ERROR"),
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UserProfileController();

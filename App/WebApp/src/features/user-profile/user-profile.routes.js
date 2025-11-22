@@ -23,6 +23,9 @@ router.post("/profile/remove-picture", ensureAuthenticated, (req, res) => {
   userProfileController.removeProfilePicture(req, res);
 });
 
-// Profile editing routes removed per request (no update/upload endpoints)
+// Admin: Update user profile settings (POST /admin/user-profile/:userId)
+router.post("/admin/user-profile/:userId", ensureAuthenticated, (req, res) => {
+  userProfileController.updateUserProfile(req, res);
+});
 
 module.exports = router;

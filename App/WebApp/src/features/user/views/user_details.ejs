@@ -1,0 +1,180 @@
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+            <%= __('USER_DETAILS_HEADER') %>
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            <%= __('USER_DETAILS_DESCRIPTION') %>
+        </p>
+    </div>
+
+    <form action="/user/details/<%= user._id %>" method="POST" class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <!-- User Information Section -->
+            <div class="mb-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-4"><%= __('USER_INFO_SECTION') %></h4>
+                <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                    <!-- Username -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('USERNAME_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <input type="text" 
+                                   name="username" 
+                                   value="<%= user.username %>" 
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm <%= errors.username ? 'border-red-500' : '' %>"
+                                   required>
+                            <% if (errors.username) { %>
+                                <p class="mt-1 text-sm text-red-600"><%= errors.username %></p>
+                            <% } %>
+                        </dd>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('EMAIL_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <input type="email" 
+                                   name="email" 
+                                   value="<%= user.email %>" 
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm <%= errors.email ? 'border-red-500' : '' %>"
+                                   required>
+                            <% if (errors.email) { %>
+                                <p class="mt-1 text-sm text-red-600"><%= errors.email %></p>
+                            <% } %>
+                        </dd>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('ROLE_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <select name="role" 
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="user" <%= user.role === 'user' ? 'selected' : '' %>><%= __('ROLE_USER') %></option>
+                                <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>><%= __('ROLE_ADMIN') %></option>
+                            </select>
+                        </dd>
+                    </div>
+
+                    <!-- Password (optional) -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('PASSWORD_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <input type="password" 
+                                   name="password" 
+                                   placeholder="<%= __('PASSWORD_PLACEHOLDER') %>"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm <%= errors.password ? 'border-red-500' : '' %>">
+                            <p class="mt-1 text-xs text-gray-500"><%= __('PASSWORD_OPTIONAL_NOTE') %></p>
+                            <% if (errors.password) { %>
+                                <p class="mt-1 text-sm text-red-600"><%= errors.password %></p>
+                            <% } %>
+                        </dd>
+                    </div>
+
+                    <!-- Created At -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('CREATED_AT_LABEL') %>
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900">
+                            <%= new Date(user.createdAt).toLocaleDateString() %>
+                        </dd>
+                    </div>
+
+                    <!-- Updated At -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('UPDATED_AT_LABEL') %>
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900">
+                            <%= new Date(user.updatedAt).toLocaleDateString() %>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- User Profile Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="text-md font-semibold text-gray-800 mb-4"><%= __('USER_PROFILE_SECTION') %></h4>
+                <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                    <!-- Profile Picture -->
+                    <div class="sm:col-span-2">
+                        <dt class="text-sm font-medium text-gray-500 mb-2">
+                            <%= __('PROFILE_PICTURE_LABEL') %>
+                        </dt>
+                        <dd>
+                            <% if (userProfile && userProfile.profilePictureBase64) { %>
+                                <img src="<%= userProfile.profilePictureBase64 %>" 
+                                     alt="<%= __('PROFILE_PICTURE_ALT') %>" 
+                                     class="h-32 w-32 rounded-full object-cover border-2 border-gray-300">
+                            <% } else { %>
+                                <div class="h-32 w-32 rounded-full bg-gray-200 flex items-center justify-center border-2 border-gray-300">
+                                    <span class="text-4xl text-gray-400">👤</span>
+                                </div>
+                            <% } %>
+                            <p class="mt-2 text-xs text-gray-500"><%= __('PROFILE_PICTURE_NOTE') %></p>
+                        </dd>
+                    </div>
+
+                    <!-- Pause Time -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('PAUSE_TIME_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <input type="number" 
+                                   name="pauseInMinutesPerDay" 
+                                   value="<%= userProfile && userProfile.pauseInMinutesPerDay !== null ? userProfile.pauseInMinutesPerDay : '' %>" 
+                                   placeholder="<%= __('PAUSE_TIME_PLACEHOLDER') %>"
+                                   min="0"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm <%= errors.pauseInMinutesPerDay ? 'border-red-500' : '' %>">
+                            <p class="mt-1 text-xs text-gray-500"><%= __('PAUSE_TIME_HINT') %></p>
+                            <% if (errors.pauseInMinutesPerDay) { %>
+                                <p class="mt-1 text-sm text-red-600"><%= errors.pauseInMinutesPerDay %></p>
+                            <% } %>
+                        </dd>
+                    </div>
+
+                    <!-- Vacation Days -->
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">
+                            <%= __('VACATION_DAYS_LABEL') %>
+                        </dt>
+                        <dd class="mt-1">
+                            <input type="number" 
+                                   name="vacationDaysPerYear" 
+                                   value="<%= userProfile && userProfile.vacationDaysPerYear !== null ? userProfile.vacationDaysPerYear : 20 %>" 
+                                   min="0"
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm <%= errors.vacationDaysPerYear ? 'border-red-500' : '' %>"
+                                   required>
+                            <p class="mt-1 text-xs text-gray-500"><%= __('VACATION_DAYS_HINT') %></p>
+                            <% if (errors.vacationDaysPerYear) { %>
+                                <p class="mt-1 text-sm text-red-600"><%= errors.vacationDaysPerYear %></p>
+                            <% } %>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-between">
+            <a href="/user/list" 
+               class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <%= __('CANCEL_BUTTON') %>
+            </a>
+            <button type="submit" 
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <%= __('SAVE_BUTTON') %>
+            </button>
+        </div>
+    </form>
+</div>
