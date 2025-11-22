@@ -13,19 +13,6 @@ router.get("/profile", ensureAuthenticated, (req, res) => {
   userProfileController.showProfile(req, res);
 });
 
-// Update user profile (POST /profile/update) - Admin only
-router.post(
-  "/profile/update",
-  ensureAuthenticated,
-  checkRole("admin"),
-  (req, res) => {
-    userProfileController.updateProfile(req, res);
-  }
-);
-
-// Upload profile picture (POST /profile/upload-picture)
-router.post("/profile/upload-picture", ensureAuthenticated, (req, res) => {
-  userProfileController.uploadProfilePicture(req, res);
-});
+// Profile editing routes removed per request (no update/upload endpoints)
 
 module.exports = router;
