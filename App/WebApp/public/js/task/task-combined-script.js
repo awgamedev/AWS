@@ -321,6 +321,16 @@ let dragState = {
   hasMoved: false,
 };
 
+// Cell selection drag state
+let cellDragState = {
+  isDragging: false,
+  startCell: null,
+  currentCell: null,
+  startRow: null,
+  dragStartX: 0,
+  dragStartY: 0,
+};
+
 const isMobileDevice = () => {
   return (
     typeof window !== "undefined" &&
@@ -341,6 +351,11 @@ const initDragAndDrop = () => {
   document.addEventListener("mousedown", handleDragStart);
   document.addEventListener("mousemove", handleDragMove);
   document.addEventListener("mouseup", handleDragEnd);
+
+  // Cell selection drag handlers
+  document.addEventListener("mousedown", handleCellDragStart);
+  document.addEventListener("mousemove", handleCellDragMove);
+  document.addEventListener("mouseup", handleCellDragEnd);
 
   function handleDragStart(e) {
     const taskItem = e.target.closest(".task-item");
@@ -697,6 +712,222 @@ const formatDate = (dateStr) => {
   if (!dateStr) return "N/A";
   const date = new Date(dateStr);
   return date.toLocaleDateString("de-DE");
+};
+
+// ============================================================================
+// CELL SELECTION DRAG (for creating tasks with date ranges)
+// ============================================================================
+
+function handleCellDragStart(e) {
+  // Only handle empty cells or cells with add-task-btn
+  const emptyCell = e.target.closest(".empty-task-cell");
+  const cellContainer = e.target.closest(".task-cell-container");
+
+  // Don't start if clicking on a task item or add task button
+  if (e.target.closest(".task-item") || e.target.closest(".add-task-btn")) {
+    return;
+  }
+
+  // Only start if it's an empty cell or a task-cell-container
+  if (!emptyCell && !cellContainer) {
+    return;
+  }
+
+  const cell = emptyCell || cellContainer;
+  if (!cell || currentView !== "board") return;
+
+  // Get the row to ensure we stay within it
+  const row = cell.closest("tr");
+  if (!row) return;
+
+  cellDragState.dragStartX = e.clientX;
+  cellDragState.dragStartY = e.clientY;
+  cellDragState.startCell = cell;
+  cellDragState.startRow = row;
+  cellDragState.currentCell = cell;
+}
+
+function handleCellDragMove(e) {
+  if (!cellDragState.startCell) return;
+
+  const deltaX = Math.abs(e.clientX - cellDragState.dragStartX);
+  const deltaY = Math.abs(e.clientY - cellDragState.dragStartY);
+
+  // Start drag if moved more than 5px horizontally
+  if (!cellDragState.isDragging && deltaX > 5 && deltaX > deltaY) {
+    cellDragState.isDragging = true;
+    startCellDrag();
+  }
+
+  if (cellDragState.isDragging) {
+    e.preventDefault();
+
+    // Find cell under cursor
+    const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+    const cellBelow = elementBelow?.closest(
+      ".task-cell-container, .empty-task-cell"
+    );
+
+    // Make sure it's in the same row
+    if (cellBelow && cellBelow.closest("tr") === cellDragState.startRow) {
+      if (cellBelow !== cellDragState.currentCell) {
+        updateCellSelection(cellBelow);
+        cellDragState.currentCell = cellBelow;
+      }
+    }
+  }
+}
+
+function handleCellDragEnd(e) {
+  if (!cellDragState.startCell) return;
+
+  if (cellDragState.isDragging) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
+    const endCell = elementBelow?.closest(
+      ".task-cell-container, .empty-task-cell"
+    );
+
+    // Make sure end cell is in the same row
+    if (
+      endCell &&
+      endCell.closest("tr") === cellDragState.startRow &&
+      endCell !== cellDragState.startCell
+    ) {
+      // Get user ID and day names
+      const userId = cellDragState.startCell.dataset.userId;
+      const startDayName = cellDragState.startCell.dataset.dayName;
+      const endDayName = endCell.dataset.dayName;
+
+      // Open create modal with date range preselected
+      openCreateModalWithDateRange(userId, startDayName, endDayName);
+    }
+
+    endCellDrag();
+  }
+
+  // Reset cell drag state
+  cellDragState = {
+    isDragging: false,
+    startCell: null,
+    currentCell: null,
+    startRow: null,
+    dragStartX: 0,
+    dragStartY: 0,
+  };
+}
+
+function startCellDrag() {
+  // Add visual feedback
+  document.body.style.cursor = "col-resize";
+  document.body.style.userSelect = "none";
+
+  // Highlight start cell
+  if (cellDragState.startCell) {
+    cellDragState.startCell.classList.add("cell-drag-active");
+  }
+
+  // Add CSS for cell selection
+  const style = document.createElement("style");
+  style.id = "cell-drag-styles";
+  style.textContent = `
+    .cell-drag-active {
+      background-color: rgba(79, 70, 229, 0.15) !important;
+      border: 2px solid #4f46e5 !important;
+    }
+    .cell-drag-range {
+      background-color: rgba(79, 70, 229, 0.1) !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function updateCellSelection(newCell) {
+  // Clear previous range highlighting
+  document.querySelectorAll(".cell-drag-range").forEach((cell) => {
+    cell.classList.remove("cell-drag-range");
+  });
+
+  // Get all cells in the row
+  const row = cellDragState.startRow;
+  const cells = Array.from(
+    row.querySelectorAll(".task-cell-container, .empty-task-cell")
+  );
+
+  const startIndex = cells.indexOf(cellDragState.startCell);
+  const endIndex = cells.indexOf(newCell);
+
+  // Highlight range
+  const minIndex = Math.min(startIndex, endIndex);
+  const maxIndex = Math.max(startIndex, endIndex);
+
+  for (let i = minIndex; i <= maxIndex; i++) {
+    if (cells[i] && cells[i] !== cellDragState.startCell) {
+      cells[i].classList.add("cell-drag-range");
+    }
+  }
+}
+
+function endCellDrag() {
+  // Remove visual feedback
+  document.body.style.cursor = "";
+  document.body.style.userSelect = "";
+
+  // Remove highlighting
+  document
+    .querySelectorAll(".cell-drag-active, .cell-drag-range")
+    .forEach((cell) => {
+      cell.classList.remove("cell-drag-active", "cell-drag-range");
+    });
+
+  // Remove style
+  const style = document.getElementById("cell-drag-styles");
+  if (style) style.remove();
+}
+
+const openCreateModalWithDateRange = (userId, startDayName, endDayName) => {
+  openModalFromApi(
+    window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
+    "/api/modal/task-create",
+    () => {
+      // Load templates into dropdown
+      loadTemplatesIntoSelector();
+
+      // Preselect user
+      const userSelect = byId("userId");
+      if (userSelect && userId) {
+        userSelect.value = userId;
+      }
+
+      // Calculate dates from day names
+      const startDateStr = getDateFromDayName(startDayName, currentWeekOffset);
+      const endDateStr = getDateFromDayName(endDayName, currentWeekOffset);
+
+      // Ensure dates are in correct order (start <= end)
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+      const finalStartDate = startDate <= endDate ? startDateStr : endDateStr;
+      const finalEndDate = startDate <= endDate ? endDateStr : startDateStr;
+
+      const startDateInput = byId("startDate");
+      const endDateInput = byId("endDate");
+
+      if (startDateInput && finalStartDate) {
+        startDateInput.value = finalStartDate;
+      }
+
+      if (endDateInput && finalEndDate) {
+        endDateInput.value = finalEndDate;
+      }
+
+      // Setup template selector change handler
+      setupTemplateSelector();
+
+      setupDateValidation();
+    }
+  );
 };
 
 // ============================================================================
