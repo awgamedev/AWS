@@ -1,68 +1,65 @@
 <%
-// Notwendige Hilfsfunktion in die Modal-Datei verschieben
+// Helper: generate dropdown option markup
 const generateTaskOptions = (users, priorityList, __) => {
-  // Optionen für das Mitarbeiter-Dropdown
-  const userOptions = users
-    .map((user) => `<option value="${user._id}">${user.username}</option>`)
-    .join("");
-
-  // Optionen für die Priorität
-  const priorityOptions = priorityList
-    .map((priority) => `<option value="${priority}">${__("PRIORITY_" + priority.toUpperCase()) || priority}</option>`)
-    .join("");
-
-  return { userOptions, priorityOptions };
+    const userOptions = users
+        .map(u => `<option value="${u._id}">${u.username}</option>`)
+        .join("");
+    const priorityOptions = priorityList
+        .map(p => `<option value="${p}">${__("PRIORITY_" + p.toUpperCase()) || p}</option>`)
+        .join("");
+    return { userOptions, priorityOptions };
 };
 
-// Generierung des Modal-HTML
-const { userOptions, priorityOptions } = generateTaskOptions(users, ["low", "medium", "high"], __);
+const { userOptions, priorityOptions } = generateTaskOptions(users, ["low","medium","high"], __);
+const fieldClass = "mt-1 block w-full border border-gray-300 rounded-md bg-white shadow-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
+const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppercase";
 %>
 
-<form id="create-task-form">
-    <div class="max-h-96 overflow-y-auto mb-2">
-        <div class="mb-4">
-            <label for="userId" class="block text-sm font-medium text-gray-700"><%= __("ASSIGN_USER") %></label>
-            <select id="userId" name="userId" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                <option value=""><%= __("SELECT_DEFAULT") %></option>
-                <%- userOptions %>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label for="taskPriority" class="block text-sm font-medium text-gray-700"><%= __("PRIORITY_LABEL") %> *</label>
-            <select id="taskPriority" name="taskPriority" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                <%- priorityOptions %>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label for="taskName" class="block text-sm font-medium text-gray-700"><%= __("TASK_NAME_LABEL") %> *</label>
-            <input type="text" id="taskName" name="taskName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-        </div>
-
-        <div class="mb-4">
-            <label for="taskDescription" class="block text-sm font-medium text-gray-700"><%= __("DESCRIPTION_LABEL") %></label>
-            <textarea id="taskDescription" name="taskDescription" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div>
-                <label for="startDate" class="block text-sm font-medium text-gray-700"><%= __("START_DATE_LABEL") %> *</label>
-                <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+<form id="create-task-form" class="space-y-4">
+    <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-6">
+        <!-- Top grouping: Name spans full width -->
+        <div class="grid gap-6 md:grid-cols-3">
+            <div class="md:col-span-3">
+                <label for="taskName" class="<%= labelClass %>"><%= __("TASK_NAME_LABEL") %> *</label>
+                <input type="text" id="taskName" name="taskName" required autocomplete="off" maxlength="120" placeholder="" class="<%= fieldClass %>" autofocus>
             </div>
             <div>
-                <label for="endDate" class="block text-sm font-medium text-gray-700"><%= __("END_DATE_LABEL") %></label>
-                <input type="date" id="endDate" name="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="userId" class="<%= labelClass %>"><%= __("ASSIGN") %></label>
+                <select id="userId" name="userId" class="<%= fieldClass %>">
+                    <option value=""><%= __("SELECT_DEFAULT") %></option>
+                    <%- userOptions %>
+                </select>
+            </div>
+            <div>
+                <label for="taskPriority" class="<%= labelClass %>"><%= __("PRIORITY") %> *</label>
+                <select id="taskPriority" name="taskPriority" class="<%= fieldClass %>">
+                    <%- priorityOptions %>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-6 md:col-span-3">
+                <div>
+                    <label for="startDate" class="<%= labelClass %>"><%= __("START_DATE_LABEL") %> *</label>
+                    <input type="date" id="startDate" name="startDate" required class="<%= fieldClass %>">
+                </div>
+                <div>
+                    <label for="endDate" class="<%= labelClass %>"><%= __("END_DATE_LABEL") %></label>
+                    <input type="date" id="endDate" name="endDate" class="<%= fieldClass %>">
+                </div>
             </div>
         </div>
-        
-        <div id="task-form-message" class="mb-4 text-sm font-medium text-center hidden"></div>
+
+        <!-- Description full width -->
+        <div>
+            <label for="taskDescription" class="<%= labelClass %>"><%= __("DESCRIPTION_LABEL") %></label>
+            <textarea id="taskDescription" name="taskDescription" rows="4" maxlength="1000" placeholder="" class="<%= fieldClass %> resize-y"></textarea>
+        </div>
+
+        <div id="task-form-message" class="hidden text-sm font-medium text-center px-3 py-2 rounded-md"></div>
     </div>
 
-    <div class="flex justify-end">
-        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
-            <%= __("SAVE_TASK_BUTTON") %>
+    <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <span><%= __("SAVE_TASK_BUTTON") %></span>
         </button>
     </div>
-
 </form>

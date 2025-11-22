@@ -59,12 +59,12 @@
 	"PRIORITY_MEDIUM": "Mittel",
 	"PRIORITY_HIGH": "Hoch",
 	"CREATE_NEW_TASK": "Neue Aufgabe zuweisen",
-	"ASSIGN_USER": "Mitarbeiter zuweisen",
-	"PRIORITY_LABEL": "Priorität wählen",
+	"ASSIGN": "zuweisen",
+	"PRIORITY": "Priorität",
 	"TASK_NAME_LABEL": "Aufgabenname",
 	"DESCRIPTION_LABEL": "Beschreibung",
 	"START_DATE_LABEL": "Startdatum",
-	"END_DATE_LABEL": "Fälligkeitsdatum (Optional)",
+	"END_DATE_LABEL": "Fälligkeitsdatum",
 	"SAVE_TASK_BUTTON": "Aufgabe speichern",
 	"STATUS_PENDING": "Ausstehend",
 	"STATUS_IN_PROGRESS": "In Bearbeitung",
@@ -248,5 +248,6 @@
 	"DAILY_RECORDS_IN_MONTH": "Tägliche Aufzeichnungen im %s",
 	"NO_STAMPINGS_IN_SELECTED_MONTH": "Keine Stempelungen im gewählten Monat gefunden.",
 	"TOTAL_SHORT": "Gesamt",
-	"ALL_TASKS_ASSIGNED": "ALL_TASKS_ASSIGNED"
+	"ALL_TASKS_ASSIGNED": "ALL_TASKS_ASSIGNED",
+	"PRIORITY_LABEL": "PRIORITY_LABEL"
 }
