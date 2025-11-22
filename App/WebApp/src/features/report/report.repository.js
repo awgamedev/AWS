@@ -154,6 +154,24 @@ class ReportRepository extends BaseRepository {
 
     return totalDays;
   }
+
+  /**
+   * Gets future reports for a user (reports starting from today onwards).
+   * @param {string} userId
+   * @returns {Promise<Array>} Array of future reports sorted by start date
+   */
+  async getFutureReports(userId) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return await this.model
+      .find({
+        userId,
+        startDate: { $gte: today },
+      })
+      .sort({ startDate: 1 })
+      .exec();
+  }
 }
 
 module.exports = new ReportRepository();

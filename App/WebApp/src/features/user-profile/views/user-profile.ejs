@@ -38,16 +38,16 @@
         <span class=\"text-sm font-medium text-gray-800\">${(userProfile && userProfile.pauseInMinutesPerDay) ? (userProfile.pauseInMinutesPerDay + ' min') : '-'}</span>
       </div>
       <div class=\"flex justify-between py-1 border-b border-gray-100\">
-        <span class=\"text-sm text-gray-600\">${__('VACATION_DAYS')}</span>
+        <span class=\"text-sm text-gray-600\">${__('TOTAL_VACATION_DAYS_THIS_YEAR')}</span>
         <span class=\"text-sm font-medium text-gray-800\">${(userProfile && userProfile.vacationDaysPerYear) ? userProfile.vacationDaysPerYear : 20} ${__('DAYS_PER_YEAR') || 'days/year'}</span>
       </div>
       <div class=\"flex justify-between py-1\">
-        <span class=\"text-sm text-gray-600\">${__('SICK_DAYS_TAKEN')}</span>
+        <span class=\"text-sm text-gray-600\">${__('TOTAL_ILLNESS_REPORT_DAYS_THIS_YEAR')}</span>
         <span class=\"text-sm font-medium text-gray-800\">${typeof sickDaysUsed !== 'undefined' ? sickDaysUsed : 0}</span>
       </div>
     `});
 
-    const vacationContent = `
+    const reportContent = `
       <div class=\"space-y-2 mb-3\">
         <div class=\"flex justify-between items-center text-sm\">
           <span class=\"text-gray-600\">${__('TOTAL')}:</span>
@@ -106,9 +106,9 @@
 
     const accountWidget = include('partials/widget', { iconClass: 'fas fa-user-circle', title: __('ACCOUNT_INFORMATION'), content: accountContent });
     const workWidget = include('partials/widget', { iconClass: 'fas fa-briefcase', title: __('WORK_SETTINGS') || 'Work Settings', content: workContent });
-    const vacationWidget = include('partials/widget', { iconClass: 'fas fa-umbrella-beach', title: __('VACATION_AND_ILLNESS_REPORTS') || __('VACATION_DAYS') || 'Vacation & Illness Reports', colSpan: 2, content: vacationContent });
+    const reportWidget = include('partials/widget', { iconClass: 'fas fa-umbrella-beach', title: __('FUTURE_VACATION_AND_ILLNESS_REPORTS') || __('VACATION_DAYS') || 'Vacation & Illness Reports', colSpan: 2, content: reportContent });
 
-    const gridContent = accountWidget + workWidget + vacationWidget;
+    const gridContent = accountWidget + workWidget + reportWidget;
   %>
   <%- include('partials/widget-grid', { columns: 2, content: gridContent }) %>
 

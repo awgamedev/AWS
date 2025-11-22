@@ -203,5 +203,7 @@
 	"REMOVE_PROFILE_PICTURE": "Profilbild entfernen",
 	"PROFILE_PICTURE_REMOVED": "Profilbild erfolgreich entfernt.",
 	"PROFILE_PICTURE_REMOVE_ERROR": "Fehler beim Entfernen des Profilbilds.",
-	"VACATION_AND_ILLNESS_REPORTS": "Urlaubs- und Krankmeldungen"
+	"FUTURE_VACATION_AND_ILLNESS_REPORTS": "Zukünftige Urlaubs- und Krankmeldungen",
+	"TOTAL_VACATION_DAYS_THIS_YEAR": "Urlaubstage insgesamt dieses Jahr",
+	"TOTAL_ILLNESS_REPORT_DAYS_THIS_YEAR": "Krankheitstage insgesamt dieses Jahr"
 }

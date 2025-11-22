@@ -37,13 +37,10 @@ class UserProfileController {
         vacationDaysTotal - vacationDaysUsed
       );
 
-      // Fetch user's own reports for embedding in profile page
-      const items = await reportRepository.model
-        .find({ userId })
-        .sort({ startDate: 1 })
-        .exec();
+      // Fetch user's own future reports for embedding in profile page
+      const items = await reportRepository.getFutureReports(userId);
 
-      const title = req.__("USER_PROFILE_TITLE") || "User Profile";
+      const title = req.__("USER_PROFILE_TITLE");
 
       renderView(req, res, "user-profile", title, {
         user,
@@ -78,7 +75,7 @@ class UserProfileController {
       if (!imageBase64) {
         return res.status(400).json({
           success: false,
-          msg: req.__("NO_IMAGE_PROVIDED") || "No image provided.",
+          msg: req.__("NO_IMAGE_PROVIDED"),
         });
       }
 
@@ -86,7 +83,7 @@ class UserProfileController {
       if (!imageBase64.startsWith("data:image/")) {
         return res.status(400).json({
           success: false,
-          msg: req.__("INVALID_IMAGE_FORMAT") || "Invalid image format.",
+          msg: req.__("INVALID_IMAGE_FORMAT"),
         });
       }
 
@@ -95,16 +92,13 @@ class UserProfileController {
 
       return res.json({
         success: true,
-        msg:
-          req.__("PROFILE_PICTURE_UPDATED") ||
-          "Profile picture updated successfully.",
+        msg: req.__("PROFILE_PICTURE_UPDATED"),
       });
     } catch (error) {
       req.logger.error("Error uploading profile picture:", error);
       return res.status(500).json({
         success: false,
-        msg:
-          req.__("PROFILE_PICTURE_ERROR") || "Error uploading profile picture.",
+        msg: req.__("PROFILE_PICTURE_ERROR"),
         error: error.message,
       });
     }
@@ -121,17 +115,13 @@ class UserProfileController {
       await userProfileRepository.removeProfilePicture(userId);
       return res.json({
         success: true,
-        msg:
-          req.__("PROFILE_PICTURE_REMOVED") ||
-          "Profile picture removed successfully.",
+        msg: req.__("PROFILE_PICTURE_REMOVED"),
       });
     } catch (error) {
       req.logger.error("Error removing profile picture:", error);
       return res.status(500).json({
         success: false,
-        msg:
-          req.__("PROFILE_PICTURE_REMOVE_ERROR") ||
-          "Error removing profile picture.",
+        msg: req.__("PROFILE_PICTURE_REMOVE_ERROR"),
         error: error.message,
       });
     }
