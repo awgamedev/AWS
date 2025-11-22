@@ -61,36 +61,54 @@ thead .sticky-col {
     }
 
     table.responsive-table tr {
-        border-bottom: 1px solid #e5e7eb; /* gray-200 */
-        margin-bottom: 0.5rem;
-        padding: 0.25rem 0;
+        border-bottom: 2px solid #e5e7eb; /* gray-200 */
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 0;
     }
 
     table.responsive-table td {
-        padding: 0.5rem 1rem;
-        display: grid;
-        grid-template-columns: 10ch auto;
-        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: left !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal !important;
+        max-width: 100%;
     }
 
     table.responsive-table td::before {
         content: attr(data-label);
         font-weight: 600;
+        font-size: 0.75rem;
         color: #6b7280; /* gray-500 */
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Remove truncate class effect on mobile */
+    table.responsive-table td.truncate {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        max-width: 100% !important;
     }
 
     /* If last column is actions, make buttons full-width */
     table.responsive-table.actions-last td:last-child {
-        grid-template-columns: 1fr;
+        padding-top: 0.75rem;
     }
     table.responsive-table.actions-last td:last-child::before {
         content: '';
         display: none;
     }
-    table.responsive-table.actions-last td:last-child .flex.justify-end {
-        justify-content: flex-start;
-        flex-wrap: wrap;
+    table.responsive-table.actions-last td:last-child .flex {
+        flex-direction: column;
         gap: 0.5rem;
+        width: 100%;
     }
     table.responsive-table.actions-last td:last-child .inline-flex {
         width: 100%;
