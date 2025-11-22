@@ -321,26 +321,33 @@ let dragState = {
   hasMoved: false,
 };
 
+const isMobileDevice = () => {
+  return (
+    typeof window !== "undefined" &&
+    (window.matchMedia("(pointer: coarse)").matches ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ))
+  );
+};
+
 const initDragAndDrop = () => {
+  if (isMobileDevice()) {
+    // Disable drag-and-drop on mobile devices
+    return;
+  }
   let currentDropTarget = null;
 
   document.addEventListener("mousedown", handleDragStart);
-  document.addEventListener("touchstart", handleDragStart, { passive: false });
-
   document.addEventListener("mousemove", handleDragMove);
-  document.addEventListener("touchmove", handleDragMove, { passive: false });
-
   document.addEventListener("mouseup", handleDragEnd);
-  document.addEventListener("touchend", handleDragEnd);
-  document.addEventListener("touchcancel", handleDragEnd);
 
   function handleDragStart(e) {
     const taskItem = e.target.closest(".task-item");
     if (!taskItem || currentView !== "board") return;
 
-    const touch = e.touches ? e.touches[0] : e;
-    dragState.dragStartX = touch.clientX;
-    dragState.dragStartY = touch.clientY;
+    dragState.dragStartX = e.clientX;
+    dragState.dragStartY = e.clientY;
     dragState.taskElement = taskItem;
     dragState.taskData = taskItem.dataset;
     dragState.startCell = taskItem.closest(
@@ -352,9 +359,8 @@ const initDragAndDrop = () => {
   function handleDragMove(e) {
     if (!dragState.taskElement) return;
 
-    const touch = e.touches ? e.touches[0] : e;
-    const deltaX = Math.abs(touch.clientX - dragState.dragStartX);
-    const deltaY = Math.abs(touch.clientY - dragState.dragStartY);
+    const deltaX = Math.abs(e.clientX - dragState.dragStartX);
+    const deltaY = Math.abs(e.clientY - dragState.dragStartY);
 
     // Start drag if moved more than 5px
     if (!dragState.isDragging && (deltaX > 5 || deltaY > 5)) {
@@ -365,13 +371,10 @@ const initDragAndDrop = () => {
 
     if (dragState.isDragging) {
       e.preventDefault();
-      updateGhostPosition(touch.clientX, touch.clientY);
+      updateGhostPosition(e.clientX, e.clientY);
 
       // Find drop target
-      const elementBelow = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
+      const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
       const dropCell = elementBelow?.closest(
         ".task-cell-container, .task-cell-mobile"
       );
@@ -397,11 +400,7 @@ const initDragAndDrop = () => {
       e.preventDefault();
       e.stopPropagation();
 
-      const touch = e.changedTouches ? e.changedTouches[0] : e;
-      const elementBelow = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
+      const elementBelow = document.elementFromPoint(e.clientX, e.clientY);
       const dropCell = elementBelow?.closest(
         ".task-cell-container, .task-cell-mobile"
       );

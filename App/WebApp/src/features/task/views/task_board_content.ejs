@@ -71,7 +71,7 @@ const isToday = (dayName, daysOfWeek) => {
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
             <tr class="bg-gray-100">
-                <th class="px-4 py-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 shadow-sm" style="min-width: 180px; max-width: 200px;"><%= __("EMPLOYEE_HEADER") %></th>
+                <th class="px-4 py-3 border border-gray-200 text-left text-sm font-medium text-gray-600 uppercase tracking-wider sticky left-0 bg-gray-100 shadow-sm" style="min-width: 180px; max-width: 200px; z-index: 20;"><%= __("EMPLOYEE_HEADER") %></th>
                 <% daysOfWeek.forEach(day => { 
                     const todayColumn = isToday(day, daysOfWeek);
                 %>
@@ -85,7 +85,7 @@ const isToday = (dayName, daysOfWeek) => {
                     const userInitials = user.username.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 %>
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 border border-gray-200 sticky left-0 bg-white shadow-sm" style="min-width: 180px; max-width: 200px;">
+                        <td class="px-4 py-3 border border-gray-200 sticky left-0 bg-white shadow-sm" style="min-width: 180px; max-width: 200px; z-index: 10;">
                             <div class="flex items-center space-x-2">
                                 <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden flex-shrink-0">
                                     <% if (profileMap && profileMap[user._id.toString()] && profileMap[user._id.toString()].profilePictureBase64) { %>
