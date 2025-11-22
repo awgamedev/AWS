@@ -1,0 +1,10 @@
+<% const __actions = (typeof actions !== 'undefined' && actions) ? actions : ''; %>
+<div class="flex items-center justify-between mb-4">
+  <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+    <i class="<%= iconClass %> text-indigo-500"></i>
+    <%= title %>
+  </h3>
+  <div class="flex items-center gap-2">
+    <%- __actions %>
+  </div>
+</div>
