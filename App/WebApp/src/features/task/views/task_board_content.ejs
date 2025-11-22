@@ -78,6 +78,56 @@ const isToday = (dayName, daysOfWeek) => {
 };
 %>
 
+<!-- Unassigned Tasks Strip -->
+<% if (unassignedTasks && unassignedTasks.length > 0) { %>
+<div class="mb-4 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl shadow-md overflow-hidden">
+    <div class="px-4 py-2 bg-amber-100 border-b border-amber-200">
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-amber-900 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2 text-amber-600"></i>
+                <%= __("UNASSIGNED_TASKS") || "Unassigned Tasks" %> (<%= unassignedTasks.length %>)
+            </h3>
+            <span class="text-xs text-amber-700"><%= __("CLICK_TO_ASSIGN") || "Click to view and assign" %></span>
+        </div>
+    </div>
+    <div class="p-3">
+        <div class="flex flex-wrap gap-2">
+            <% unassignedTasks.forEach(task => { 
+                const priorityIcon = getPriorityIcon(task.taskPriority);
+                const startDateStr = task.startDate.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' });
+                const endDateStr = task.endDate ? task.endDate.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }) : '';
+            %>
+                <div 
+                    class="unassigned-task-chip px-3 py-2 bg-white border-2 border-amber-300 rounded-lg cursor-pointer hover:bg-amber-50 hover:border-amber-400 hover:shadow-md transition-all duration-200 flex items-center gap-2 text-sm"
+                    data-task-id="<%= task._id %>"
+                    data-task-name="<%= task.taskName %>"
+                    data-task-desc="<%= task.taskDescription || '' %>"
+                    data-task-status="<%= task.taskStatus %>"
+                    data-task-priority="<%= task.taskPriority %>"
+                    data-start-date="<%= task.startDate.toISOString().substring(0, 10) %>"
+                    data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
+                    title="<%= __("CLICK_TO_VIEW_AND_ASSIGN") || 'Click to view and assign to yourself' %>"
+                >
+                    <div class="flex-shrink-0"><%- priorityIcon %></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-gray-900 truncate"><%= task.taskName %></div>
+                        <div class="text-xs text-gray-600">
+                            <%= startDateStr %><% if (endDateStr) { %> - <%= endDateStr %><% } %>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-200 text-amber-800">
+                            <i class="fas fa-user-plus mr-1"></i>
+                            <%= __("ASSIGN") || 'Assign' %>
+                        </span>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+<% } %>
+
 <!-- Desktop/Tablet View: Table Layout -->
 <div class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-lg">
     <table class="min-w-full divide-y divide-gray-200">

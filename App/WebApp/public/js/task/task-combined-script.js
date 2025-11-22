@@ -1377,8 +1377,16 @@ const showUnassignedTaskModal = (taskData) => {
         assignBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>${
           t.assigning || "Assigning..."
         }`;
-        await assignTaskToCurrentUser(taskData.taskId, taskData);
-        closeModal();
+        const success = await assignTaskToCurrentUser(
+          taskData.taskId,
+          taskData
+        );
+        if (success) {
+          closeModal();
+        } else {
+          assignBtn.disabled = false;
+          assignBtn.innerHTML = originalText;
+        }
       };
     }
   }, 100);
@@ -1393,7 +1401,7 @@ const assignTaskToCurrentUser = async (taskId, taskData) => {
 
     if (!userData.ok || !userData.data || !userData.data._id) {
       alert("Could not determine current user");
-      return;
+      return false;
     }
 
     const currentUserId = userData.data._id;
@@ -1415,18 +1423,24 @@ const assignTaskToCurrentUser = async (taskId, taskData) => {
     });
 
     if (ok) {
+      // Wait a bit to ensure database transaction is committed
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       // Reload the current view
       if (currentView === "board") {
         await loadWeekData(currentWeekOffset);
       } else {
         await loadListView(currentWeekOffset);
       }
+      return true;
     } else {
       alert(data.msg || "Failed to assign task");
+      return false;
     }
   } catch (err) {
     console.error("Error assigning task:", err);
     alert("Network error while assigning task");
+    return false;
   }
 };
 
