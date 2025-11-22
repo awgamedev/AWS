@@ -1,0 +1,13 @@
+<%
+  const spanClass = (typeof rowSpan !== 'undefined' && rowSpan) ? `md:row-span-${rowSpan}` : '';
+  const _iconClass = (typeof iconClass !== 'undefined' && iconClass) ? iconClass : 'fas fa-square';
+  const _title = (typeof title !== 'undefined' && title) ? title : '';
+  const _actions = (typeof actions !== 'undefined' && actions) ? actions : '';
+  const _content = (typeof content !== 'undefined' && content) ? content : '';
+%>
+<div class="<%= spanClass %>">
+  <div class="bg-white rounded-xl shadow border border-gray-200 p-4">
+    <%- include('partials/widget-header', { iconClass: _iconClass, title: _title, actions: _actions }) %>
+    <%- _content %>
+  </div>
+</div>

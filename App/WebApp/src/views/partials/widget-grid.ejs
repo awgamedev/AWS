@@ -1,0 +1,4 @@
+<% const cols = (typeof columns !== 'undefined' && columns) ? parseInt(columns, 10) : 1; %>
+<div class="grid gap-6 md:grid-cols-<%= cols %>">
+  <%- content || '' %>
+</div>
