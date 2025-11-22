@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../user/user.model");
+const UserProfile = require("../user-profile/user-profile.model");
 const { ensureAuthenticated } = require("../../middleware/auth");
 const taskController = require("./task.controller");
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
@@ -47,6 +48,13 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
     const users = await User.find({}).select("_id username").lean();
     const userMap = createUserMap(users);
 
+    // Load user profiles for profile pictures
+    const userProfiles = await UserProfile.find({}).lean();
+    const profileMap = {};
+    userProfiles.forEach((profile) => {
+      profileMap[profile.userId.toString()] = profile;
+    });
+
     // Fetch tasks
     const tasks = await fetchTasksForWeek(startOfWeek, addDays(startOfWeek, 7));
 
@@ -71,6 +79,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
         daysOfWeek,
         weekRange: formatWeekRange(startOfWeek),
         weekOffset,
+        profileMap,
       },
       '<link rel="stylesheet" href="/css/task-board.css">'
     );
@@ -102,6 +111,13 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
     const users = await User.find({}).select("_id username").lean();
     const userMap = createUserMap(users);
 
+    // Load user profiles for profile pictures
+    const userProfiles = await UserProfile.find({}).lean();
+    const profileMap = {};
+    userProfiles.forEach((profile) => {
+      profileMap[profile.userId.toString()] = profile;
+    });
+
     // Fetch tasks
     const tasks = await fetchTasksForWeek(startOfWeek, addDays(startOfWeek, 7));
 
@@ -122,6 +138,7 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
           users,
           tasksByDayAndUser,
           daysOfWeek,
+          profileMap,
           __: req.__,
         },
         (err, html) => {
