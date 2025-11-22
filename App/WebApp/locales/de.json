@@ -284,5 +284,13 @@
 	"CONTEXT_MENU_PRIORITY_HIGH": "Hoch",
 	"CONTEXT_MENU_PRIORITY_MEDIUM": "Mittel",
 	"CONTEXT_MENU_PRIORITY_LOW": "Niedrig",
-	"CONFIRM_DELETE_TASK": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?"
+	"CONFIRM_DELETE_TASK": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?",
+	"UNASSIGNED_TASKS": "Nicht zugewiesene Aufgaben",
+	"CLICK_TO_ASSIGN": "Klicken Sie zum Anzeigen und Zuweisen",
+	"CLICK_TO_VIEW_AND_ASSIGN": "Klicken Sie, um die Aufgabe anzuzeigen und sich selbst zuzuweisen",
+	"UNASSIGNED_TASK_DETAILS": "Details der nicht zugewiesenen Aufgabe",
+	"ASSIGN_TO_ME": "Mir zuweisen",
+	"ASSIGNING": "Wird zugewiesen...",
+	"ASSIGN_TO_YOURSELF_MESSAGE": "Sie können diese Aufgabe sich selbst zuweisen oder diesen Dialog schließen, um sie nicht zugewiesen zu lassen.",
+	"DATE_RANGE": "Zeitraum"
 }

@@ -129,6 +129,27 @@
     color: #9ca3af;
 }
 
+/* Unassigned Tasks Strip */
+.unassigned-task-chip {
+    max-width: 280px;
+    transition: all 0.2s ease;
+}
+
+.unassigned-task-chip:hover {
+    transform: translateY(-2px);
+}
+
+.unassigned-task-chip:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+    .unassigned-task-chip {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
 /* Priority indicators - enhanced visibility on mobile */
 @media (max-width: 768px) {
     .bg-red-100 {

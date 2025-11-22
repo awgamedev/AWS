@@ -303,5 +303,13 @@
 	"CONTEXT_MENU_PRIORITY_HIGH": "CONTEXT_MENU_PRIORITY_HIGH",
 	"CONTEXT_MENU_PRIORITY_MEDIUM": "CONTEXT_MENU_PRIORITY_MEDIUM",
 	"CONTEXT_MENU_PRIORITY_LOW": "CONTEXT_MENU_PRIORITY_LOW",
-	"CONFIRM_DELETE_TASK": "CONFIRM_DELETE_TASK"
+	"CONFIRM_DELETE_TASK": "CONFIRM_DELETE_TASK",
+	"UNASSIGNED_TASKS": "Tâches non attribuées",
+	"CLICK_TO_ASSIGN": "Cliquer pour voir et attribuer",
+	"CLICK_TO_VIEW_AND_ASSIGN": "Cliquer pour voir et s'attribuer",
+	"UNASSIGNED_TASK_DETAILS": "Détails de la tâche non attribuée",
+	"ASSIGN_TO_ME": "M'attribuer",
+	"ASSIGNING": "Attribution...",
+	"ASSIGN_TO_YOURSELF_MESSAGE": "Vous pouvez vous attribuer cette tâche ou fermer cette fenêtre pour la laisser non attribuée.",
+	"DATE_RANGE": "Période"
 }

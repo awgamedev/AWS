@@ -230,6 +230,14 @@ const initTaskHoverHighlight = () => {
 };
 
 const reattachTaskListeners = () => {
+  // Unassigned task chip click handlers
+  document.querySelectorAll(".unassigned-task-chip").forEach((chip) => {
+    chip.addEventListener("click", (e) => {
+      const data = e.currentTarget.dataset;
+      showUnassignedTaskModal(data);
+    });
+  });
+
   // Task item click handlers (for editing existing tasks)
   document.querySelectorAll(".task-item").forEach((item) => {
     let lastTap = 0;
@@ -1153,6 +1161,183 @@ const openCreateModalWithDateRange = (userId, startDayName, endDayName) => {
       setupDateValidation();
     }
   );
+};
+
+// ============================================================================
+// UNASSIGNED TASK MODAL
+// ============================================================================
+
+const showUnassignedTaskModal = (taskData) => {
+  const t = window.taskTranslations || {};
+  const startDateFormatted = formatDate(taskData.startDate);
+  const endDateFormatted = taskData.endDate
+    ? formatDate(taskData.endDate)
+    : "N/A";
+
+  const priorityLabels = {
+    high: t.contextMenuPriorityHigh || "High",
+    medium: t.contextMenuPriorityMedium || "Medium",
+    low: t.contextMenuPriorityLow || "Low",
+  };
+
+  const statusLabels = {
+    pending: "Pending",
+    "in-progress": "In Progress",
+    completed: "Completed",
+  };
+
+  const modalHtml = `
+    <div class="p-6">
+      <div class="mb-6">
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">${
+          taskData.taskName
+        }</h3>
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+            <i class="fas fa-user-times mr-1"></i>
+            ${t.unassigned || "Unassigned"}
+          </span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            ${statusLabels[taskData.taskStatus] || taskData.taskStatus}
+          </span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+            taskData.taskPriority === "high"
+              ? "bg-red-100 text-red-800"
+              : taskData.taskPriority === "medium"
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-green-100 text-green-800"
+          }">
+            <i class="fas ${
+              taskData.taskPriority === "high"
+                ? "fa-exclamation-circle"
+                : taskData.taskPriority === "medium"
+                ? "fa-exclamation-triangle"
+                : "fa-info-circle"
+            } mr-1"></i>
+            ${priorityLabels[taskData.taskPriority] || taskData.taskPriority}
+          </span>
+        </div>
+      </div>
+      
+      <div class="mb-6 space-y-3">
+        <div class="flex items-start gap-3">
+          <i class="fas fa-align-left text-gray-400 mt-1"></i>
+          <div class="flex-1">
+            <div class="text-sm font-medium text-gray-700 mb-1">Description</div>
+            <div class="text-sm text-gray-600">${
+              taskData.taskDesc || "No description provided"
+            }</div>
+          </div>
+        </div>
+        
+        <div class="flex items-start gap-3">
+          <i class="fas fa-calendar text-gray-400 mt-1"></i>
+          <div class="flex-1">
+            <div class="text-sm font-medium text-gray-700 mb-1">${
+              t.dateRange || "Date Range"
+            }</div>
+            <div class="text-sm text-gray-600">${startDateFormatted} - ${endDateFormatted}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-200 pt-4 mt-6">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+            <div class="flex-1 text-sm text-blue-800">
+              ${
+                t.assignToYourselfMessage ||
+                "You can assign this task to yourself or close this dialog to leave it unassigned."
+              }
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 justify-end">
+          <button id="cancel-assign-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition font-medium">
+            ${t.cancel || "Cancel"}
+          </button>
+          <button id="assign-to-me-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition font-medium flex items-center gap-2">
+            <i class="fas fa-user-check"></i>
+            ${t.assignToMe || "Assign to Me"}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  openModal(t.unassignedTaskDetails || "Unassigned Task Details", modalHtml);
+
+  // Use setTimeout to ensure DOM is ready
+  setTimeout(() => {
+    const cancelBtn = byId("cancel-assign-btn");
+    const assignBtn = byId("assign-to-me-btn");
+
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        closeModal();
+      };
+    }
+
+    if (assignBtn) {
+      assignBtn.onclick = async () => {
+        assignBtn.disabled = true;
+        const originalText = assignBtn.innerHTML;
+        assignBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>${
+          t.assigning || "Assigning..."
+        }`;
+        await assignTaskToCurrentUser(taskData.taskId, taskData);
+        closeModal();
+      };
+    }
+  }, 100);
+};
+
+const assignTaskToCurrentUser = async (taskId, taskData) => {
+  try {
+    // Get current user ID from the page (we can get it from any user cell or we'll fetch it)
+    // For now, we'll get it from the server by making the update with null userId (server will set current user)
+    const response = await fetch("/api/user/current");
+    const userData = await response.json();
+
+    if (!userData.ok || !userData.data || !userData.data._id) {
+      alert("Could not determine current user");
+      return;
+    }
+
+    const currentUserId = userData.data._id;
+
+    const payload = {
+      userId: currentUserId,
+      taskName: taskData.taskName,
+      taskDescription: taskData.taskDesc || "",
+      taskPriority: taskData.taskPriority,
+      taskStatus: taskData.taskStatus,
+      startDate: taskData.startDate,
+      endDate: taskData.endDate || null,
+    };
+
+    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      // Reload the current view
+      if (currentView === "board") {
+        await loadWeekData(currentWeekOffset);
+      } else {
+        await loadListView(currentWeekOffset);
+      }
+    } else {
+      alert(data.msg || "Failed to assign task");
+    }
+  } catch (err) {
+    console.error("Error assigning task:", err);
+    alert("Network error while assigning task");
+  }
 };
 
 // ============================================================================

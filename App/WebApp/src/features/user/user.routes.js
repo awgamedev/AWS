@@ -181,4 +181,17 @@ router.post("/user/details/:id", ensureAuthenticated, (req, res) => {
   userController.updateUserDetails(req, res);
 });
 
+// 8. Get current user info (API endpoint)
+router.get("/api/user/current", ensureAuthenticated, (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ ok: false, msg: "Not authenticated" });
+    }
+    res.json({ ok: true, data: req.user });
+  } catch (err) {
+    req.logger.error("Error fetching current user:", err);
+    res.status(500).json({ ok: false, msg: "Server error" });
+  }
+});
+
 module.exports = router;

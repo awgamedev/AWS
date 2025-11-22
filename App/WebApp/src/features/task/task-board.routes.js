@@ -58,9 +58,13 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
     // Fetch tasks
     const tasks = await fetchTasksForWeek(startOfWeek, addDays(startOfWeek, 7));
 
-    // Group tasks
+    // Separate unassigned tasks
+    const unassignedTasks = tasks.filter((task) => !task.userId);
+    const assignedTasks = tasks.filter((task) => task.userId);
+
+    // Group assigned tasks
     const tasksByDayAndUser = groupTasksByDayAndUser(
-      tasks,
+      assignedTasks,
       userMap,
       startOfWeek,
       endOfDisplayedWeek,
@@ -76,6 +80,7 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       {
         users,
         tasksByDayAndUser,
+        unassignedTasks,
         daysOfWeek,
         weekRange: formatWeekRange(startOfWeek),
         weekOffset,
@@ -123,9 +128,13 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
     // Fetch tasks
     const tasks = await fetchTasksForWeek(startOfWeek, addDays(startOfWeek, 7));
 
-    // Group tasks
+    // Separate unassigned tasks
+    const unassignedTasks = tasks.filter((task) => !task.userId);
+    const assignedTasks = tasks.filter((task) => task.userId);
+
+    // Group assigned tasks
     const tasksByDayAndUser = groupTasksByDayAndUser(
-      tasks,
+      assignedTasks,
       userMap,
       startOfWeek,
       endOfDisplayedWeek,
@@ -139,6 +148,7 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
         {
           users,
           tasksByDayAndUser,
+          unassignedTasks,
           daysOfWeek,
           profileMap,
           startOfWeek,
