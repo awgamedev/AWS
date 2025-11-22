@@ -7,7 +7,7 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
     <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-6">
         <!-- Template Name -->
         <div>
-            <label for="templateName" class="<%= labelClass %>"><%= __("TEMPLATE_NAME_LABEL") || "Template Name" %> *</label>
+            <label for="templateName" class="<%= labelClass %>"><%= __("TEMPLATE_NAME_LABEL") %> *</label>
             <input type="text" id="templateName" name="templateName" required autocomplete="off" maxlength="120" placeholder="" class="<%= fieldClass %>" autofocus>
         </div>
 
@@ -21,9 +21,9 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
         <div>
             <label for="taskPriority" class="<%= labelClass %>"><%= __("PRIORITY") %> *</label>
             <select id="taskPriority" name="taskPriority" class="<%= fieldClass %>">
-                <option value="low"><%= __("PRIORITY_LOW") || "Low" %></option>
-                <option value="medium" selected><%= __("PRIORITY_MEDIUM") || "Medium" %></option>
-                <option value="high"><%= __("PRIORITY_HIGH") || "High" %></option>
+                <option value="low"><%= __("PRIORITY_LOW") %></option>
+                <option value="medium" selected><%= __("PRIORITY_MEDIUM") %></option>
+                <option value="high"><%= __("PRIORITY_HIGH") %></option>
             </select>
         </div>
 

@@ -3,16 +3,27 @@
 // ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ensure modal system exists
   if (typeof initModal === "function") initModal();
   initTemplateManagement();
 });
 
+// Expose form accessors globally so other handlers can use them
+const getCreateForm = () => byId("create-template-form");
+const getEditForm = () => byId("edit-template-form");
+
+// Submit handlers need global scope (edit handler invoked outside init function)
+function createSubmitHandler(e) {
+  e.preventDefault();
+  handleCreateTemplate(getCreateForm());
+}
+
+function editSubmitHandler(e) {
+  e.preventDefault();
+  handleUpdateTemplate(getEditForm());
+}
+
 function initTemplateManagement() {
   const btnCreateTemplate = byId("btn-create-template");
-  // Forms appear only after modal content injected
-  const getCreateForm = () => byId("create-template-form");
-  const getEditForm = () => byId("edit-template-form");
 
   // Create template button
   if (btnCreateTemplate) {
@@ -33,19 +44,6 @@ function initTemplateManagement() {
       }, 50);
     });
   }
-
-  // Create template form submission
-  // submit handler separated to re-bind after dynamic injection
-  const createSubmitHandler = async (e) => {
-    e.preventDefault();
-    await handleCreateTemplate(getCreateForm());
-  };
-
-  // Edit template form submission
-  const editSubmitHandler = async (e) => {
-    e.preventDefault();
-    await handleUpdateTemplate(getEditForm());
-  };
 
   // Edit and delete buttons
   document.addEventListener("click", (e) => {
@@ -78,6 +76,7 @@ async function handleCreateTemplate(form) {
 
     const response = await api("/api/task-templates", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
@@ -159,6 +158,7 @@ async function handleUpdateTemplate(form) {
 
     const response = await api(`/api/task-templates/${templateId}`, {
       method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
