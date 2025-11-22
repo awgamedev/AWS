@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(form);
     const data = {
       pauseInMinutesPerDay: formData.get("pauseInMinutesPerDay") || null,
-      vacationDaysPerYear: formData.get("vacationDaysPerYear"),
     };
 
     try {

@@ -39,6 +39,12 @@ class UserProfileController {
         vacationDaysTotal - vacationDaysUsed
       );
 
+      // Fetch user's own reports for embedding in profile page
+      const items = await reportRepository.model
+        .find({ userId })
+        .sort({ startDate: 1 })
+        .exec();
+
       const title = req.__("USER_PROFILE_TITLE") || "User Profile";
 
       renderView(req, res, "user-profile", title, {
@@ -47,6 +53,7 @@ class UserProfileController {
         vacationDaysUsed,
         sickDaysUsed,
         vacationDaysRemaining,
+        items: items.map((i) => i.toObject()),
       });
     } catch (error) {
       req.logger.error("Error loading user profile:", error);
