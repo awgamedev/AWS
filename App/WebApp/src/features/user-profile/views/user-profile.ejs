@@ -138,9 +138,9 @@
       </div>
     `;
 
-    const vacationWidget = include('partials/widget', { iconClass: 'fas fa-umbrella-beach', title: __('VACATION_DAYS'), rowSpan: 2, content: vacationContent });
     const accountWidget = include('partials/widget', { iconClass: 'fas fa-user-circle', title: __('ACCOUNT_INFORMATION'), content: accountContent });
     const workWidget = include('partials/widget', { iconClass: 'fas fa-briefcase', title: __('WORK_SETTINGS') || 'Work Settings', content: workContent });
+    const vacationWidget = include('partials/widget', { iconClass: 'fas fa-umbrella-beach', title: __('VACATION_DAYS'), colSpan: 2, content: vacationContent });
 
     const gridContent = accountWidget + workWidget + vacationWidget;
   %>
