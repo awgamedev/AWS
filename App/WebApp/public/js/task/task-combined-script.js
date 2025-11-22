@@ -257,6 +257,13 @@ const reattachTaskListeners = () => {
         }
       );
     });
+
+    // Right-click context menu handler
+    item.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      const data = e.currentTarget.dataset;
+      showTaskContextMenu(e.clientX, e.clientY, e.currentTarget, data);
+    });
   });
 
   // Empty cell click handlers (for creating new tasks)
@@ -277,6 +284,213 @@ const reattachTaskListeners = () => {
       openCreateModalWithPreselect(userId, dayName);
     });
   });
+};
+
+// ============================================================================
+// CONTEXT MENU
+// ============================================================================
+
+const showTaskContextMenu = (x, y, taskElement, taskData) => {
+  // Remove existing context menu if any
+  hideContextMenu();
+
+  // Create context menu
+  const menu = document.createElement("div");
+  menu.id = "task-context-menu";
+  menu.className =
+    "fixed bg-white rounded-lg shadow-2xl border border-gray-200 py-2 z-[10000]";
+  menu.style.left = `${x}px`;
+  menu.style.top = `${y}px`;
+  menu.style.minWidth = "200px";
+
+  const priorities = [
+    {
+      value: "high",
+      label: "High",
+      icon: "fa-exclamation-circle",
+      color: "text-red-600",
+    },
+    {
+      value: "medium",
+      label: "Medium",
+      icon: "fa-exclamation-triangle",
+      color: "text-yellow-600",
+    },
+    {
+      value: "low",
+      label: "Low",
+      icon: "fa-info-circle",
+      color: "text-green-600",
+    },
+  ];
+
+  const currentPriority = taskData.taskPriority;
+
+  // Build menu HTML
+  let menuHTML = `
+    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">
+      ${taskData.taskName}
+    </div>
+    
+    <!-- Priority submenu -->
+    <div class="px-1">
+      <div class="px-3 py-2 text-xs font-semibold text-gray-500 mt-1">Change Priority</div>
+  `;
+
+  priorities.forEach((priority) => {
+    const isActive = currentPriority === priority.value;
+    menuHTML += `
+      <button 
+        class="context-menu-item w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2 transition ${
+          isActive ? "bg-gray-50" : ""
+        }"
+        data-action="change-priority"
+        data-priority="${priority.value}">
+        <i class="fas ${priority.icon} ${priority.color}"></i>
+        <span>${priority.label}</span>
+        ${
+          isActive ? '<i class="fas fa-check ml-auto text-indigo-600"></i>' : ""
+        }
+      </button>
+    `;
+  });
+
+  menuHTML += `
+    </div>
+    
+    <div class="border-t border-gray-200 my-1"></div>
+    
+    <!-- Delete option -->
+    <button 
+      class="context-menu-item w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-600 rounded flex items-center gap-2 transition"
+      data-action="delete">
+      <i class="fas fa-trash"></i>
+      <span>Delete Task</span>
+    </button>
+  `;
+
+  menu.innerHTML = menuHTML;
+  document.body.appendChild(menu);
+
+  // Store state
+  contextMenuState.menu = menu;
+  contextMenuState.currentTaskElement = taskElement;
+  contextMenuState.currentTaskData = taskData;
+
+  // Adjust position if menu goes off screen
+  const rect = menu.getBoundingClientRect();
+  if (rect.right > window.innerWidth) {
+    menu.style.left = `${x - rect.width}px`;
+  }
+  if (rect.bottom > window.innerHeight) {
+    menu.style.top = `${y - rect.height}px`;
+  }
+
+  // Add click handlers to menu items
+  menu.querySelectorAll(".context-menu-item").forEach((item) => {
+    item.addEventListener("click", async (e) => {
+      const action = e.currentTarget.dataset.action;
+
+      if (action === "delete") {
+        await handleContextMenuDelete();
+      } else if (action === "change-priority") {
+        const newPriority = e.currentTarget.dataset.priority;
+        await handleContextMenuChangePriority(newPriority);
+      }
+
+      hideContextMenu();
+    });
+  });
+
+  // Close menu when clicking outside
+  setTimeout(() => {
+    document.addEventListener("click", hideContextMenu);
+    document.addEventListener("contextmenu", hideContextMenu);
+  }, 0);
+};
+
+const hideContextMenu = () => {
+  if (contextMenuState.menu) {
+    contextMenuState.menu.remove();
+    document.removeEventListener("click", hideContextMenu);
+    document.removeEventListener("contextmenu", hideContextMenu);
+  }
+  contextMenuState = {
+    menu: null,
+    currentTaskElement: null,
+    currentTaskData: null,
+  };
+};
+
+const handleContextMenuDelete = async () => {
+  const taskData = contextMenuState.currentTaskData;
+  if (!taskData || !taskData.taskId) return;
+
+  const t = window.taskTranslations || {};
+  const confirmMessage =
+    t.confirmDelete ||
+    "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?";
+
+  if (!confirm(confirmMessage)) {
+    return;
+  }
+
+  try {
+    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+      method: "DELETE",
+    });
+
+    if (ok) {
+      // Reload the current view
+      if (currentView === "board") {
+        await loadWeekData(currentWeekOffset);
+      } else {
+        await loadListView(currentWeekOffset);
+      }
+    } else {
+      alert(data.msg || "Failed to delete task");
+    }
+  } catch (err) {
+    console.error("Error deleting task:", err);
+    alert("Network error while deleting task");
+  }
+};
+
+const handleContextMenuChangePriority = async (newPriority) => {
+  const taskData = contextMenuState.currentTaskData;
+  if (!taskData || !taskData.taskId) return;
+
+  try {
+    const payload = {
+      userId: taskData.userId || null,
+      taskName: taskData.taskName,
+      taskDescription: taskData.taskDesc || "",
+      taskPriority: newPriority,
+      taskStatus: taskData.taskStatus,
+      startDate: taskData.startDate,
+      endDate: taskData.endDate || null,
+    };
+
+    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      // Reload the current view
+      if (currentView === "board") {
+        await loadWeekData(currentWeekOffset);
+      } else {
+        await loadListView(currentWeekOffset);
+      }
+    } else {
+      alert(data.msg || "Failed to change priority");
+    }
+  } catch (err) {
+    console.error("Error changing priority:", err);
+    alert("Network error while changing priority");
+  }
 };
 
 // ============================================================================
@@ -329,6 +543,13 @@ let cellDragState = {
   startRow: null,
   dragStartX: 0,
   dragStartY: 0,
+};
+
+// Context menu state
+let contextMenuState = {
+  menu: null,
+  currentTaskElement: null,
+  currentTaskData: null,
 };
 
 const isMobileDevice = () => {
