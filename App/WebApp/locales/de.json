@@ -247,5 +247,6 @@
 	"HOURS_BY_REASON": "Stunden nach Grund:",
 	"DAILY_RECORDS_IN_MONTH": "Tägliche Aufzeichnungen im %s",
 	"NO_STAMPINGS_IN_SELECTED_MONTH": "Keine Stempelungen im gewählten Monat gefunden.",
-	"TOTAL_SHORT": "Gesamt"
+	"TOTAL_SHORT": "Gesamt",
+	"ALL_TASKS_ASSIGNED": "ALL_TASKS_ASSIGNED"
 }

@@ -168,19 +168,53 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
 });
 
 /**
- * API Route: Get list view data for all tasks (returns rendered HTML)
+ * API Route: Get list view data for tasks filtered by week (returns rendered HTML)
  */
 router.get("/api/task-list/view", ensureAuthenticated, async (req, res) => {
-  req.logger.info("API: task-list/view called");
+  req.logger.info(
+    `API: task-list/view called with offset: ${req.query.offset}`
+  );
 
   try {
     const Task = require("./task.model");
 
+    // Get week offset from query parameter
+    const weekOffset = parseInt(req.query.offset) || 0;
+    const baseDate = new Date();
+    baseDate.setDate(baseDate.getDate() + weekOffset * 7);
+
+    const startOfWeek = getStartOfWeek(baseDate);
+    const endOfWeek = addDays(startOfWeek, 7);
+
     // Define priority order for sorting
     const priorityOrder = { high: 1, medium: 2, low: 3 };
 
-    // Fetch all tasks
-    const allTasks = await Task.find({}).lean().exec();
+    // Fetch tasks for the specified week
+    const allTasks = await Task.find({
+      $or: [
+        // Tasks that start within the week
+        {
+          startDate: {
+            $gte: startOfWeek,
+            $lt: endOfWeek,
+          },
+        },
+        // Tasks that end within the week
+        {
+          endDate: {
+            $gte: startOfWeek,
+            $lt: endOfWeek,
+          },
+        },
+        // Tasks that span across the entire week
+        {
+          startDate: { $lt: startOfWeek },
+          $or: [{ endDate: { $gte: endOfWeek } }, { endDate: null }],
+        },
+      ],
+    })
+      .lean()
+      .exec();
 
     // Sort tasks: unassigned first, then by userId, then by priority
     allTasks.sort((a, b) => {
@@ -237,6 +271,8 @@ router.get("/api/task-list/view", ensureAuthenticated, async (req, res) => {
     res.json({
       ok: true,
       html,
+      weekRange: formatWeekRange(startOfWeek),
+      weekOffset,
     });
   } catch (error) {
     req.logger.error("Error fetching task list view data:", error);

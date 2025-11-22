@@ -67,9 +67,6 @@ const updateWeekDisplay = () => {
 
 const toggleView = async () => {
   const switchBtn = byId("switch-to-list-view");
-  const prevWeekBtn = byId("prev-week");
-  const nextWeekBtn = byId("next-week");
-  const todayWeekBtn = byId("today-week");
 
   if (currentView === "board") {
     await loadListView();
@@ -77,20 +74,12 @@ const toggleView = async () => {
     if (switchBtn && window.taskTranslations?.viewSwitch) {
       switchBtn.textContent = window.taskTranslations.viewSwitch.board;
     }
-    // Hide week navigation buttons in list view
-    if (prevWeekBtn) prevWeekBtn.classList.add("hidden");
-    if (nextWeekBtn) nextWeekBtn.classList.add("hidden");
-    if (todayWeekBtn) todayWeekBtn.classList.add("hidden");
   } else {
     await loadBoardView();
     currentView = "board";
     if (switchBtn && window.taskTranslations?.viewSwitch) {
       switchBtn.textContent = window.taskTranslations.viewSwitch.list;
     }
-    // Show week navigation buttons in board view
-    if (prevWeekBtn) prevWeekBtn.classList.remove("hidden");
-    if (nextWeekBtn) nextWeekBtn.classList.remove("hidden");
-    if (todayWeekBtn) todayWeekBtn.classList.remove("hidden");
   }
 };
 
@@ -159,17 +148,32 @@ const updateTaskBoard = (html, weekRange) => {
 // LIST VIEW
 // ============================================================================
 
-const loadListView = async () => {
+const loadListView = async (offset = currentWeekOffset) => {
   showLoading();
+  currentWeekOffset = offset;
   const contentContainer = byId("task-content-container");
 
   try {
-    const response = await api("/api/task-list/view");
+    const response = await api(`/api/task-list/view?offset=${offset}`);
     if (response && response.ok && response.data) {
-      const { html } = response.data;
+      const { html, weekRange, weekOffset } = response.data;
       if (contentContainer) {
         contentContainer.innerHTML = html;
       }
+      // Update week range display
+      const weekRangeEl = byId("current-week-range");
+      if (weekRangeEl) weekRangeEl.textContent = weekRange;
+      updateWeekDisplay();
+
+      // Update URL without reload
+      const url = new URL(window.location);
+      if (offset === 0) {
+        url.searchParams.delete("week");
+      } else {
+        url.searchParams.set("week", offset);
+      }
+      window.history.pushState({}, "", url);
+
       // Reattach event listeners
       reattachTaskListeners();
     } else {
@@ -414,6 +418,8 @@ document.addEventListener("DOMContentLoaded", () => {
     prevWeekBtn.addEventListener("click", () => {
       if (currentView === "board") {
         loadWeekData(currentWeekOffset - 1);
+      } else {
+        loadListView(currentWeekOffset - 1);
       }
     });
   }
@@ -422,6 +428,8 @@ document.addEventListener("DOMContentLoaded", () => {
     nextWeekBtn.addEventListener("click", () => {
       if (currentView === "board") {
         loadWeekData(currentWeekOffset + 1);
+      } else {
+        loadListView(currentWeekOffset + 1);
       }
     });
   }
@@ -430,15 +438,16 @@ document.addEventListener("DOMContentLoaded", () => {
     todayWeekBtn.addEventListener("click", () => {
       if (currentView === "board") {
         loadWeekData(0);
+      } else {
+        loadListView(0);
       }
     });
   }
 
-  // Keyboard shortcuts for week navigation (board view only)
+  // Keyboard shortcuts for week navigation
   document.addEventListener("keydown", (e) => {
-    // Only trigger if no modal is open and not in an input and in board view
+    // Only trigger if no modal is open and not in an input
     if (
-      currentView !== "board" ||
       document.querySelector(".modal-overlay") ||
       e.target.tagName === "INPUT" ||
       e.target.tagName === "TEXTAREA"
@@ -449,17 +458,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // Left arrow = previous week
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      loadWeekData(currentWeekOffset - 1);
+      if (currentView === "board") {
+        loadWeekData(currentWeekOffset - 1);
+      } else {
+        loadListView(currentWeekOffset - 1);
+      }
     }
     // Right arrow = next week
     else if (e.key === "ArrowRight") {
       e.preventDefault();
-      loadWeekData(currentWeekOffset + 1);
+      if (currentView === "board") {
+        loadWeekData(currentWeekOffset + 1);
+      } else {
+        loadListView(currentWeekOffset + 1);
+      }
     }
     // T key = today's week
     else if (e.key === "t" || e.key === "T") {
       e.preventDefault();
-      loadWeekData(0);
+      if (currentView === "board") {
+        loadWeekData(0);
+      } else {
+        loadListView(0);
+      }
     }
   });
 
