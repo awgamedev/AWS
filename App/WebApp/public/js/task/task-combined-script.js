@@ -498,25 +498,37 @@ const showMoveConfirmation = (targetCell) => {
     ?.querySelector("h3.font-bold");
 
   const oldUserName =
-    oldUserCell?.textContent || oldUserMobile?.textContent || "Unassigned";
+    oldUserCell?.textContent ||
+    oldUserMobile?.textContent ||
+    window.taskTranslations?.unassigned ||
+    "Unassigned";
   const newUserName =
-    newUserCell?.textContent || newUserMobile?.textContent || "Unassigned";
+    newUserCell?.textContent ||
+    newUserMobile?.textContent ||
+    window.taskTranslations?.unassigned ||
+    "Unassigned";
 
   // Build confirmation message
+  const t = window.taskTranslations || {};
   const changes = [];
+
   if (taskData.userId !== newUserId) {
-    changes.push(`<strong>User:</strong> ${oldUserName} → ${newUserName}`);
+    changes.push(
+      `<strong>${
+        t.dragUser || "User"
+      }:</strong> ${oldUserName} → ${newUserName}`
+    );
   }
   if (taskData.startDate !== newStartDate) {
     changes.push(
-      `<strong>Start Date:</strong> ${formatDate(
+      `<strong>${t.dragStartDate || "Start Date"}:</strong> ${formatDate(
         taskData.startDate
       )} → ${formatDate(newStartDate)}`
     );
   }
   if (newEndDate && taskData.endDate !== newEndDate) {
     changes.push(
-      `<strong>End Date:</strong> ${formatDate(
+      `<strong>${t.dragEndDate || "End Date"}:</strong> ${formatDate(
         taskData.endDate
       )} → ${formatDate(newEndDate)}`
     );
@@ -526,23 +538,27 @@ const showMoveConfirmation = (targetCell) => {
 
   const confirmHtml = `
     <div class="p-4">
-      <h3 class="text-lg font-semibold mb-4">Confirm Task Move</h3>
-      <p class="mb-2"><strong>Task:</strong> ${taskData.taskName}</p>
+      <h3 class="text-lg font-semibold mb-4">${
+        t.dragConfirmTitle || "Confirm Task Move"
+      }</h3>
+      <p class="mb-2"><strong>${t.dragTask || "Task"}:</strong> ${
+    taskData.taskName
+  }</p>
       <div class="mb-4 space-y-1">
         ${changes.join("<br>")}
       </div>
       <div class="flex gap-3 justify-end">
         <button id="cancel-move-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition">
-          Cancel
+          ${t.cancel || "Cancel"}
         </button>
         <button id="confirm-move-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition">
-          Confirm Move
+          ${t.dragConfirmButton || "Confirm Move"}
         </button>
       </div>
     </div>
   `;
 
-  openModal("Confirm Task Move", confirmHtml);
+  openModal(t.dragConfirmTitle || "Confirm Task Move", confirmHtml);
 
   // Use setTimeout to ensure DOM is ready
   setTimeout(() => {
@@ -558,7 +574,8 @@ const showMoveConfirmation = (targetCell) => {
     if (confirmBtn) {
       confirmBtn.onclick = async () => {
         confirmBtn.disabled = true;
-        confirmBtn.textContent = "Moving...";
+        const t = window.taskTranslations || {};
+        confirmBtn.textContent = t.dragMoving || "Moving...";
         await applyTaskMove(
           taskData.taskId,
           newUserId,

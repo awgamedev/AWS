@@ -250,5 +250,12 @@
 	"TOTAL_SHORT": "Gesamt",
 	"ALL_TASKS_ASSIGNED": "Alle Aufgaben zugewiesen",
 	"CLICK_TO_ADD_TASK": "Klicke hier, um eine Aufgabe hinzuzufügen",
-	"ADD_TASK": "Aufgabe hinzufügen"
+	"ADD_TASK": "Aufgabe hinzufügen",
+	"DRAG_CONFIRM_TITLE": "Aufgabenverschiebung bestätigen",
+	"DRAG_TASK": "Aufgabe",
+	"DRAG_USER": "Benutzer",
+	"DRAG_START_DATE": "Startdatum",
+	"DRAG_END_DATE": "Enddatum",
+	"DRAG_CONFIRM_BUTTON": "Verschiebung bestätigen",
+	"DRAG_MOVING": "Wird verschoben..."
 }
