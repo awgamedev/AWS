@@ -248,6 +248,7 @@
 	"DAILY_RECORDS_IN_MONTH": "Tägliche Aufzeichnungen im %s",
 	"NO_STAMPINGS_IN_SELECTED_MONTH": "Keine Stempelungen im gewählten Monat gefunden.",
 	"TOTAL_SHORT": "Gesamt",
-	"ALL_TASKS_ASSIGNED": "ALL_TASKS_ASSIGNED",
-	"PRIORITY_LABEL": "PRIORITY_LABEL"
+	"ALL_TASKS_ASSIGNED": "Alle Aufgaben zugewiesen",
+	"CLICK_TO_ADD_TASK": "Klicke hier, um eine Aufgabe hinzuzufügen",
+	"ADD_TASK": "Aufgabe hinzufügen"
 }

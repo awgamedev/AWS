@@ -52,9 +52,26 @@ const getStatusLabel = (status) => {
                             const userId = user._id.toString();
                             const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
                         %>
-                            <td class="px-3 py-2 border border-gray-200 align-top" style="min-width: 200px;">
+                            <td class="px-3 py-2 border border-gray-200 align-top task-cell-container <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>" 
+                                style="min-width: 200px;"
+                                data-user-id="<%= userId %>"
+                                data-day-name="<%= dayName %>">
                                 <div class="space-y-2">
-                                    <% dayTasks.forEach(task => { const priorityIcon = getPriorityIcon(task.taskPriority); %>
+                                    <% if (dayTasks.length > 0) { %>
+                                        <!-- Add Task Button (visible when tasks exist) -->
+                                        <button 
+                                            class="add-task-btn w-full flex items-center justify-center gap-1 px-2 py-1.5 mb-2 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition border border-indigo-200"
+                                            data-user-id="<%= userId %>"
+                                            data-day-name="<%= dayName %>"
+                                            title="<%= __("ADD_TASK") || 'Add Task' %>">
+                                            <i class="fas fa-plus text-xs"></i>
+                                            <span><%= __("ADD_TASK") || 'Add Task' %></span>
+                                        </button>
+                                    <% } %>
+                                    
+                                    <% dayTasks.forEach(task => { 
+                                        const priorityIcon = getPriorityIcon(task.taskPriority); 
+                                    %>
                                         <div 
                                             class="task-item px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100 shadow-sm" 
                                             data-task-id="<%= task._id %>"
@@ -76,7 +93,15 @@ const getStatusLabel = (status) => {
                                                 <div class="flex-shrink-0 mt-0.5"><%- priorityIcon %></div>
                                             </div>
                                         </div>
-                                    <% }) %>
+                                    <% }); %>
+                                    
+                                    <% if (dayTasks.length === 0) { %>
+                                        <!-- Empty State (clickable) -->
+                                        <div class="text-center py-4 text-gray-400 text-xs pointer-events-none">
+                                            <i class="fas fa-plus-circle text-lg mb-1"></i>
+                                            <div><%= __("CLICK_TO_ADD_TASK") || 'Click to add task' %></div>
+                                        </div>
+                                    <% } %>
                                 </div>
                             </td>
                         <% }) %>
@@ -119,15 +144,29 @@ const getStatusLabel = (status) => {
                         const userId = user._id.toString();
                         const dayTasks = tasksByDayAndUser[userId] ? tasksByDayAndUser[userId][dayName] || [] : [];
                     %>
-                        <div class="p-3">
+                        <div class="p-3 task-cell-mobile <%= dayTasks.length === 0 ? 'empty-task-cell cursor-pointer hover:bg-indigo-50 transition' : '' %>"
+                             data-user-id="<%= userId %>"
+                             data-day-name="<%= dayName %>">
                             <div class="flex items-center justify-between mb-2">
                                 <h4 class="font-semibold text-gray-700 text-sm"><%= dayName %></h4>
                                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full"><%= dayTasks.length %> <%= dayTasks.length === 1 ? __("TASK") : __("TASKS") %></span>
                             </div>
                             
                             <% if (dayTasks.length > 0) { %>
+                                <!-- Add Task Button (mobile) -->
+                                <button 
+                                    class="add-task-btn w-full flex items-center justify-center gap-1 px-2 py-1.5 mb-2 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition border border-indigo-200"
+                                    data-user-id="<%= userId %>"
+                                    data-day-name="<%= dayName %>"
+                                    title="<%= __("ADD_TASK") || 'Add Task' %>">
+                                    <i class="fas fa-plus text-xs"></i>
+                                    <span><%= __("ADD_TASK") || 'Add Task' %></span>
+                                </button>
+                                
                                 <div class="space-y-2">
-                                    <% dayTasks.forEach(task => { const priorityIcon = getPriorityIcon(task.taskPriority); %>
+                                    <% dayTasks.forEach(task => { 
+                                        const priorityIcon = getPriorityIcon(task.taskPriority); 
+                                    %>
                                         <div 
                                             class="task-item px-3 py-2 rounded-lg text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100" 
                                             data-task-id="<%= task._id %>"
@@ -152,10 +191,14 @@ const getStatusLabel = (status) => {
                                                 <div class="flex-shrink-0 mt-0.5"><%- priorityIcon %></div>
                                             </div>
                                         </div>
-                                    <% }) %>
+                                    <% }); %>
                                 </div>
                             <% } else { %>
-                                <p class="text-xs text-gray-400 italic"><%= __("NO_TASKS") %></p>
+                                <!-- Empty State (clickable mobile) -->
+                                <div class="text-center py-4 text-gray-400 text-xs pointer-events-none">
+                                    <i class="fas fa-plus-circle text-lg mb-1"></i>
+                                    <div><%= __("CLICK_TO_ADD_TASK") || 'Click to add task' %></div>
+                                </div>
                             <% } %>
                         </div>
                     <% }) %>

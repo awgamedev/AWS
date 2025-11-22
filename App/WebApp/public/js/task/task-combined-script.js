@@ -197,6 +197,7 @@ const loadListView = async (offset = currentWeekOffset) => {
 // ============================================================================
 
 const reattachTaskListeners = () => {
+  // Task item click handlers (for editing existing tasks)
   document.querySelectorAll(".task-item").forEach((item) => {
     let lastTap = 0;
 
@@ -233,6 +234,25 @@ const reattachTaskListeners = () => {
       e.currentTarget.style.opacity = "";
     });
   });
+
+  // Empty cell click handlers (for creating new tasks)
+  document.querySelectorAll(".empty-task-cell").forEach((cell) => {
+    cell.addEventListener("click", (e) => {
+      const userId = e.currentTarget.dataset.userId;
+      const dayName = e.currentTarget.dataset.dayName;
+      openCreateModalWithPreselect(userId, dayName);
+    });
+  });
+
+  // Add task button handlers (for creating new tasks in populated cells)
+  document.querySelectorAll(".add-task-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent cell click
+      const userId = e.currentTarget.dataset.userId;
+      const dayName = e.currentTarget.dataset.dayName;
+      openCreateModalWithPreselect(userId, dayName);
+    });
+  });
 };
 
 // ============================================================================
@@ -265,6 +285,77 @@ const setupDateValidation = () => {
 // ============================================================================
 // MODAL HANDLERS
 // ============================================================================
+
+const openCreateModalWithPreselect = (userId, dayName) => {
+  openModalFromApi(
+    window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
+    "/api/modal/task-create",
+    () => {
+      // Preselect user
+      const userSelect = byId("userId");
+      if (userSelect && userId) {
+        userSelect.value = userId;
+      }
+
+      // Calculate date from day name and current week offset
+      const dateStr = getDateFromDayName(dayName, currentWeekOffset);
+      const startDateInput = byId("startDate");
+      if (startDateInput && dateStr) {
+        startDateInput.value = dateStr;
+      }
+
+      setupDateValidation();
+    }
+  );
+};
+
+const getDateFromDayName = (dayName, weekOffset) => {
+  // Get the start of the current week (Monday)
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust to Monday
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diff + weekOffset * 7);
+  monday.setHours(0, 0, 0, 0);
+
+  // Map day names to offsets from Monday (0-6)
+  const dayMap = {
+    Montag: 0,
+    Monday: 0,
+    Lundi: 0,
+    Dienstag: 1,
+    Tuesday: 1,
+    Mardi: 1,
+    Mittwoch: 2,
+    Wednesday: 2,
+    Mercredi: 2,
+    Donnerstag: 3,
+    Thursday: 3,
+    Jeudi: 3,
+    Freitag: 4,
+    Friday: 4,
+    Vendredi: 4,
+    Samstag: 5,
+    Saturday: 5,
+    Samedi: 5,
+    Sonntag: 6,
+    Sunday: 6,
+    Dimanche: 6,
+  };
+
+  // Find the day offset
+  const dayOffset = dayMap[dayName] !== undefined ? dayMap[dayName] : 0;
+
+  // Calculate the target date
+  const targetDate = new Date(monday);
+  targetDate.setDate(monday.getDate() + dayOffset);
+
+  // Format as YYYY-MM-DD
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+  const day = String(targetDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const fillEditForm = (data) => {
   const fieldMap = {
