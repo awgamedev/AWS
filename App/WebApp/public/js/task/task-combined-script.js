@@ -471,13 +471,29 @@ const showMoveConfirmation = (targetCell) => {
     ? Math.ceil((oldEndDate - oldStartDate) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const newStartDate = getDateFromDayName(newDayName, currentWeekOffset);
-  const newStartDateObj = new Date(newStartDate);
+  // Get the day that was actually grabbed (the cell where drag started)
+  const grabbedDayName = dragState.startCell?.dataset.dayName;
+  const grabbedDate = getDateFromDayName(grabbedDayName, currentWeekOffset);
+  const grabbedDateObj = new Date(grabbedDate);
+
+  // Calculate which day of the task was grabbed (0 = first day, 1 = second day, etc.)
+  const dayOffset = Math.floor(
+    (grabbedDateObj - oldStartDate) / (1000 * 60 * 60 * 24)
+  );
+
+  // The target date is where we want the grabbed day to be
+  const targetDate = getDateFromDayName(newDayName, currentWeekOffset);
+  const targetDateObj = new Date(targetDate);
+
+  // Calculate the new start date by subtracting the day offset
+  const newStartDateObj = new Date(targetDateObj);
+  newStartDateObj.setDate(targetDateObj.getDate() - dayOffset);
+  const newStartDate = newStartDateObj.toISOString().substring(0, 10);
 
   let newEndDate = null;
   if (oldEndDate && taskDuration > 0) {
     const newEndDateObj = new Date(newStartDateObj);
-    newEndDateObj.setDate(newEndDateObj.getDate() + taskDuration);
+    newEndDateObj.setDate(newStartDateObj.getDate() + taskDuration);
     newEndDate = newEndDateObj.toISOString().substring(0, 10);
   }
 
