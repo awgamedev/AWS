@@ -17,6 +17,33 @@ const getStatusLabel = (status) => {
       default: return status;
     }
 };
+
+// Helper to check if task extends beyond week boundaries
+const getTaskArrows = (task, dayName, daysOfWeek) => {
+    const dayIndex = daysOfWeek.indexOf(dayName);
+    const taskStart = new Date(task.startDate);
+    const taskEnd = task.endDate ? new Date(task.endDate) : null;
+    
+    // Get week boundaries from template data
+    const firstDayOfWeek = typeof startOfWeek === 'string' ? new Date(startOfWeek) : new Date(startOfWeek.getTime());
+    firstDayOfWeek.setHours(0, 0, 0, 0);
+    const lastDayOfWeek = typeof endOfWeek === 'string' ? new Date(endOfWeek) : new Date(endOfWeek.getTime());
+    lastDayOfWeek.setHours(23, 59, 59, 999);
+    
+    const arrows = { left: false, right: false };
+    
+    // Check if task starts before the week and we're on the first day
+    if (dayIndex === 0 && taskStart < firstDayOfWeek) {
+        arrows.left = true;
+    }
+    
+    // Check if task ends after the week and we're on the last day
+    if (dayIndex === daysOfWeek.length - 1 && taskEnd && taskEnd > lastDayOfWeek) {
+        arrows.right = true;
+    }
+    
+    return arrows;
+};
 %>
 
 <!-- Desktop/Tablet View: Table Layout -->
@@ -70,10 +97,11 @@ const getStatusLabel = (status) => {
                                     <% } %>
                                     
                                     <% dayTasks.forEach(task => { 
-                                        const priorityIcon = getPriorityIcon(task.taskPriority); 
+                                        const priorityIcon = getPriorityIcon(task.taskPriority);
+                                        const arrows = getTaskArrows(task, dayName, daysOfWeek);
                                     %>
                                         <div 
-                                            class="task-item px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100 shadow-sm" 
+                                            class="task-item px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100 shadow-sm relative" 
                                             data-task-id="<%= task._id %>"
                                             data-user-id="<%= task.userId %>"
                                             data-task-name="<%= task.taskName %>"
@@ -84,6 +112,16 @@ const getStatusLabel = (status) => {
                                             data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
                                             title="<%= __("STATUS_TITLE") %>: <%= task.taskStatus %> - <%= __("CLICK_TO_EDIT") %>"
                                         >
+                                            <% if (arrows.left) { %>
+                                                <div class="absolute -left-2 top-1/2 -translate-y-1/2 bg-indigo-500 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-md" title="Continues from previous week">
+                                                    <i class="fas fa-chevron-left text-[10px]"></i>
+                                                </div>
+                                            <% } %>
+                                            <% if (arrows.right) { %>
+                                                <div class="absolute -right-2 top-1/2 -translate-y-1/2 bg-indigo-500 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-md" title="Continues to next week">
+                                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                                </div>
+                                            <% } %>
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="flex-1 min-w-0">
                                                     <div class="font-medium text-gray-900"><%= task.taskName %></div>
@@ -165,10 +203,11 @@ const getStatusLabel = (status) => {
                                 
                                 <div class="space-y-2">
                                     <% dayTasks.forEach(task => { 
-                                        const priorityIcon = getPriorityIcon(task.taskPriority); 
+                                        const priorityIcon = getPriorityIcon(task.taskPriority);
+                                        const arrows = getTaskArrows(task, dayName, daysOfWeek);
                                     %>
                                         <div 
-                                            class="task-item px-3 py-2 rounded-lg text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100" 
+                                            class="task-item px-3 py-2 rounded-lg text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition duration-100 relative" 
                                             data-task-id="<%= task._id %>"
                                             data-user-id="<%= task.userId %>"
                                             data-task-name="<%= task.taskName %>"
@@ -178,6 +217,16 @@ const getStatusLabel = (status) => {
                                             data-start-date="<%= task.startDate.toISOString().substring(0, 10) %>"
                                             data-end-date="<%= task.endDate ? task.endDate.toISOString().substring(0, 10) : '' %>"
                                         >
+                                            <% if (arrows.left) { %>
+                                                <div class="absolute -left-2 top-1/2 -translate-y-1/2 bg-indigo-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md" title="Continues from previous week">
+                                                    <i class="fas fa-chevron-left text-xs"></i>
+                                                </div>
+                                            <% } %>
+                                            <% if (arrows.right) { %>
+                                                <div class="absolute -right-2 top-1/2 -translate-y-1/2 bg-indigo-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md" title="Continues to next week">
+                                                    <i class="fas fa-chevron-right text-xs"></i>
+                                                </div>
+                                            <% } %>
                                             <div class="flex items-start justify-between gap-2">
                                                 <div class="flex-1">
                                                     <div><%= task.taskName %></div>

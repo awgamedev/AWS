@@ -80,6 +80,8 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
         weekRange: formatWeekRange(startOfWeek),
         weekOffset,
         profileMap,
+        startOfWeek,
+        endOfWeek: endOfDisplayedWeek,
       },
       '<link rel="stylesheet" href="/css/task-board.css">'
     );
@@ -139,6 +141,8 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
           tasksByDayAndUser,
           daysOfWeek,
           profileMap,
+          startOfWeek,
+          endOfWeek: endOfDisplayedWeek,
           __: req.__,
         },
         (err, html) => {
