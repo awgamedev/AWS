@@ -1,5 +1,5 @@
 <div class="bg-white p-4 rounded-xl shadow-lg mb-4">
-    <div class="text-sm sm:text-base font-semibold text-gray-700 mb-3">Zeitraum wählen:</div>
+    <div class="text-sm sm:text-base font-semibold text-gray-700 mb-3"><%= __('SELECT_PERIOD') %></div>
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <select id="month-select" class="flex-1 p-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             <% monthOptions.forEach(option => { %>
@@ -19,13 +19,13 @@
 </div>
 
 <div class="bg-blue-600 p-4 sm:p-5 rounded-xl shadow-2xl mb-4 text-white">
-    <h2 class="text-sm sm:text-base font-medium mb-2 sm:mb-3">Gesamte Arbeitsstunden aller Mitarbeiter im <%= monthName %></h2>
-    <p class="text-2xl sm:text-3xl font-extrabold"><%= totalMonthlyHours %> Stunden</p>
+    <h2 class="text-sm sm:text-base font-medium mb-2 sm:mb-3"><%= __('TOTAL_MONTHLY_HOURS_ALL_EMPLOYEES').replace('%s', monthName) %></h2>
+    <p class="text-2xl sm:text-3xl font-extrabold"><%= totalMonthlyHours %> <%= __('HOURS_SHORT') %></p>
 </div>
 
 <div id="employee-overview" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-4">
     <% if (overviewData.length === 0) { %>
-        <div class="bg-white p-2 rounded-xl shadow-lg text-gray-500 col-span-full">Keine Mitarbeiter oder Stempeldaten für diesen Monat gefunden.</div>
+        <div class="bg-white p-2 rounded-xl shadow-lg text-gray-500 col-span-full"><%= __('NO_EMPLOYEES_OR_STAMPINGS_FOUND') %></div>
     <% } else { %>
         <% overviewData.forEach(userData => { %>
             <div class="bg-white p-3 sm:p-4 rounded-xl shadow-lg mb-4 border-t-4 border-blue-500">
@@ -46,26 +46,26 @@
 
                 <% if (userData.hoursByReason && Object.keys(userData.hoursByReason).length > 0) { %>
                     <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Stunden nach Grund:</h4>
+                        <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2"><%= __('HOURS_BY_REASON') %></h4>
                         <div class="space-y-1">
                             <% Object.keys(userData.hoursByReason).sort().forEach(reason => { %>
                                 <div class="flex justify-between items-center text-xs sm:text-sm">
                                     <span class="text-gray-700"><%= reason %></span>
-                                    <span class="font-semibold text-blue-600"><%= userData.hoursByReason[reason] %> h</span>
+                                    <span class="font-semibold text-blue-600"><%= userData.hoursByReason[reason] %> <%= __('HOURS_ABBREVIATION') %></span>
                                 </div>
                             <% }); %>
                         </div>
                     </div>
                 <% } %>
 
-                <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tägliche Aufzeichnungen im <%= monthName %></h4>
+                <h4 class="text-xs sm:text-sm font-semibold text-gray-700 mb-2"><%= __('DAILY_RECORDS_IN_MONTH').replace('%s', monthName) %></h4>
                 
                 <div class="max-h-64 sm:max-h-40 overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 -webkit-overflow-scrolling-touch">
                     <%
                         const sortedDays = Object.keys(userData.dailyWork).sort();
                         if (sortedDays.length === 0) {
                     %>
-                        <div class="p-4 text-gray-500 text-center">Keine Stempelungen im gewählten Monat gefunden.</div>
+                        <div class="p-4 text-gray-500 text-center"><%= __('NO_STAMPINGS_IN_SELECTED_MONTH') %></div>
                     <% } else { %>
                         <% sortedDays.forEach(day => { %>
                             <% const dayData = userData.dailyWork[day]; %>
@@ -114,7 +114,7 @@
                                             </div>
                                         <% }); %>
                                         <p class="text-xs sm:text-xs font-medium <%= dayData.totalTimeHours > 0 ? 'text-blue-600' : 'text-gray-400' %> mt-1 pt-1 border-t border-gray-200">
-                                            Gesamt: <%= dayData.totalTimeHours %> h
+                                            <%= __('TOTAL_SHORT') %>: <%= dayData.totalTimeHours %> <%= __('HOURS_ABBREVIATION') %>
                                         </p>
                                     </div>
                                 </div>

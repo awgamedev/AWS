@@ -235,7 +235,16 @@
 	"UPLOAD_PICTURE_BUTTON": "Bild hochladen",
 	"PROFILE_PICTURE_ADMIN_NOTE": "Profilbildänderungen werden sofort gespeichert",
 	"NO_IMAGE_PROVIDED": "Kein Bild bereitgestellt",
-	"INVALID_IMAGE_FORMAT": "Ungültiges Bildformat"
-,
-	"BACK_TO_LIST_BUTTON": "Zurück zur Liste"
+	"INVALID_IMAGE_FORMAT": "Ungültiges Bildformat",
+	"BACK_TO_LIST_BUTTON": "Zurück zur Liste",
+	"STAMPING_OVERVIEW_PAGE_TITLE": "Zeiterfassung Übersicht",
+	"STAMPING_OVERVIEW_ADMIN_TITLE": "Zeiterfassung Übersicht - Administration",
+	"TOTAL_MONTHLY_HOURS_ALL_EMPLOYEES": "Gesamte Arbeitsstunden aller Mitarbeiter im %s",
+	"HOURS_SHORT": "Stunden",
+	"HOURS_ABBREVIATION": "h",
+	"NO_EMPLOYEES_OR_STAMPINGS_FOUND": "Keine Mitarbeiter oder Stempeldaten für diesen Monat gefunden.",
+	"HOURS_BY_REASON": "Stunden nach Grund:",
+	"DAILY_RECORDS_IN_MONTH": "Tägliche Aufzeichnungen im %s",
+	"NO_STAMPINGS_IN_SELECTED_MONTH": "Keine Stempelungen im gewählten Monat gefunden.",
+	"TOTAL_SHORT": "Gesamt"
 }
