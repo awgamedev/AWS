@@ -5,12 +5,12 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900"><%= __("TASK_TEMPLATES_PAGE_TITLE") || "Task Templates" %></h1>
-                        <p class="mt-1 text-sm text-gray-600"><%= __("TASK_TEMPLATES_DESCRIPTION") || "Manage reusable task templates" %></p>
+                        <h1 class="text-2xl font-bold text-gray-900"><%= __("TASK_TEMPLATES_PAGE_TITLE") %></h1>
+                        <p class="mt-1 text-sm text-gray-600"><%= __("TASK_TEMPLATES_DESCRIPTION") %></p>
                     </div>
                     <button id="btn-create-template" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <i class="fas fa-plus"></i>
-                        <span><%= __("CREATE_TEMPLATE_BUTTON") || "Create Template" %></span>
+                        <span><%= __("CREATE_TEMPLATE_BUTTON") %></span>
                     </button>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <%= __("TEMPLATE_NAME_LABEL") || "Template Name" %>
+                                    <%= __("TEMPLATE_NAME_LABEL") %>
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <%= __("TASK_NAME_LABEL") %>
@@ -31,13 +31,13 @@
                                     <%= __("PRIORITY") %>
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <%= __("DEFAULT_DURATION_LABEL") || "Duration" %>
+                                    <%= __("DEFAULT_DURATION_LABEL") %>
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <%= __("DESCRIPTION_LABEL") %>
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <%= __("ACTIONS") || "Actions" %>
+                                    <%= __("ACTIONS") %>
                                 </th>
                             </tr>
                         </thead>
@@ -63,7 +63,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                             <% if (template.defaultDuration) { %>
-                                                <%= template.defaultDuration %> <%= __("DAYS") || "days" %>
+                                                <%= template.defaultDuration %> <%= __("DAYS") %>
                                             <% } else { %>
                                                 <span class="text-gray-400">—</span>
                                             <% } %>
@@ -85,7 +85,7 @@
                                 <tr>
                                     <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-500">
                                         <i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i>
-                                        <p><%= __("NO_TEMPLATES_FOUND") || "No templates found. Create your first template!" %></p>
+                                        <p><%= __("NO_TEMPLATES_FOUND") %></p>
                                     </td>
                                 </tr>
                             <% } %>
