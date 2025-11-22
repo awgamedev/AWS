@@ -202,6 +202,11 @@ const reattachTaskListeners = () => {
     let lastTap = 0;
 
     item.addEventListener("click", (e) => {
+      // Don't open edit modal if we just finished dragging
+      if (dragState.hasMoved) {
+        return;
+      }
+
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
       if (tapLength < 500 && tapLength > 0) {
@@ -218,20 +223,6 @@ const reattachTaskListeners = () => {
           setupDateValidation();
         }
       );
-    });
-
-    item.addEventListener("touchstart", (e) => {
-      e.currentTarget.style.opacity = "0.8";
-    });
-
-    item.addEventListener("touchend", (e) => {
-      setTimeout(() => {
-        e.currentTarget.style.opacity = "";
-      }, 100);
-    });
-
-    item.addEventListener("touchcancel", (e) => {
-      e.currentTarget.style.opacity = "";
     });
   });
 
@@ -280,6 +271,326 @@ const setupDateValidation = () => {
 
   startDateInput.addEventListener("change", validateDates);
   endDateInput.addEventListener("change", validateDates);
+};
+
+// ============================================================================
+// DRAG AND DROP
+// ============================================================================
+
+let dragState = {
+  isDragging: false,
+  taskElement: null,
+  taskData: null,
+  startCell: null,
+  ghostElement: null,
+  dragStartX: 0,
+  dragStartY: 0,
+  hasMoved: false,
+};
+
+const initDragAndDrop = () => {
+  let currentDropTarget = null;
+
+  document.addEventListener("mousedown", handleDragStart);
+  document.addEventListener("touchstart", handleDragStart, { passive: false });
+
+  document.addEventListener("mousemove", handleDragMove);
+  document.addEventListener("touchmove", handleDragMove, { passive: false });
+
+  document.addEventListener("mouseup", handleDragEnd);
+  document.addEventListener("touchend", handleDragEnd);
+  document.addEventListener("touchcancel", handleDragEnd);
+
+  function handleDragStart(e) {
+    const taskItem = e.target.closest(".task-item");
+    if (!taskItem || currentView !== "board") return;
+
+    const touch = e.touches ? e.touches[0] : e;
+    dragState.dragStartX = touch.clientX;
+    dragState.dragStartY = touch.clientY;
+    dragState.taskElement = taskItem;
+    dragState.taskData = taskItem.dataset;
+    dragState.startCell = taskItem.closest(
+      ".task-cell-container, .task-cell-mobile"
+    );
+    dragState.hasMoved = false;
+  }
+
+  function handleDragMove(e) {
+    if (!dragState.taskElement) return;
+
+    const touch = e.touches ? e.touches[0] : e;
+    const deltaX = Math.abs(touch.clientX - dragState.dragStartX);
+    const deltaY = Math.abs(touch.clientY - dragState.dragStartY);
+
+    // Start drag if moved more than 5px
+    if (!dragState.isDragging && (deltaX > 5 || deltaY > 5)) {
+      dragState.isDragging = true;
+      dragState.hasMoved = true;
+      startDrag();
+    }
+
+    if (dragState.isDragging) {
+      e.preventDefault();
+      updateGhostPosition(touch.clientX, touch.clientY);
+
+      // Find drop target
+      const elementBelow = document.elementFromPoint(
+        touch.clientX,
+        touch.clientY
+      );
+      const dropCell = elementBelow?.closest(
+        ".task-cell-container, .task-cell-mobile"
+      );
+
+      if (dropCell !== currentDropTarget) {
+        if (currentDropTarget) {
+          currentDropTarget.classList.remove("drag-over");
+        }
+        currentDropTarget = dropCell;
+        if (currentDropTarget && currentDropTarget !== dragState.startCell) {
+          currentDropTarget.classList.add("drag-over");
+        }
+      }
+    }
+  }
+
+  function handleDragEnd(e) {
+    if (!dragState.taskElement) return;
+
+    if (dragState.isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const touch = e.changedTouches ? e.changedTouches[0] : e;
+      const elementBelow = document.elementFromPoint(
+        touch.clientX,
+        touch.clientY
+      );
+      const dropCell = elementBelow?.closest(
+        ".task-cell-container, .task-cell-mobile"
+      );
+
+      if (dropCell && dropCell !== dragState.startCell) {
+        showMoveConfirmation(dropCell);
+      }
+
+      endDrag();
+    }
+
+    if (currentDropTarget) {
+      currentDropTarget.classList.remove("drag-over");
+      currentDropTarget = null;
+    }
+
+    // Reset drag state
+    dragState = {
+      isDragging: false,
+      taskElement: null,
+      taskData: null,
+      startCell: null,
+      ghostElement: null,
+      dragStartX: 0,
+      dragStartY: 0,
+      hasMoved: false,
+    };
+  }
+
+  function startDrag() {
+    // Create ghost element
+    const ghost = dragState.taskElement.cloneNode(true);
+    ghost.classList.add("task-dragging-ghost");
+    ghost.style.position = "fixed";
+    ghost.style.pointerEvents = "none";
+    ghost.style.zIndex = "10000";
+    ghost.style.opacity = "0.8";
+    ghost.style.transform = "scale(1.05)";
+    ghost.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)";
+    document.body.appendChild(ghost);
+    dragState.ghostElement = ghost;
+
+    // Highlight original
+    dragState.taskElement.style.opacity = "0.3";
+
+    // Add CSS for drop zones
+    const style = document.createElement("style");
+    style.id = "drag-drop-styles";
+    style.textContent = `
+      .drag-over {
+        background-color: rgba(79, 70, 229, 0.1) !important;
+        border: 2px dashed #4f46e5 !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function updateGhostPosition(x, y) {
+    if (dragState.ghostElement) {
+      dragState.ghostElement.style.left = `${x + 10}px`;
+      dragState.ghostElement.style.top = `${y + 10}px`;
+    }
+  }
+
+  function endDrag() {
+    if (dragState.ghostElement) {
+      dragState.ghostElement.remove();
+    }
+    if (dragState.taskElement) {
+      dragState.taskElement.style.opacity = "";
+    }
+    const style = document.getElementById("drag-drop-styles");
+    if (style) style.remove();
+  }
+};
+
+const showMoveConfirmation = (targetCell) => {
+  const taskData = dragState.taskData;
+  const newUserId = targetCell.dataset.userId;
+  const newDayName = targetCell.dataset.dayName;
+
+  // Calculate new dates
+  const oldStartDate = new Date(taskData.startDate);
+  const oldEndDate = taskData.endDate ? new Date(taskData.endDate) : null;
+  const taskDuration = oldEndDate
+    ? Math.ceil((oldEndDate - oldStartDate) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  const newStartDate = getDateFromDayName(newDayName, currentWeekOffset);
+  const newStartDateObj = new Date(newStartDate);
+
+  let newEndDate = null;
+  if (oldEndDate && taskDuration > 0) {
+    const newEndDateObj = new Date(newStartDateObj);
+    newEndDateObj.setDate(newEndDateObj.getDate() + taskDuration);
+    newEndDate = newEndDateObj.toISOString().substring(0, 10);
+  }
+
+  // Get user names
+  const oldUserSelect = document.querySelector(
+    `#userId option[value="${taskData.userId}"]`
+  );
+  const newUserSelect = document.querySelector(
+    `#userId option[value="${newUserId}"]`
+  );
+  const oldUserName = oldUserSelect ? oldUserSelect.textContent : "Unassigned";
+  const newUserName = newUserSelect ? newUserSelect.textContent : "Unassigned";
+
+  // Build confirmation message
+  const changes = [];
+  if (taskData.userId !== newUserId) {
+    changes.push(`<strong>User:</strong> ${oldUserName} → ${newUserName}`);
+  }
+  if (taskData.startDate !== newStartDate) {
+    changes.push(
+      `<strong>Start Date:</strong> ${formatDate(
+        taskData.startDate
+      )} → ${formatDate(newStartDate)}`
+    );
+  }
+  if (newEndDate && taskData.endDate !== newEndDate) {
+    changes.push(
+      `<strong>End Date:</strong> ${formatDate(
+        taskData.endDate
+      )} → ${formatDate(newEndDate)}`
+    );
+  }
+
+  if (changes.length === 0) return;
+
+  const confirmHtml = `
+    <div class="p-4">
+      <h3 class="text-lg font-semibold mb-4">Confirm Task Move</h3>
+      <p class="mb-2"><strong>Task:</strong> ${taskData.taskName}</p>
+      <div class="mb-4 space-y-1">
+        ${changes.join("<br>")}
+      </div>
+      <div class="flex gap-3 justify-end">
+        <button id="cancel-move-btn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition">
+          Cancel
+        </button>
+        <button id="confirm-move-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition">
+          Confirm Move
+        </button>
+      </div>
+    </div>
+  `;
+
+  openModal("Confirm Task Move", confirmHtml);
+
+  // Use setTimeout to ensure DOM is ready
+  setTimeout(() => {
+    const cancelBtn = byId("cancel-move-btn");
+    const confirmBtn = byId("confirm-move-btn");
+
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        closeModal();
+      };
+    }
+
+    if (confirmBtn) {
+      confirmBtn.onclick = async () => {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Moving...";
+        await applyTaskMove(
+          taskData.taskId,
+          newUserId,
+          newStartDate,
+          newEndDate
+        );
+        closeModal();
+      };
+    }
+  }, 100);
+};
+
+const applyTaskMove = async (taskId, newUserId, newStartDate, newEndDate) => {
+  try {
+    // Get existing task data to preserve other fields
+    const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (!taskElement) {
+      alert("Task element not found");
+      return;
+    }
+
+    const taskData = taskElement.dataset;
+
+    const payload = {
+      userId: newUserId || null,
+      taskName: taskData.taskName,
+      taskDescription: taskData.taskDesc || "",
+      taskPriority: taskData.taskPriority,
+      taskStatus: taskData.taskStatus,
+      startDate: newStartDate,
+      endDate: newEndDate || null,
+    };
+
+    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      // Reload the current view
+      if (currentView === "board") {
+        await loadWeekData(currentWeekOffset);
+      } else {
+        await loadListView(currentWeekOffset);
+      }
+    } else {
+      alert(data.msg || "Failed to move task");
+    }
+  } catch (err) {
+    console.error("Error moving task:", err);
+    alert("Network error while moving task");
+  }
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "N/A";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("de-DE");
 };
 
 // ============================================================================
@@ -490,6 +801,9 @@ const handleDeleteTask = async () => {
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize modal component
   initModal();
+
+  // Initialize drag and drop
+  initDragAndDrop();
 
   // Initialize week display
   updateWeekDisplay();
