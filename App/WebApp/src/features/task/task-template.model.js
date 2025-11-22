@@ -46,5 +46,9 @@ const taskTemplateSchema = new mongoose.Schema({
   },
 });
 
+// Add indexes for better query performance
+taskTemplateSchema.index({ templateName: 1 });
+taskTemplateSchema.index({ createdAt: -1 });
+
 // Create and export the model
 module.exports = mongoose.model("TaskTemplate", taskTemplateSchema);

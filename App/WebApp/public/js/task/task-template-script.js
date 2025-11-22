@@ -68,11 +68,37 @@ function initTemplateManagement() {
 
 async function handleCreateTemplate(form) {
   const messageEl = byId("template-form-message");
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const submitBtnText = submitBtn?.querySelector("span");
+
   clearMessage(messageEl);
+
+  // Prevent double submission
+  if (submitBtn && submitBtn.disabled) {
+    return;
+  }
+
+  // Disable submit button and show loading state
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    if (submitBtnText) {
+      submitBtnText.textContent = window.SAVING_TEXT || "Saving...";
+    }
+  }
 
   try {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    // Client-side validation
+    if (!data.templateName || !data.taskName) {
+      setMessage(
+        messageEl,
+        "error",
+        "Template name and task name are required"
+      );
+      return;
+    }
 
     const response = await api("/api/task-templates", {
       method: "POST",
@@ -105,6 +131,15 @@ async function handleCreateTemplate(form) {
       "error",
       "An error occurred while creating the template"
     );
+  } finally {
+    // Re-enable submit button
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      if (submitBtnText) {
+        submitBtnText.textContent =
+          window.SAVE_TEMPLATE_BUTTON || "Save Template";
+      }
+    }
   }
 }
 
@@ -149,12 +184,38 @@ async function handleEditTemplate(templateId) {
 
 async function handleUpdateTemplate(form) {
   const messageEl = byId("edit-template-form-message");
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const submitBtnText = submitBtn?.querySelector("span");
+
   clearMessage(messageEl);
+
+  // Prevent double submission
+  if (submitBtn && submitBtn.disabled) {
+    return;
+  }
+
+  // Disable submit button and show loading state
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    if (submitBtnText) {
+      submitBtnText.textContent = window.SAVING_TEXT || "Saving...";
+    }
+  }
 
   try {
     const templateId = byId("edit-template-id").value;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    // Client-side validation
+    if (!data.templateName || !data.taskName) {
+      setMessage(
+        messageEl,
+        "error",
+        "Template name and task name are required"
+      );
+      return;
+    }
 
     const response = await api(`/api/task-templates/${templateId}`, {
       method: "PUT",
@@ -187,6 +248,15 @@ async function handleUpdateTemplate(form) {
       "error",
       "An error occurred while updating the template"
     );
+  } finally {
+    // Re-enable submit button
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      if (submitBtnText) {
+        submitBtnText.textContent =
+          window.SAVE_TEMPLATE_BUTTON || "Save Template";
+      }
+    }
   }
 }
 
