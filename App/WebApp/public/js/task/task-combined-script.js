@@ -358,6 +358,8 @@ const initDragAndDrop = () => {
   function handleDragEnd(e) {
     if (!dragState.taskElement) return;
 
+    const wasInSameCell = !dragState.isDragging;
+
     if (dragState.isDragging) {
       e.preventDefault();
       e.stopPropagation();
@@ -376,6 +378,11 @@ const initDragAndDrop = () => {
       }
 
       endDrag();
+
+      // Set flag to prevent edit modal from opening
+      if (dropCell && dropCell !== dragState.startCell) {
+        dragState.hasMoved = true;
+      }
     }
 
     if (currentDropTarget) {
@@ -383,17 +390,24 @@ const initDragAndDrop = () => {
       currentDropTarget = null;
     }
 
-    // Reset drag state
-    dragState = {
-      isDragging: false,
-      taskElement: null,
-      taskData: null,
-      startCell: null,
-      ghostElement: null,
-      dragStartX: 0,
-      dragStartY: 0,
-      hasMoved: false,
-    };
+    // Reset drag state after a short delay to prevent click event
+    const shouldPreventClick = dragState.isDragging || dragState.hasMoved;
+
+    setTimeout(
+      () => {
+        dragState = {
+          isDragging: false,
+          taskElement: null,
+          taskData: null,
+          startCell: null,
+          ghostElement: null,
+          dragStartX: 0,
+          dragStartY: 0,
+          hasMoved: false,
+        };
+      },
+      shouldPreventClick ? 100 : 0
+    );
   }
 
   function startDrag() {
