@@ -1,0 +1,52 @@
+<%
+const fieldClass = "mt-1 block w-full border border-gray-300 rounded-md bg-white shadow-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
+const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppercase";
+%>
+
+<form id="edit-template-form" class="space-y-4">
+    <input type="hidden" id="edit-template-id" name="templateId">
+    
+    <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-6">
+        <!-- Template Name -->
+        <div>
+            <label for="edit-templateName" class="<%= labelClass %>"><%= __("TEMPLATE_NAME_LABEL") || "Template Name" %> *</label>
+            <input type="text" id="edit-templateName" name="templateName" required autocomplete="off" maxlength="120" placeholder="" class="<%= fieldClass %>" autofocus>
+        </div>
+
+        <!-- Task Name -->
+        <div>
+            <label for="edit-taskName" class="<%= labelClass %>"><%= __("TASK_NAME_LABEL") %> *</label>
+            <input type="text" id="edit-taskName" name="taskName" required autocomplete="off" maxlength="120" placeholder="" class="<%= fieldClass %>">
+        </div>
+
+        <!-- Priority -->
+        <div>
+            <label for="edit-taskPriority" class="<%= labelClass %>"><%= __("PRIORITY") %> *</label>
+            <select id="edit-taskPriority" name="taskPriority" class="<%= fieldClass %>">
+                <option value="low"><%= __("PRIORITY_LOW") || "Low" %></option>
+                <option value="medium"><%= __("PRIORITY_MEDIUM") || "Medium" %></option>
+                <option value="high"><%= __("PRIORITY_HIGH") || "High" %></option>
+            </select>
+        </div>
+
+        <!-- Default Duration -->
+        <div>
+            <label for="edit-defaultDuration" class="<%= labelClass %>"><%= __("DEFAULT_DURATION_LABEL") || "Default Duration (days)" %></label>
+            <input type="number" id="edit-defaultDuration" name="defaultDuration" min="1" max="365" placeholder="" class="<%= fieldClass %>">
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label for="edit-taskDescription" class="<%= labelClass %>"><%= __("DESCRIPTION_LABEL") %></label>
+            <textarea id="edit-taskDescription" name="taskDescription" rows="4" maxlength="1000" placeholder="" class="<%= fieldClass %> resize-y"></textarea>
+        </div>
+
+        <div id="edit-template-form-message" class="hidden text-sm font-medium text-center px-3 py-2 rounded-md"></div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <span><%= __("SAVE_TEMPLATE_BUTTON") || "Save Template" %></span>
+        </button>
+    </div>
+</form>

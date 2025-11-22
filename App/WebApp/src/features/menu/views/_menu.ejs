@@ -49,12 +49,29 @@
     }) 
     %>
     
-    <%- include('_menu_item', { 
-        href: '/task/task-list', 
-        icon: 'fa-solid fa-bars-progress', 
+    <%- include('_menu_dropdown', {
+        prefix: '/task',
+        icon: 'fa-solid fa-bars-progress',
         text: 'Aufgaben',
         currentPath: currentPath,
-        user: user
+        user: user,
+        subitems: [
+            include('_menu_item', { 
+                href: '/task/task-list', 
+                icon: 'fa-solid fa-list-check', 
+                text: 'Aufgabenliste',
+                currentPath: currentPath,
+                user: user
+            }),
+            include('_menu_item', { 
+                href: '/task/templates', 
+                icon: 'fa-solid fa-file-lines', 
+                text: 'Vorlagen',
+                currentPath: currentPath,
+                user: user,
+                roles: 'admin'
+            })
+        ]
     }) %>
 
     <%- include('_menu_dropdown', {

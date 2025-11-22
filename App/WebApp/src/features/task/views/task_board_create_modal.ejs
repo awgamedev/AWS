@@ -17,6 +17,14 @@ const labelClass = "block text-xs font-semibold tracking-wide text-gray-600 uppe
 
 <form id="create-task-form" class="space-y-4">
     <div class="max-h-[28rem] overflow-y-auto pr-1 space-y-6">
+        <!-- Template Selector (new addition) -->
+        <div>
+            <label for="templateSelector" class="<%= labelClass %>"><%= __("USE_TEMPLATE_LABEL") || "Use Template" %></label>
+            <select id="templateSelector" name="templateSelector" class="<%= fieldClass %>">
+                <option value=""><%= __("SELECT_TEMPLATE_DEFAULT") || "-- No Template --" %></option>
+            </select>
+        </div>
+
         <!-- Top grouping: Name spans full width -->
         <div class="grid gap-6 md:grid-cols-3">
             <div class="md:col-span-3">

@@ -704,11 +704,99 @@ const formatDate = (dateStr) => {
 // MODAL HANDLERS
 // ============================================================================
 
+// ============================================================================
+// TEMPLATE HELPERS
+// ============================================================================
+
+/**
+ * Load templates from the API and populate the template selector dropdown
+ */
+async function loadTemplatesIntoSelector() {
+  const templateSelector = byId("templateSelector");
+  if (!templateSelector) return;
+
+  try {
+    const response = await api("/api/task-templates");
+    if (response && response.ok && response.data.templates) {
+      const templates = response.data.templates;
+
+      // Clear existing options except the first one (no template)
+      templateSelector.innerHTML =
+        '<option value="">-- No Template --</option>';
+
+      // Add template options
+      templates.forEach((template) => {
+        const option = document.createElement("option");
+        option.value = template._id;
+        option.textContent = template.templateName;
+        templateSelector.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error("Error loading templates:", error);
+  }
+}
+
+/**
+ * Setup the template selector change handler
+ */
+function setupTemplateSelector() {
+  const templateSelector = byId("templateSelector");
+  if (!templateSelector) return;
+
+  templateSelector.addEventListener("change", async (e) => {
+    const templateId = e.target.value;
+    if (!templateId) return;
+
+    try {
+      const response = await api(`/api/task-templates/${templateId}`);
+      if (response && response.ok && response.data.template) {
+        const template = response.data.template;
+
+        // Fill form with template values
+        const taskNameInput = byId("taskName");
+        const taskPriorityInput = byId("taskPriority");
+        const taskDescriptionInput = byId("taskDescription");
+        const startDateInput = byId("startDate");
+        const endDateInput = byId("endDate");
+
+        if (taskNameInput) taskNameInput.value = template.taskName;
+        if (taskPriorityInput) taskPriorityInput.value = template.taskPriority;
+        if (taskDescriptionInput)
+          taskDescriptionInput.value = template.taskDescription || "";
+
+        // If template has defaultDuration and startDate is set, calculate endDate
+        if (
+          template.defaultDuration &&
+          startDateInput &&
+          startDateInput.value
+        ) {
+          const startDate = new Date(startDateInput.value);
+          const endDate = new Date(startDate);
+          endDate.setDate(endDate.getDate() + template.defaultDuration);
+
+          if (endDateInput) {
+            const year = endDate.getFullYear();
+            const month = String(endDate.getMonth() + 1).padStart(2, "0");
+            const day = String(endDate.getDate()).padStart(2, "0");
+            endDateInput.value = `${year}-${month}-${day}`;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error loading template:", error);
+    }
+  });
+}
+
 const openCreateModalWithPreselect = (userId, dayName) => {
   openModalFromApi(
     window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
     "/api/modal/task-create",
     () => {
+      // Load templates into dropdown
+      loadTemplatesIntoSelector();
+
       // Preselect user
       const userSelect = byId("userId");
       if (userSelect && userId) {
@@ -721,6 +809,9 @@ const openCreateModalWithPreselect = (userId, dayName) => {
       if (startDateInput && dateStr) {
         startDateInput.value = dateStr;
       }
+
+      // Setup template selector change handler
+      setupTemplateSelector();
 
       setupDateValidation();
     }
@@ -1003,7 +1094,11 @@ document.addEventListener("DOMContentLoaded", () => {
       openModalFromApi(
         window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
         "/api/modal/task-create",
-        setupDateValidation
+        () => {
+          loadTemplatesIntoSelector();
+          setupTemplateSelector();
+          setupDateValidation();
+        }
       );
     });
   }
