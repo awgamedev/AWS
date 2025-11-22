@@ -334,7 +334,29 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
     },
   ];
 
+  const statuses = [
+    {
+      value: "pending",
+      label: t.contextMenuStatusPending || "Pending",
+      icon: "fa-clock",
+      color: "text-gray-600",
+    },
+    {
+      value: "in-progress",
+      label: t.contextMenuStatusInProgress || "In Progress",
+      icon: "fa-spinner",
+      color: "text-blue-600",
+    },
+    {
+      value: "completed",
+      label: t.contextMenuStatusCompleted || "Completed",
+      icon: "fa-check-circle",
+      color: "text-green-600",
+    },
+  ];
+
   const currentPriority = taskData.taskPriority;
+  const currentStatus = taskData.taskStatus;
 
   // Build menu HTML
   let menuHTML = `
@@ -360,6 +382,34 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
         data-priority="${priority.value}">
         <i class="fas ${priority.icon} ${priority.color}"></i>
         <span>${priority.label}</span>
+        ${
+          isActive ? '<i class="fas fa-check ml-auto text-indigo-600"></i>' : ""
+        }
+      </button>
+    `;
+  });
+
+  menuHTML += `
+    </div>
+    
+    <!-- Status submenu -->
+    <div class="px-1">
+      <div class="px-3 py-2 text-xs font-semibold text-gray-500 mt-1">${
+        t.contextMenuChangeStatus || "Change Status"
+      }</div>
+  `;
+
+  statuses.forEach((status) => {
+    const isActive = currentStatus === status.value;
+    menuHTML += `
+      <button 
+        class="context-menu-item w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2 transition ${
+          isActive ? "bg-gray-50" : ""
+        }"
+        data-action="change-status"
+        data-status="${status.value}">
+        <i class="fas ${status.icon} ${status.color}"></i>
+        <span>${status.label}</span>
         ${
           isActive ? '<i class="fas fa-check ml-auto text-indigo-600"></i>' : ""
         }
@@ -408,6 +458,9 @@ const showTaskContextMenu = (x, y, taskElement, taskData) => {
       } else if (action === "change-priority") {
         const newPriority = e.currentTarget.dataset.priority;
         await handleContextMenuChangePriority(newPriority);
+      } else if (action === "change-status") {
+        const newStatus = e.currentTarget.dataset.status;
+        await handleContextMenuChangeStatus(newStatus);
       }
 
       hideContextMenu();
@@ -502,6 +555,43 @@ const handleContextMenuChangePriority = async (newPriority) => {
   } catch (err) {
     console.error("Error changing priority:", err);
     alert("Network error while changing priority");
+  }
+};
+
+const handleContextMenuChangeStatus = async (newStatus) => {
+  const taskData = contextMenuState.currentTaskData;
+  if (!taskData || !taskData.taskId) return;
+
+  try {
+    const payload = {
+      userId: taskData.userId || null,
+      taskName: taskData.taskName,
+      taskDescription: taskData.taskDesc || "",
+      taskPriority: taskData.taskPriority,
+      taskStatus: newStatus,
+      startDate: taskData.startDate,
+      endDate: taskData.endDate || null,
+    };
+
+    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (ok) {
+      // Reload the current view
+      if (currentView === "board") {
+        await loadWeekData(currentWeekOffset);
+      } else {
+        await loadListView(currentWeekOffset);
+      }
+    } else {
+      alert(data.msg || "Failed to change status");
+    }
+  } catch (err) {
+    console.error("Error changing status:", err);
+    alert("Network error while changing status");
   }
 };
 
