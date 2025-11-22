@@ -241,6 +241,14 @@ router.get("/api/task-list/view", ensureAuthenticated, async (req, res) => {
       return map;
     }, {});
 
+    // Fetch user profiles for profile pictures
+    const UserProfile = require("../user-profile/user-profile.model");
+    const userProfiles = await UserProfile.find({}).lean();
+    const profileMap = {};
+    userProfiles.forEach((profile) => {
+      profileMap[profile.userId.toString()] = profile;
+    });
+
     // Enrich tasks with username and formatted date
     const enrichedTasks = allTasks.map((task) => ({
       ...task,
@@ -255,6 +263,7 @@ router.get("/api/task-list/view", ensureAuthenticated, async (req, res) => {
         "task_list_content",
         {
           allTasks: enrichedTasks,
+          profileMap,
           __: req.__,
         },
         (err, html) => {

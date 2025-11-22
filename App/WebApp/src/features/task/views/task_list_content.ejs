@@ -1,9 +1,22 @@
+
 <% 
 const getPriorityIcon = (priority) => {
     switch (priority) {
       case "high": return '<img class="w-4 h-4" src="/img/priority/high.png" alt="High Priority" />';
       case "medium": return '<img class="w-4 h-4" src="/img/priority/medium.png" alt="Medium Priority"/>';
       case "low": return '<img class="w-4 h-4" src="/img/priority/low.png" alt="Low Priority"/>';
+    }
+};
+
+// Helper for user icon (profile picture or initials)
+const getUserIcon = (task) => {
+    if (task.userId && profileMap && profileMap[task.userId] && profileMap[task.userId].profilePictureBase64) {
+        return `<img src="${profileMap[task.userId].profilePictureBase64}" alt="Avatar" class="w-7 h-7 rounded-full object-cover" />`;
+    } else if (task.assignedUsername) {
+        const initials = task.assignedUsername.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        return `<div class=\"w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm overflow-hidden flex-shrink-0\">${initials}</div>`;
+    } else {
+        return '';
     }
 };
 %>
@@ -41,11 +54,15 @@ const getPriorityIcon = (priority) => {
                                 <p class="text-xs sm:text-sm text-gray-600 italic line-clamp-2"><%= task.taskDescription || __("NO_DESCRIPTION") %></p>
                             </div>
                             
-                            <!-- Creator Info -->
-                            <div class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700">
-                                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                                </svg>
+                            <!-- Creator Info with User Icon -->
+                            <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
+                                <% if (task.userId && task.assignedUsername) { %>
+                                    <span class="flex-shrink-0"><%- getUserIcon(task) %></span>
+                                <% } else { %>
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                <% } %>
                                 <span class="font-medium"><%= task.assignedUsername %></span>
                             </div>
                         </div>
