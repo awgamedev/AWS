@@ -211,6 +211,7 @@
 	"SELECT_PERIOD": "SELECT_PERIOD",
 	"SWITCH_TO_LIST_VIEW": "Passer à la vue liste",
 	"SWITCH_TO_CALENDAR_VIEW": "Passer à la vue calendrier",
+	"SWITCH_TO_BOARD_VIEW": "Passer à la vue tableau",
 	"Type": "Type",
 	"Start": "Start",
 	"End": "End",

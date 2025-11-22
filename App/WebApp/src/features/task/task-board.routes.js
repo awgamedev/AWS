@@ -29,7 +29,7 @@ function createUserMap(users) {
 }
 
 /**
- * GET Route: Display task board (/task-list)
+ * GET Route: Display combined task view (/task-list)
  */
 router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
   const title = req.__("TASK_BOARD_PAGE_TITLE");
@@ -67,11 +67,11 @@ router.get("/task/task-list", ensureAuthenticated, async (req, res) => {
       daysOfWeek
     );
 
-    // Render view with mobile-optimized styles
+    // Render combined view with mobile-optimized styles
     renderView(
       req,
       res,
-      "task_board",
+      "tasks",
       title,
       {
         users,
@@ -160,6 +160,86 @@ router.get("/api/task-board/week", ensureAuthenticated, async (req, res) => {
     });
   } catch (error) {
     req.logger.error("Error fetching task board week data:", error);
+    res.status(500).json({
+      ok: false,
+      msg: req.__("TASK_LOAD_ERROR") || "Error loading tasks",
+    });
+  }
+});
+
+/**
+ * API Route: Get list view data for all tasks (returns rendered HTML)
+ */
+router.get("/api/task-list/view", ensureAuthenticated, async (req, res) => {
+  req.logger.info("API: task-list/view called");
+
+  try {
+    const Task = require("./task.model");
+
+    // Define priority order for sorting
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+
+    // Fetch all tasks
+    const allTasks = await Task.find({}).lean().exec();
+
+    // Sort tasks: unassigned first, then by userId, then by priority
+    allTasks.sort((a, b) => {
+      // Sort by assignment status (unassigned first)
+      if (a.userId === null && b.userId !== null) return -1;
+      if (b.userId === null && a.userId !== null) return 1;
+
+      // Sort by userId if both are assigned
+      if (a.userId !== null && b.userId !== null) {
+        const userIdComparison = String(a.userId).localeCompare(
+          String(b.userId)
+        );
+        if (userIdComparison !== 0) return userIdComparison;
+      }
+
+      // Sort by priority
+      return priorityOrder[a.taskPriority] - priorityOrder[b.taskPriority];
+    });
+
+    // Fetch all users and create user map
+    const users = await User.find({}).select("_id username").lean().exec();
+    const userMap = users.reduce((map, user) => {
+      map[user._id.toString()] = user.username;
+      return map;
+    }, {});
+
+    // Enrich tasks with username and formatted date
+    const enrichedTasks = allTasks.map((task) => ({
+      ...task,
+      assignedUsername:
+        userMap[task.userId?.toString()] || req.__("UNASSIGNED"),
+      dateStr: task.startDate.toLocaleDateString("de-DE"),
+    }));
+
+    // Render the partial view
+    const html = await new Promise((resolve, reject) => {
+      req.app.render(
+        "task_list_content",
+        {
+          allTasks: enrichedTasks,
+          __: req.__,
+        },
+        (err, html) => {
+          if (err) {
+            req.logger.error("Error rendering task_list_content:", err);
+            reject(err);
+          } else {
+            resolve(html);
+          }
+        }
+      );
+    });
+
+    res.json({
+      ok: true,
+      html,
+    });
+  } catch (error) {
+    req.logger.error("Error fetching task list view data:", error);
     res.status(500).json({
       ok: false,
       msg: req.__("TASK_LOAD_ERROR") || "Error loading tasks",
