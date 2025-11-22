@@ -23,7 +23,10 @@
                 <span class="text-4xl font-bold text-gray-400"><%= user.username.substring(0, 2).toUpperCase() %></span>
               <% } %>
             </div>
-            <!-- Avatar upload removed per request (edit functionality disabled) -->
+            <button id="upload-avatar-btn" class="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 shadow-lg transition">
+              <i class="fas fa-camera"></i>
+            </button>
+            <input type="file" id="avatar-input" accept="image/*" class="hidden">
           </div>
           
           <!-- User Info -->

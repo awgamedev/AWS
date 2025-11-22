@@ -215,5 +215,6 @@
 	"Start": "Start",
 	"End": "End",
 	"Status": "Status",
-	"Description": "Description"
+	"Description": "Description",
+	"PROFILE_PICTURE_ERROR": "PROFILE_PICTURE_ERROR"
 }

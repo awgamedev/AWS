@@ -64,6 +64,51 @@ class UserProfileController {
       );
     }
   }
+
+  /**
+   * Upload profile picture
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async uploadProfilePicture(req, res) {
+    try {
+      const userId = req.user.id;
+      const { imageBase64 } = req.body;
+
+      if (!imageBase64) {
+        return res.status(400).json({
+          success: false,
+          msg: req.__("NO_IMAGE_PROVIDED") || "No image provided.",
+        });
+      }
+
+      // Validate base64 format
+      if (!imageBase64.startsWith("data:image/")) {
+        return res.status(400).json({
+          success: false,
+          msg: req.__("INVALID_IMAGE_FORMAT") || "Invalid image format.",
+        });
+      }
+
+      // Update profile picture
+      await userProfileRepository.updateProfilePicture(userId, imageBase64);
+
+      return res.json({
+        success: true,
+        msg:
+          req.__("PROFILE_PICTURE_UPDATED") ||
+          "Profile picture updated successfully.",
+      });
+    } catch (error) {
+      req.logger.error("Error uploading profile picture:", error);
+      return res.status(500).json({
+        success: false,
+        msg:
+          req.__("PROFILE_PICTURE_ERROR") || "Error uploading profile picture.",
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UserProfileController();

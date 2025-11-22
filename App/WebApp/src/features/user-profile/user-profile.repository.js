@@ -54,6 +54,18 @@ class UserProfileRepository {
       throw new Error(`Error deleting user profile: ${error.message}`);
     }
   }
+
+  async updateProfilePicture(userId, base64Image) {
+    try {
+      return await UserProfile.findOneAndUpdate(
+        { userId },
+        { $set: { profilePictureBase64: base64Image } },
+        { new: true, upsert: true, runValidators: true }
+      ).lean();
+    } catch (error) {
+      throw new Error(`Error updating profile picture: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new UserProfileRepository();

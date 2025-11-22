@@ -13,6 +13,11 @@ router.get("/profile", ensureAuthenticated, (req, res) => {
   userProfileController.showProfile(req, res);
 });
 
+// Upload profile picture (POST /profile/upload-picture)
+router.post("/profile/upload-picture", ensureAuthenticated, (req, res) => {
+  userProfileController.uploadProfilePicture(req, res);
+});
+
 // Profile editing routes removed per request (no update/upload endpoints)
 
 module.exports = router;
