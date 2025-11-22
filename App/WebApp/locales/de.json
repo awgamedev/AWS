@@ -193,5 +193,10 @@
 	"NO_DESCRIPTION": "Keine Beschreibung",
 	"SELECT_PERIOD": "Zeitraum wählen:",
 	"SWITCH_TO_LIST_VIEW": "Zur Listenansicht wechseln",
-	"SWITCH_TO_CALENDAR_VIEW": "Zur Kalenderansicht wechseln"
+	"SWITCH_TO_CALENDAR_VIEW": "Zur Kalenderansicht wechseln",
+	"Type": "Type",
+	"Start": "Start",
+	"End": "End",
+	"Status": "Status",
+	"Description": "Description"
 }

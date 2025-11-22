@@ -211,5 +211,10 @@
 	"NO_DESCRIPTION": "NO_DESCRIPTION",
 	"SELECT_PERIOD": "SELECT_PERIOD",
 	"SWITCH_TO_LIST_VIEW": "Switch To List View",
-	"SWITCH_TO_CALENDAR_VIEW": "Switch To Calendar View"
+	"SWITCH_TO_CALENDAR_VIEW": "Switch To Calendar View",
+	"Type": "Type",
+	"Start": "Start",
+	"End": "End",
+	"Status": "Status",
+	"Description": "Description"
 }

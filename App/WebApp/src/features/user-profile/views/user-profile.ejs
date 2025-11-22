@@ -107,7 +107,7 @@
   </div>
 
   <!-- Reports & Vacation Widget -->
-  <div class="mt-6 space-y-6" id="user-reports-widget">
+  <div class="space-y-6" id="user-reports-widget">
     <!-- Vacation Days Info Card (replicated from report_user.ejs) -->
     <div class="bg-white rounded-lg shadow border border-gray-200 p-4">
       <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
@@ -158,11 +158,11 @@
               : ((typeof reports !== 'undefined' && Array.isArray(reports)) ? reports : []); %>
             <% reportItems.forEach(r => { %>
               <tr data-id="<%= r._id %>" data-type="<%= r.type %>" data-start="<%= new Date(r.startDate).toLocaleDateString('de-DE') %>" data-end="<%= new Date(r.endDate).toLocaleDateString('de-DE') %>" data-status="<%= r.status %>" data-description="<%= r.description || '' %>">
-                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Typ"><%= __('REPORT_TYPE_' + r.type.toUpperCase()) %></td>
-                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Start"><%= new Date(r.startDate).toLocaleDateString('de-DE') %></td>
-                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Ende"><%= new Date(r.endDate).toLocaleDateString('de-DE') %></td>
-                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Status"><%= __('REPORT_STATUS_' + r.status.toUpperCase()) %></td>
-                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="Beschreibung"><%= r.description || '' %></td>
+                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<% __("Type") %>"><%= __('REPORT_TYPE_' + r.type.toUpperCase()) %></td>
+                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<% __("Start") %>"><%= new Date(r.startDate).toLocaleDateString('de-DE') %></td>
+                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<% __("End") %>"><%= new Date(r.endDate).toLocaleDateString('de-DE') %></td>
+                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<% __("Status") %>"><%= __('REPORT_STATUS_' + r.status.toUpperCase()) %></td>
+                <td class="px-6 py-3 text-left text-sm font-medium text-gray-900" data-label="<% __("Description") %>"><%= r.description || '' %></td>
                 <td class="px-6 py-3 text-right">
                   <div class="flex justify-end gap-2">
                     <% if (r.status === 'pending') { %>
