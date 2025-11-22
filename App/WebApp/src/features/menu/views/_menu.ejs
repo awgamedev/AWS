@@ -49,32 +49,13 @@
     }) 
     %>
     
-    <%- include('_menu_dropdown', {
-        prefix: '/task',
-        icon: 'fa-solid fa-bars-progress',
+    <%- include('_menu_item', { 
+        href: '/task/task-list', 
+        icon: 'fa-solid fa-bars-progress', 
         text: 'Aufgaben',
         currentPath: currentPath,
-        user: user,
-        // roles: undefined bedeutet: für alle sichtbar
-        subitems: [
-            include('_menu_item', { 
-                href: '/task/task-list', 
-                icon: 'fa-solid fa-chart-bar', 
-                text: 'Aufgabenplan',
-                currentPath: currentPath,
-                user: user
-            }),
-
-            include('_menu_item', { 
-                href: '/task/task-backlog', 
-                icon: 'fa-solid fa-list-check', 
-                text: 'Alle Aufgaben',
-                currentPath: currentPath,
-                user: user
-            })
-        ]
-    }) 
-    %>
+        user: user
+    }) %>
 
     <%- include('_menu_dropdown', {
         prefix: '/reports',
