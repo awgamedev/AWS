@@ -17,6 +17,19 @@ const getStatusLabel = (status) => {
     }
 };
 
+const getStatusBadge = (status) => {
+    switch (status) {
+      case "pending": 
+        return '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-700 border border-gray-300"><i class="fas fa-clock mr-1"></i>' + __("STATUS_PENDING") + '</span>';
+      case "in-progress": 
+        return '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700 border border-blue-300"><i class="fas fa-spinner mr-1"></i>' + __("STATUS_IN_PROGRESS") + '</span>';
+      case "completed": 
+        return '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700 border border-green-300"><i class="fas fa-check-circle mr-1"></i>' + __("STATUS_COMPLETED") + '</span>';
+      default: 
+        return '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-700 border border-gray-300">' + status + '</span>';
+    }
+};
+
 // Helper to check if task extends beyond week boundaries
 const getTaskArrows = (task, dayName, daysOfWeek) => {
     const dayIndex = daysOfWeek.indexOf(dayName);
@@ -198,7 +211,7 @@ const isToday = (dayName, daysOfWeek) => {
                                                 <div class="flex-1 min-w-0">
                                                     <div class="font-medium text-gray-900"><%= task.taskName %></div>
                                                     <div class="text-[10px] text-gray-600 mt-1">(<%= task.assignedUsername %>)</div>
-                                                    <div class="text-[10px] text-gray-500 mt-1"><%= __("STATUS_TITLE") %>: <%= getStatusLabel(task.taskStatus) %></div>
+                                                    <div class="mt-1"><%- getStatusBadge(task.taskStatus) %></div>
                                                 </div>
                                                 <div class="flex-shrink-0 mt-0.5"><%- priorityIcon %></div>
                                             </div>
@@ -306,8 +319,8 @@ const isToday = (dayName, daysOfWeek) => {
                                                     <div class="text-xs mt-1 opacity-75">
                                                         <%= task.assignedUsername %>
                                                     </div>
-                                                    <div class="text-xs mt-1 opacity-75">
-                                                        <%= __("STATUS_TITLE") %>: <%= getStatusLabel(task.taskStatus) %>
+                                                    <div class="mt-1">
+                                                        <%- getStatusBadge(task.taskStatus) %>
                                                     </div>
                                                 </div>
                                                 <div class="flex-shrink-0 mt-0.5"><%- priorityIcon %></div>
