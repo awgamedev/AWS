@@ -37,6 +37,10 @@
 	#sidebar.sidebar-open {
 		transform: translateX(0);
 	}
+
+	footer {
+		display: none !important;
+	}
 }
 
 /* Inhalt: Anpassung der linken Einrückung basierend auf dem Sidebar-Zustand */
