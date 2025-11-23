@@ -1035,7 +1035,7 @@ body.fullscreen-active {
 
     .chat-sidebar {
         width: -webkit-fill-available;
-        z-index: 40;
+        /* z-index: 40; */
         transition: transform 0.3s ease;
     }
 
