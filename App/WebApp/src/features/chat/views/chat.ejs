@@ -1,4 +1,4 @@
-<div class="chat-container" data-current-user-id="<%= currentUserId %>">
+<div class="chat-container" data-current-user-id="<%= currentUserId %>" data-user-role="<%= userRole %>">
     <!-- Left Sidebar: User List and Groups -->
     <div class="chat-sidebar">
         <!-- Header with Create Group Button -->
@@ -20,7 +20,7 @@
             <!-- Existing Chats will be rendered here -->
             <% if (userChats && userChats.length > 0) { %>
                 <% userChats.forEach(chat => { %>
-                    <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>">
+                    <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>" data-creator-id="<%= chat.creatorId._id %>">
                         <div class="chat-item-avatar">
                             <% if (chat.type === 'group') { %>
                                 <i class="fas fa-users"></i>
@@ -103,9 +103,14 @@
                     <h3 id="chatTitle">Chat</h3>
                     <p id="chatSubtitle"></p>
                 </div>
-                <button id="closeChatBtn" class="btn-close-chat">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="chat-header-actions">
+                    <button id="renameGroupBtn" class="btn-rename-chat" style="display:none;" title="Gruppennamen ändern">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button id="closeChatBtn" class="btn-close-chat">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Messages Area -->
@@ -162,6 +167,26 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal for Renaming Group -->
+<div id="renameGroupModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Gruppennamen ändern</h3>
+      <button class="modal-close" onclick="closeRenameGroupModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="renameGroupInput">Neuer Name</label>
+        <input type="text" id="renameGroupInput" class="form-input" placeholder="Neuen Gruppennamen eingeben..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeRenameGroupModal()">Abbrechen</button>
+      <button class="btn-primary" onclick="submitRenameGroup()">Speichern</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal for Creating Group -->

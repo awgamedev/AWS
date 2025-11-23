@@ -161,6 +161,19 @@ function setupSocketListeners() {
     updateChatListItem(chatId, lastMessage);
   });
 
+  socket.on("chat-renamed", ({ chatId, newName }) => {
+    // Update list item
+    const item = document.querySelector(
+      `.chat-item[data-chat-id="${chatId}"] .chat-item-name`
+    );
+    if (item) item.textContent = newName;
+    // Update header if open
+    if (currentChatId === chatId) {
+      const titleEl = document.getElementById("chatTitle");
+      if (titleEl) titleEl.textContent = newName;
+    }
+  });
+
   socket.on("error", ({ message }) => {
     showNotification(message, "error");
   });
@@ -203,6 +216,11 @@ function setupEventListeners() {
   const sendBtnRich = document.getElementById("sendMessageBtnRich");
   if (sendBtnRich) {
     sendBtnRich.addEventListener("click", sendMessage);
+  }
+
+  const renameBtn = document.getElementById("renameGroupBtn");
+  if (renameBtn) {
+    renameBtn.addEventListener("click", openRenameGroupModal);
   }
 
   // Delete chat buttons
@@ -254,6 +272,22 @@ function openChat(chatId) {
     const chatType = activeChatItem.dataset.chatType;
     document.getElementById("chatSubtitle").textContent =
       chatType === "group" ? "Gruppenchat" : "Direktnachricht";
+
+    // Show rename button if permitted
+    const creatorId = activeChatItem.dataset.creatorId;
+    const container = document.querySelector(".chat-container");
+    const userRole = container ? container.dataset.userRole : null;
+    const renameBtn = document.getElementById("renameGroupBtn");
+    if (renameBtn) {
+      if (
+        chatType === "group" &&
+        (creatorId === currentUserId || userRole === "admin")
+      ) {
+        renameBtn.style.display = "inline-flex";
+      } else {
+        renameBtn.style.display = "none";
+      }
+    }
   }
 
   // Join chat room and load messages
@@ -818,6 +852,34 @@ function applyEditorMode() {
     if (simpleToggle) simpleToggle.classList.remove("active");
     if (richToggle) richToggle.classList.add("active");
   }
+}
+
+// Rename group chat modal logic
+function openRenameGroupModal() {
+  const modal = document.getElementById("renameGroupModal");
+  const input = document.getElementById("renameGroupInput");
+  if (!modal || !input || !currentChatId) return;
+  // Prefill with current name
+  const chatItem = document.querySelector(
+    `.chat-item[data-chat-id="${currentChatId}"] .chat-item-name`
+  );
+  input.value = chatItem ? chatItem.textContent.trim() : "";
+  modal.style.display = "flex";
+}
+function closeRenameGroupModal() {
+  const modal = document.getElementById("renameGroupModal");
+  if (modal) modal.style.display = "none";
+}
+function submitRenameGroup() {
+  const input = document.getElementById("renameGroupInput");
+  if (!input || !currentChatId) return;
+  const newName = input.value.trim();
+  if (!newName) {
+    showNotification("Name darf nicht leer sein", "error");
+    return;
+  }
+  socket.emit("rename-chat", { chatId: currentChatId, newName });
+  closeRenameGroupModal();
 }
 
 function escapeHtml(str) {

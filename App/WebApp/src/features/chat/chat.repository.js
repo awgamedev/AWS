@@ -130,6 +130,23 @@ class ChatRepository {
       throw new Error(`Error fetching users: ${error.message}`);
     }
   }
+
+  /**
+   * Rename a group chat
+   */
+  async renameGroupChat(chatId, newName) {
+    try {
+      const chat = await Chat.findById(chatId);
+      if (!chat) return null;
+      if (chat.type !== "group")
+        throw new Error("Cannot rename non-group chat");
+      chat.name = newName.trim();
+      await chat.save();
+      return await this.findById(chatId);
+    } catch (error) {
+      throw new Error(`Error renaming group chat: ${error.message}`);
+    }
+  }
 }
 
 /**

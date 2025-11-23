@@ -186,6 +186,62 @@ function initializeChatSocket(io) {
     });
 
     /**
+     * Rename a group chat
+     */
+    socket.on("rename-chat", async ({ chatId, newName }) => {
+      try {
+        if (!newName || !newName.trim()) {
+          socket.emit("error", { message: "Neuer Name darf nicht leer sein" });
+          return;
+        }
+        const chat = await chatRepository.findById(chatId);
+        if (!chat) {
+          socket.emit("error", { message: "Chat nicht gefunden" });
+          return;
+        }
+        if (chat.type !== "group") {
+          socket.emit("error", {
+            message: "Nur Gruppen können umbenannt werden",
+          });
+          return;
+        }
+        const isCreator = chat.creatorId._id.toString() === userId.toString();
+        const requestingUser = socket.request.session?.passport?.userRole; // may not exist
+        // We don't have role here; fetch user role from participants array
+        const participantRecord = chat.participants.find(
+          (p) => p._id.toString() === userId.toString()
+        );
+        const isAdmin = participantRecord && participantRecord.role === "admin";
+        if (!isCreator && !isAdmin) {
+          socket.emit("error", {
+            message: "Keine Berechtigung zum Umbenennen",
+          });
+          return;
+        }
+        const updated = await chatRepository.renameGroupChat(chatId, newName);
+        if (!updated) {
+          socket.emit("error", { message: "Fehler beim Umbenennen" });
+          return;
+        }
+        // Broadcast rename to participants
+        updated.participants.forEach((participant) => {
+          io.to(`user:${participant._id}`).emit("chat-renamed", {
+            chatId: updated._id,
+            newName: updated.name,
+          });
+        });
+        // Also notify room
+        io.to(`chat:${chatId}`).emit("chat-renamed", {
+          chatId: updated._id,
+          newName: updated.name,
+        });
+      } catch (error) {
+        console.error("Error renaming chat:", error);
+        socket.emit("error", { message: "Fehler beim Umbenennen des Chats" });
+      }
+    });
+
+    /**
      * Handle disconnect
      */
     socket.on("disconnect", () => {

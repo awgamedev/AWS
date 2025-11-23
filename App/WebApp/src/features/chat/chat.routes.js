@@ -27,6 +27,7 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
         allUsers,
         userChats,
         currentUserId: req.user.id,
+        userRole: req.user.role,
       },
       specificStyles
     );
