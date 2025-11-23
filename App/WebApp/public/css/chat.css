@@ -353,6 +353,26 @@
     align-items: center;
     gap: 8px;
 }
+.chat-current-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#6366f1 0%, #4f46e5 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
+    font-size:0.85rem;
+    overflow:hidden;
+    box-shadow:0 2px 4px rgba(0,0,0,0.15);
+}
+.chat-current-user-avatar img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
 
 .chat-header-info h3 {
     margin: 0;
@@ -1043,6 +1063,7 @@ body.fullscreen-active {
         padding: 6px 10px;
         font-size: 1rem;
     }
+    .chat-current-user-avatar { width:36px; height:36px; }
 
     /* Hide close chat button on mobile devices */
     .chat-header-actions .btn-close-chat { display: none !important; }

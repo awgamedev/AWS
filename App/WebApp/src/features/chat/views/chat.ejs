@@ -21,12 +21,17 @@
             <% if (userChats && userChats.length > 0) { %>
                 <% userChats.forEach(chat => { %>
                     <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>" data-creator-id="<%= chat.creatorId._id %>">
-                        <div class="chat-item-avatar">
+                        <div class="chat-item-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden <%= chat.type === 'group' ? 'bg-indigo-400' : 'bg-indigo-600' %>">
                             <% if (chat.type === 'group') { %>
                                 <i class="fas fa-users"></i>
                             <% } else { %>
-                                <% const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString()); %>
-                                <div class="user-initials"><%= otherUser ? otherUser.username.substring(0, 2).toUpperCase() : 'U' %></div>
+                                <% const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString());
+                                   const otherProfile = otherUser && userProfiles && userProfiles[otherUser._id.toString()]; %>
+                                <% if (otherProfile && otherProfile.profilePictureBase64) { %>
+                                    <img src="<%= otherProfile.profilePictureBase64 %>" alt="Avatar" class="w-full h-full object-cover" />
+                                <% } else { %>
+                                    <%= otherUser ? otherUser.username.substring(0, 2).toUpperCase() : 'U' %>
+                                <% } %>
                             <% } %>
                         </div>
                         <div class="chat-item-content">
@@ -70,8 +75,13 @@
                 <% allUsers.forEach(user => { %>
                     <% if (user._id.toString() !== currentUserId.toString()) { %>
                         <div class="user-item" data-user-id="<%= user._id %>">
-                            <div class="user-item-avatar">
-                                <div class="user-initials"><%= user.username.substring(0, 2).toUpperCase() %></div>
+                            <div class="user-item-avatar w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden bg-indigo-600">
+                                <% const profile = userProfiles && userProfiles[user._id.toString()]; %>
+                                <% if (profile && profile.profilePictureBase64) { %>
+                                    <img src="<%= profile.profilePictureBase64 %>" alt="Avatar" class="w-full h-full object-cover" />
+                                <% } else { %>
+                                    <%= user.username.substring(0, 2).toUpperCase() %>
+                                <% } %>
                             </div>
                             <div class="user-item-content">
                                 <span class="user-item-name"><%= user.username %></span>
@@ -107,6 +117,13 @@
                     <p id="chatSubtitle"></p>
                 </div>
                 <div class="chat-header-actions">
+                    <div class="chat-current-user-avatar" title="">
+                        <% if (userProfile && userProfile.profilePictureBase64) { %>
+                            <img src="<%= userProfile.profilePictureBase64 %>" alt="Avatar" />
+                        <% } else { %>
+                            <span><%= userInitials %></span>
+                        <% } %>
+                    </div>
                     <button id="renameGroupBtn" class="btn-rename-chat" style="display:none;" title="Gruppennamen ändern">
                         <i class="fas fa-pen"></i>
                     </button>

@@ -3,6 +3,7 @@ const router = express.Router();
 const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView } = require("../../utils/view-renderer");
 const { chatRepository, messageRepository } = require("./chat.repository");
+const { userProfileRepository } = require("../user-profile");
 
 /**
  * GET /chat - Main chat interface
@@ -18,6 +19,22 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
     // Get user's chats
     const userChats = await chatRepository.findByUserId(req.user.id);
 
+    // Get all user profiles for avatars (map by userId for fast lookup)
+    const userIds = allUsers.map((u) => u._id.toString());
+    const userProfilesRaw = await Promise.all(
+      userIds.map((id) => userProfileRepository.findByUserId(id))
+    );
+    const userProfiles = {};
+    userProfilesRaw.forEach((profile) => {
+      if (profile && profile.userId)
+        userProfiles[profile.userId.toString()] = profile;
+    });
+
+    const userProfile = userProfiles[req.user.id.toString()] || null;
+    const userInitials = req.user.username
+      ? req.user.username.substring(0, 2).toUpperCase()
+      : "";
+
     renderView(
       req,
       res,
@@ -28,6 +45,9 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
         userChats,
         currentUserId: req.user.id,
         userRole: req.user.role,
+        userProfile,
+        userInitials,
+        userProfiles, // pass all user profiles for sidebar avatars
       },
       specificStyles
     );
