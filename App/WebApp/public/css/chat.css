@@ -1044,6 +1044,9 @@ body.fullscreen-active {
         font-size: 1rem;
     }
 
+    /* Hide close chat button on mobile devices */
+    .chat-header-actions .btn-close-chat { display: none !important; }
+
     .chat-messages {
         padding: 16px;
     }
