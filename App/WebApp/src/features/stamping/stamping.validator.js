@@ -169,7 +169,8 @@ async function validateStampingPairOverlap(
     }
   }
 
-  // Check for overlaps
+  // Check for overlaps and collect overlapping pairs
+  const overlappingPairs = [];
   for (const pair of pairs) {
     const existingIn = pair.inTime;
     const existingOut = pair.outTime;
@@ -183,9 +184,28 @@ async function validateStampingPairOverlap(
     );
 
     if (hasOverlap) {
-      errors.overlap = req.__("ERROR_STAMPING_OVERLAP");
-      break;
+      overlappingPairs.push(pair);
     }
+  }
+
+  if (overlappingPairs.length > 0) {
+    // Format the overlapping pairs for display
+    const formatTime = (date) => {
+      if (!date) return "offen";
+      return date.toTimeString().substring(0, 5);
+    };
+
+    const pairsList = overlappingPairs
+      .map((pair) => {
+        const inStr = formatTime(pair.inTime);
+        const outStr = formatTime(pair.outTime);
+        return `${inStr} - ${outStr}`;
+      })
+      .join(", ");
+
+    errors.overlap = `${req.__("ERROR_STAMPING_OVERLAP")} ${req.__(
+      "OVERLAPPING_STAMPINGS"
+    )}: ${pairsList}`;
   }
 
   return errors;
