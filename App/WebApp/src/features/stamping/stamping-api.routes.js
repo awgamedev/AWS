@@ -9,8 +9,87 @@ const {
 const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
 
 /**
+ * POST /api/stampings/pair
+ * Create a new stamping pair (admin only)
+ */
+router.post(
+  "/api/stampings/pair",
+  ensureAuthenticated,
+  checkRole("admin"),
+  async (req, res) => {
+    try {
+      const { userId, reason, date, inTime, outTime } = req.body;
+
+      // Validate the pair data
+      const validationReq = {
+        body: { reason, date, inTime, outTime },
+        __: req.__,
+      };
+
+      const validationErrors = await validateStampingPairEdit(
+        validationReq,
+        ALLOWED_STAMPING_REASONS
+      );
+
+      if (Object.keys(validationErrors).length > 0) {
+        return res
+          .status(400)
+          .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
+      }
+
+      // Parse date and times as local time
+      const [year, month, day] = date.split("-").map(Number);
+      const [inHour, inMinute] = inTime.split(":").map(Number);
+      const inDateTime = new Date(year, month - 1, day, inHour, inMinute, 0);
+
+      // Create the "in" stamping
+      const newIn = new Stamping({
+        userId,
+        stampingType: "in",
+        stampingReason: reason,
+        date: inDateTime,
+      });
+
+      const inStamping = await newIn.save();
+
+      // Create the "out" stamping if outTime is provided
+      let outStamping = null;
+      if (outTime) {
+        const [outHour, outMinute] = outTime.split(":").map(Number);
+        const outDateTime = new Date(
+          year,
+          month - 1,
+          day,
+          outHour,
+          outMinute,
+          0
+        );
+
+        const newOut = new Stamping({
+          userId,
+          stampingType: "out",
+          date: outDateTime,
+        });
+        outStamping = await newOut.save();
+      }
+
+      res.status(201).json({
+        msg: `Stempelpaar erfolgreich erstellt.`,
+        stampings: { in: inStamping, out: outStamping },
+      });
+    } catch (err) {
+      console.error("Fehler beim Erstellen des Stempelpaars:", err.message);
+      res
+        .status(500)
+        .json({ msg: "Serverfehler beim Erstellen des Stempelpaars." });
+    }
+  }
+);
+
+/**
  * POST /api/stampings
  * Create a new stamping entry (admin only)
+ * @deprecated Use POST /api/stampings/pair instead
  */
 router.post(
   "/api/stampings",

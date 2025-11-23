@@ -122,6 +122,8 @@
 	"STAMPING_TYPE_OUT": "Pointer à la sortie",
 	"STAMPING_DATE_LABEL": "Date",
 	"STAMPING_TIME_LABEL": "Heure",
+	"STAMPING_IN_TIME_LABEL": "Heure d'entrée",
+	"STAMPING_OUT_TIME_LABEL": "Heure de sortie",
 	"SAVE_STAMPING_BUTTON": "Enregistrer le pointage",
 	"DELETE_STAMPING_TITLE": "Supprimer le pointage",
 	"CONFIRM_DELETE_STAMPING": "Êtes-vous sûr de vouloir supprimer ce pointage?",

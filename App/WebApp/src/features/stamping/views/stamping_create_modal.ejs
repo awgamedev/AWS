@@ -1,18 +1,13 @@
 <%
 const generateStampingOptions = (reasons, __) => {
-  const typeOptions = `
-    <option value="in">${__("STAMPING_TYPE_IN")}</option>
-    <option value="out">${__("STAMPING_TYPE_OUT")}</option>
-  `;
-  
   const reasonOptions = reasons
     .map((reason) => `<option value="${reason}">${reason}</option>`)
     .join("");
   
-  return { typeOptions, reasonOptions };
+  return { reasonOptions };
 };
 
-const { typeOptions, reasonOptions } = generateStampingOptions(allowedReasons, __);
+const { reasonOptions } = generateStampingOptions(allowedReasons, __);
 
 // Get current date and time for default values
 const now = new Date();
@@ -25,28 +20,26 @@ const currentTime = now.toTimeString().substring(0, 5);
     
     <div class="max-h-96 overflow-y-auto mb-2">
         <div class="mb-4">
-            <label for="create-stampingType" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_TYPE_LABEL") %> *</label>
-            <select id="create-stampingType" name="stampingType" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                <%- typeOptions %>
-            </select>
-        </div>
-
-        <div class="mb-4" id="reason-field">
-            <label for="create-stampingReason" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_REASON_LABEL") %></label>
-            <select id="create-stampingReason" name="stampingReason" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+            <label for="create-stampingReason" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_REASON_LABEL") %> *</label>
+            <select id="create-stampingReason" name="reason" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                 <option value=""><%= __("SELECT_DEFAULT") %></option>
                 <%- reasonOptions %>
             </select>
         </div>
 
+        <div class="mb-4">
+            <label for="create-stampingDate" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_DATE_LABEL") %> *</label>
+            <input type="date" id="create-stampingDate" name="date" value="<%= currentDate %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
         <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-                <label for="create-stampingDate" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_DATE_LABEL") %> *</label>
-                <input type="date" id="create-stampingDate" name="stampingDate" value="<%= currentDate %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="create-inTime" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_IN_TIME_LABEL") %> *</label>
+                <input type="time" id="create-inTime" name="inTime" value="<%= currentTime %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div>
-                <label for="create-stampingTime" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_TIME_LABEL") %> *</label>
-                <input type="time" id="create-stampingTime" name="stampingTime" value="<%= currentTime %>" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="create-outTime" class="block text-sm font-medium text-gray-700"><%= __("STAMPING_OUT_TIME_LABEL") %></label>
+                <input type="time" id="create-outTime" name="outTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
         
@@ -59,23 +52,3 @@ const currentTime = now.toTimeString().substring(0, 5);
         </button>
     </div>
 </form>
-
-<script>
-// Show/hide reason field based on stamping type
-document.getElementById('create-stampingType').addEventListener('change', function() {
-    const reasonField = document.getElementById('reason-field');
-    const reasonSelect = document.getElementById('create-stampingReason');
-    
-    if (this.value === 'in') {
-        reasonField.style.display = 'block';
-        reasonSelect.required = true;
-    } else {
-        reasonField.style.display = 'none';
-        reasonSelect.required = false;
-        reasonSelect.value = '';
-    }
-});
-
-// Trigger on load
-document.getElementById('create-stampingType').dispatchEvent(new Event('change'));
-</script>

@@ -31,29 +31,20 @@ const clearMessage = (el) => {
 
 const handleCreateStamping = async (form) => {
   const msg = byId("create-stamping-form-message");
-  setMessage(msg, "info", "Stempelung wird gespeichert...");
+  setMessage(msg, "info", "Stempelpaar wird gespeichert...");
 
   try {
     const formData = new FormData(form);
 
-    // Combine date and time
-    const date = formData.get("stampingDate");
-    const time = formData.get("stampingTime");
-    const stampingType = formData.get("stampingType");
-    const stampingReason = formData.get("stampingReason");
-    const userId = formData.get("userId");
-
-    // Combine date and time as a single string to avoid timezone conversion
-    const dateTimeString = `${date}T${time}:00`;
-
     const payload = {
-      userId,
-      stampingType,
-      stampingReason: stampingType === "in" ? stampingReason : undefined,
-      date: dateTimeString,
+      userId: formData.get("userId"),
+      reason: formData.get("reason"),
+      date: formData.get("date"),
+      inTime: formData.get("inTime"),
+      outTime: formData.get("outTime") || null,
     };
 
-    const { ok, data } = await api("/api/stampings", {
+    const { ok, data } = await api("/api/stampings/pair", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -63,18 +54,18 @@ const handleCreateStamping = async (form) => {
       setMessage(
         msg,
         "success",
-        data.msg || "Stempelung erfolgreich gespeichert!"
+        data.msg || "Stempelpaar erfolgreich gespeichert!"
       );
       reloadAfter();
     } else {
       setMessage(
         msg,
         "error",
-        data.msg || "Fehler beim Speichern der Stempelung."
+        data.msg || "Fehler beim Speichern des Stempelpaars."
       );
     }
   } catch (err) {
-    console.error("Create stamping error:", err);
+    console.error("Create stamping pair error:", err);
     setMessage(msg, "error", "Ein Netzwerkfehler ist aufgetreten.");
   }
 };

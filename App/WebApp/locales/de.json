@@ -117,6 +117,8 @@
 	"STAMPING_TYPE_OUT": "Ausstempeln",
 	"STAMPING_DATE_LABEL": "Datum",
 	"STAMPING_TIME_LABEL": "Uhrzeit",
+	"STAMPING_IN_TIME_LABEL": "Einstempelzeit",
+	"STAMPING_OUT_TIME_LABEL": "Ausstempelzeit",
 	"SAVE_STAMPING_BUTTON": "Stempelung speichern",
 	"DELETE_STAMPING_TITLE": "Stempelung löschen",
 	"CONFIRM_DELETE_STAMPING": "Möchten Sie diese Stempelung wirklich löschen?",

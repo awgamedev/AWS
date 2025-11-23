@@ -125,6 +125,8 @@
 	"STAMPING_TYPE_OUT": "Clock Out",
 	"STAMPING_DATE_LABEL": "Date",
 	"STAMPING_TIME_LABEL": "Time",
+	"STAMPING_IN_TIME_LABEL": "Clock In Time",
+	"STAMPING_OUT_TIME_LABEL": "Clock Out Time",
 	"SAVE_STAMPING_BUTTON": "Save Stamping",
 	"DELETE_STAMPING_TITLE": "Delete Stamping",
 	"CONFIRM_DELETE_STAMPING": "Are you sure you want to delete this stamping entry?",
