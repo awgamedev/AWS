@@ -481,7 +481,7 @@ function updateChatListItem(chatId, lastMessage) {
       tempDiv.innerHTML = lastMessage.content;
       const textContent = tempDiv.textContent || tempDiv.innerText || "";
       preview.textContent =
-        textContent.substring(0, 40) + (textContent.length > 40 ? "..." : "");
+        textContent.substring(0, 20) + (textContent.length > 20 ? "..." : "");
     }
 
     // Move to top of list

@@ -45,8 +45,12 @@
                                     </button>
                                 <% } %>
                             </div>
-                            <% if (chat.lastMessage) { %>
-                                <p class="chat-item-preview"><%= chat.lastMessage.content.substring(0, 40) %><%= chat.lastMessage.content.length > 40 ? '...' : '' %></p>
+                            <% if (chat.lastMessage) { 
+                                const _raw = chat.lastMessage.content || ''; 
+                                const _text = _raw.replace(/<[^>]*>/g, ''); 
+                                const _snippet = _text.substring(0, 50); 
+                            %>
+                                <p class="chat-item-preview"><%= _snippet %><%= _text.length > 50 ? '...' : '' %></p>
                             <% } %>
                         </div>
                     </div>
