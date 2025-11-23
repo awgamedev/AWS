@@ -5,6 +5,7 @@ const { ensureAuthenticated, checkRole } = require("../../middleware/auth");
 const {
   validateStampingData,
   validateStampingPairEdit,
+  validateStampingPairOverlap,
 } = require("./stamping.validator");
 const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
 
@@ -35,6 +36,18 @@ router.post(
         return res
           .status(400)
           .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
+      }
+
+      // Check for overlapping stampings
+      const overlapErrors = await validateStampingPairOverlap(
+        validationReq,
+        userId
+      );
+
+      if (Object.keys(overlapErrors).length > 0) {
+        return res
+          .status(400)
+          .json({ msg: "Ungültige Stempeldaten.", errors: overlapErrors });
       }
 
       // Parse date and times as local time
@@ -170,6 +183,26 @@ router.put(
         return res
           .status(400)
           .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
+      }
+
+      // Get userId from the existing stamping
+      const existingStamping = await Stamping.findById(inId);
+      if (!existingStamping) {
+        return res.status(404).json({ msg: "Einstempelung nicht gefunden." });
+      }
+
+      // Check for overlapping stampings (exclude the current pair being edited)
+      const overlapErrors = await validateStampingPairOverlap(
+        req,
+        existingStamping.userId,
+        inId,
+        outId
+      );
+
+      if (Object.keys(overlapErrors).length > 0) {
+        return res
+          .status(400)
+          .json({ msg: "Ungültige Stempeldaten.", errors: overlapErrors });
       }
 
       // Parse date and times as local time

@@ -140,6 +140,7 @@
 	"ERROR_ARRIVE_TIME_REQUIRED": "L'heure d'arrivée est requise.",
 	"ERROR_ARRIVE_TIME_REQUIRED_FIRST": "L'heure d'arrivée doit être définie avant l'heure de départ.",
 	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "L'heure de départ doit être après l'heure d'arrivée.",
+	"ERROR_STAMPING_OVERLAP": "Au moins un pointage existe déjà dans cette période. Les pointages ne peuvent pas se chevaucher.",
 	"Tasks": "Tasks",
 	"Task": "Task",
 	"TASKS": "TASKS",
