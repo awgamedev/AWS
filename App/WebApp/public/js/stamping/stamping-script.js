@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       messageDiv.classList.add("text-yellow-600");
 
       try {
-        const response = await fetch("/stamp", {
+        const response = await fetch("stamp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
