@@ -57,13 +57,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         messageDiv.classList.remove("hidden");
-        messageDiv.textContent = data.msg || "Aktion erfolgreich.";
 
         if (response.ok) {
+          messageDiv.textContent = data.msg || "Aktion erfolgreich.";
           messageDiv.classList.remove("text-yellow-600", "text-red-600");
           messageDiv.classList.add("text-green-600");
           setTimeout(() => window.location.reload(), 1000);
         } else {
+          // Show specific validation errors if provided by server
+          let errorMessage = data.msg || "Ein Fehler ist aufgetreten.";
+          if (data.errors) {
+            const errorTexts = Object.values(data.errors).filter(Boolean);
+            if (errorTexts.length > 0) {
+              errorMessage = errorTexts.join(" ");
+            }
+          }
+          messageDiv.textContent = errorMessage;
           messageDiv.classList.remove("text-yellow-600", "text-green-600");
           messageDiv.classList.add("text-red-600");
         }
