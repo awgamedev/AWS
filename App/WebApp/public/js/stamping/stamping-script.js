@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stampingReason = reasonSelect.value;
         if (!stampingReason) {
           reasonError.classList.remove("hidden");
+          messageDiv.classList.remove("hidden");
           messageDiv.textContent =
             "Bitte wähle einen Grund für das Einstempeln aus."; // Hardcoded, da i18n nicht in JS übertragen wird
           messageDiv.classList.remove(
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Ladezustand anzeigen
+      messageDiv.classList.remove("hidden");
       messageDiv.textContent = "Verarbeite Stempelvorgang...";
       messageDiv.classList.remove(
         "text-green-600",
@@ -54,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json();
 
+        messageDiv.classList.remove("hidden");
         messageDiv.textContent = data.msg || "Aktion erfolgreich.";
 
         if (response.ok) {
@@ -65,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
           messageDiv.classList.add("text-red-600");
         }
       } catch (error) {
+        messageDiv.classList.remove("hidden");
         messageDiv.textContent = "Ein Netzwerkfehler ist aufgetreten.";
         messageDiv.classList.remove("text-yellow-600", "text-green-600");
         messageDiv.classList.add("text-red-600");
