@@ -306,23 +306,24 @@
 	"CREATE_GROUP": "Gruppe erstellen",
 	"SEARCH_CHATS": "Chats suchen",
 	"TYPE_MESSAGE": "Nachricht eingeben...",
-	"DELETE_CHAT": "Chat löschen"
-	,"CHAT_TOGGLE_SIMPLE": "Einfach"
-	,"CHAT_TOGGLE_RICH": "Rich"
-	,"CHAT_PLACEHOLDER_RICH": "Nachricht eingeben..."
-	,"CHAT_PLACEHOLDER_SIMPLE": "Kurze Nachricht eingeben..."
-	,"CHAT_EDITED": "(bearbeitet)"
-	,"CHAT_CONFIRM_DELETE_MESSAGE": "Möchten Sie diese Nachricht wirklich löschen?"
-	,"CHAT_CONFIRM_DELETE_CHAT": "Möchten Sie diesen Chat wirklich löschen?"
-	,"CHAT_ERROR_IMAGE_TOO_LARGE": "Bild ist zu groß (max 5MB)"
-	,"CHAT_GROUP_CREATED_SUCCESS": "Gruppe erfolgreich erstellt"
-	,"CHAT_GROUP_NAME_REQUIRED": "Bitte geben Sie einen Gruppennamen ein"
-	,"CHAT_GROUP_PARTICIPANTS_REQUIRED": "Bitte wählen Sie mindestens einen Teilnehmer aus"
-	,"CHAT_DIRECT_CREATE_ERROR_PREFIX": "Fehler beim Erstellen der Direktnachricht: "
-	,"CHAT_GROUP_CREATE_ERROR_PREFIX": "Fehler beim Erstellen der Gruppe: "
-	,"CHAT_DELETE_ERROR": "Fehler beim Löschen des Chats"
-	,"CHAT_DELETE_SUCCESS": "Chat erfolgreich gelöscht"
-	,"CHAT_SEND_ERROR": "Fehler beim Senden der Nachricht"
-	,"CHAT_MODE_SWITCHED_SIMPLE": "Einfacher Modus aktiviert"
-	,"CHAT_MODE_SWITCHED_RICH": "Rich-Editor aktiviert"
+	"DELETE_CHAT": "Chat löschen",
+	"CHAT_TOGGLE_SIMPLE": "Einfach",
+	"CHAT_TOGGLE_RICH": "Rich",
+	"CHAT_PLACEHOLDER_RICH": "Nachricht eingeben...",
+	"CHAT_PLACEHOLDER_SIMPLE": "Kurze Nachricht eingeben...",
+	"CHAT_EDITED": "(bearbeitet)",
+	"CHAT_CONFIRM_DELETE_MESSAGE": "Möchten Sie diese Nachricht wirklich löschen?",
+	"CHAT_CONFIRM_DELETE_CHAT": "Möchten Sie diesen Chat wirklich löschen?",
+	"CHAT_ERROR_IMAGE_TOO_LARGE": "Bild ist zu groß (max 5MB)",
+	"CHAT_GROUP_CREATED_SUCCESS": "Gruppe erfolgreich erstellt",
+	"CHAT_GROUP_NAME_REQUIRED": "Bitte geben Sie einen Gruppennamen ein",
+	"CHAT_GROUP_PARTICIPANTS_REQUIRED": "Bitte wählen Sie mindestens einen Teilnehmer aus",
+	"CHAT_DIRECT_CREATE_ERROR_PREFIX": "Fehler beim Erstellen der Direktnachricht: ",
+	"CHAT_GROUP_CREATE_ERROR_PREFIX": "Fehler beim Erstellen der Gruppe: ",
+	"CHAT_DELETE_ERROR": "Fehler beim Löschen des Chats",
+	"CHAT_DELETE_SUCCESS": "Chat erfolgreich gelöscht",
+	"CHAT_SEND_ERROR": "Fehler beim Senden der Nachricht",
+	"CHAT_MODE_SWITCHED_SIMPLE": "Einfacher Modus aktiviert",
+	"CHAT_MODE_SWITCHED_RICH": "Rich-Editor aktiviert",
+	"NO_CHATS_AVAILABLE": "Keine Chats verfügbar."
 }
