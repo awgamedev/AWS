@@ -143,6 +143,7 @@
 	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Leave time must be after arrive time.",
 	"ERROR_STAMPING_OVERLAP": "At least one stamping already exists in that period. Stampings cannot overlap.",
 	"OVERLAPPING_STAMPINGS": "Overlapping stampings",
+	"ERROR_STAMPING_NOT_LATEST": "A later stamping already exists today. New stampings must be the latest chronological entry.",
 	"Tasks": "Tasks",
 	"Task": "Task",
 	"TASKS": "TASKS",

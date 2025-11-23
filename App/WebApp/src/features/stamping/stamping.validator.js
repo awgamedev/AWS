@@ -251,8 +251,55 @@ function checkTimeOverlap(newIn, newOut, existingIn, existingOut) {
   );
 }
 
+/**
+ * Validates that the new stamping (current timestamp) is the latest chronological entry for the day.
+ * Rejects if there exists any stamping for the same user later on the same day (future timestamp relative to now).
+ * @param {Object} req - Express request object with user and __ (translator)
+ * @param {string} userId - User ID
+ * @param {Date} nowDate - Current server timestamp
+ * @returns {Object} errors object (empty if ok)
+ */
+async function validateLatestChronological(req, userId, nowDate) {
+  const errors = {};
+
+  // Define start and end of the current day (local server timezone)
+  const startOfDay = new Date(
+    nowDate.getFullYear(),
+    nowDate.getMonth(),
+    nowDate.getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+  const endOfDay = new Date(
+    nowDate.getFullYear(),
+    nowDate.getMonth(),
+    nowDate.getDate(),
+    23,
+    59,
+    59,
+    999
+  );
+
+  // Find any stampings later than now but still today
+  const laterStampings = await Stamping.find({
+    userId,
+    date: { $gt: nowDate, $lte: endOfDay },
+  })
+    .sort({ date: 1 })
+    .exec();
+
+  if (laterStampings.length > 0) {
+    errors.chronology = req.__("ERROR_STAMPING_NOT_LATEST");
+  }
+
+  return errors;
+}
+
 module.exports = {
   validateStampingData,
   validateStampingPairEdit,
   validateStampingPairOverlap,
+  validateLatestChronological,
 };

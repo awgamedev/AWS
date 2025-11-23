@@ -5,7 +5,10 @@ const { ensureAuthenticated } = require("../../middleware/auth");
 const { renderView } = require("../../utils/view-renderer");
 const { formatTime, formatDate } = require("../../utils/date-utils");
 const { getStampingPairs } = require("./utils/stamping-pair-utils");
-const { validateStampingData } = require("./stamping.validator");
+const {
+  validateStampingData,
+  validateLatestChronological,
+} = require("./stamping.validator");
 
 // Centralized allowed reasons
 const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
@@ -138,11 +141,28 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
         .json({ msg: "Ungültige Stempeldaten.", errors: validationErrors });
     }
 
+    // Current timestamp for this stamping
+    const nowDate = new Date();
+
+    // Chronology validation: ensure there is no later stamping today
+    const chronologyErrors = await validateLatestChronological(
+      req,
+      userId,
+      nowDate
+    );
+
+    const allErrors = { ...validationErrors, ...chronologyErrors };
+    if (Object.keys(allErrors).length > 0) {
+      return res
+        .status(400)
+        .json({ msg: "Ungültige Stempeldaten.", errors: allErrors });
+    }
+
     const newStamping = new Stamping({
       userId,
       stampingType,
       stampingReason: stampingType === "in" ? stampingReason : undefined,
-      date: new Date(),
+      date: nowDate,
     });
 
     const stampingEntry = await newStamping.save();

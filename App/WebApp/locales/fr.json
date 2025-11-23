@@ -142,6 +142,7 @@
 	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "L'heure de départ doit être après l'heure d'arrivée.",
 	"ERROR_STAMPING_OVERLAP": "Au moins un pointage existe déjà dans cette période. Les pointages ne peuvent pas se chevaucher.",
 	"OVERLAPPING_STAMPINGS": "Pointages qui se chevauchent",
+	"ERROR_STAMPING_NOT_LATEST": "Un pointage ultérieur existe déjà aujourd'hui. Les nouveaux pointages doivent être le dernier en ordre chronologique.",
 	"Tasks": "Tasks",
 	"Task": "Task",
 	"TASKS": "TASKS",

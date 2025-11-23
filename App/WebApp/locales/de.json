@@ -137,6 +137,7 @@
 	"ERROR_LEAVE_TIME_AFTER_ARRIVE": "Abgangszeit muss nach der Ankunftszeit liegen.",
 	"ERROR_STAMPING_OVERLAP": "In diesem Zeitraum existiert bereits mindestens eine Stempelung. Stempelungen dürfen sich nicht überschneiden.",
 	"OVERLAPPING_STAMPINGS": "Überschneidende Stempelungen",
+	"ERROR_STAMPING_NOT_LATEST": "Es existiert bereits eine spätere Stempelung heute. Neue Stempelungen müssen chronologisch die letzte sein.",
 	"TASKS": "Aufgaben",
 	"TASK": "Aufgabe",
 	"PREVIOUS": "Vorherige",
