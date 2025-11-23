@@ -25,6 +25,7 @@ function initializeChat() {
 
   // Initialize Socket.IO connection
   socket = io({
+    path: "/onis/socket.io",
     transports: ["websocket", "polling"],
   });
 

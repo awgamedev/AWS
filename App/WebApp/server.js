@@ -15,10 +15,13 @@ const server = http.createServer(app);
 
 // Initialize Socket.IO
 const io = new Server(server, {
+  path: "/socket.io",
   cors: {
     origin: `http://localhost:${PORT}`,
     credentials: true,
   },
+  transports: ["websocket", "polling"],
+  allowEIO3: true,
 });
 
 // Get the session middleware from app
