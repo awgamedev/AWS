@@ -68,10 +68,15 @@
             <% } %>
         </div>
 
-        <!-- User List Section -->
-        <div class="user-list-section">
-            <h3 class="user-list-title">Benutzer</h3>
-            <div class="user-list" id="userList">
+        <!-- User List Section (Collapsible) -->
+        <div class="user-list-section collapsed" id="userListSection">
+            <h3 class="user-list-title" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleUserListSection()">
+                Benutzer
+                <button id="userListToggleBtn" class="user-list-toggle-btn" style="background:none;border:none;outline:none;cursor:pointer;padding:0 0 0 8px;">
+                    <i id="userListToggleIcon" class="fas fa-chevron-down" style="transition:transform 0.2s;"></i>
+                </button>
+            </h3>
+            <div class="user-list" id="userList" style="display:none;">
                 <% allUsers.forEach(user => { %>
                     <% if (user._id.toString() !== currentUserId.toString()) { %>
                         <div class="user-item" data-user-id="<%= user._id %>">
@@ -250,3 +255,31 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat/chat-script.js"></script>
+<script>
+// Collapsible user list section
+function toggleUserListSection() {
+    var section = document.getElementById('userListSection');
+    var list = document.getElementById('userList');
+    var icon = document.getElementById('userListToggleIcon');
+    if (section.classList.contains('collapsed')) {
+        section.classList.remove('collapsed');
+        list.style.display = '';
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        section.classList.add('collapsed');
+        list.style.display = 'none';
+        icon.style.transform = '';
+    }
+}
+// Ensure collapsed by default
+document.addEventListener('DOMContentLoaded', function() {
+    var section = document.getElementById('userListSection');
+    var list = document.getElementById('userList');
+    var icon = document.getElementById('userListToggleIcon');
+    if (section && list && icon) {
+        section.classList.add('collapsed');
+        list.style.display = 'none';
+        icon.style.transform = '';
+    }
+});
+</script>
