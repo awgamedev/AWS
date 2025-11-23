@@ -58,11 +58,15 @@ const handleCreateStamping = async (form) => {
       );
       reloadAfter();
     } else {
-      setMessage(
-        msg,
-        "error",
-        data.msg || "Fehler beim Speichern des Stempelpaars."
-      );
+      // Display specific validation errors if available
+      let errorMessage = data.msg || "Fehler beim Speichern des Stempelpaars.";
+      if (data.errors) {
+        const errorMessages = Object.values(data.errors).join(" ");
+        if (errorMessages) {
+          errorMessage = errorMessages;
+        }
+      }
+      setMessage(msg, "error", errorMessage);
     }
   } catch (err) {
     console.error("Create stamping pair error:", err);
@@ -139,11 +143,16 @@ const handleEditStampingPair = async (form) => {
       );
       reloadAfter();
     } else {
-      setMessage(
-        msg,
-        "error",
-        data.msg || "Fehler beim Aktualisieren des Stempelpaars."
-      );
+      // Display specific validation errors if available
+      let errorMessage =
+        data.msg || "Fehler beim Aktualisieren des Stempelpaars.";
+      if (data.errors) {
+        const errorMessages = Object.values(data.errors).join(" ");
+        if (errorMessages) {
+          errorMessage = errorMessages;
+        }
+      }
+      setMessage(msg, "error", errorMessage);
     }
   } catch (err) {
     console.error("Edit stamping pair error:", err);
