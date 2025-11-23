@@ -109,15 +109,33 @@
                 <!-- Messages will be dynamically inserted here -->
             </div>
 
-            <!-- Message Input -->
+            <!-- Message Input with Quill Editor -->
             <div class="chat-input-container">
-                <textarea 
-                    id="messageInput" 
-                    class="chat-input" 
-                    placeholder="<%= __('TYPE_MESSAGE') || 'Nachricht eingeben...' %>"
-                    rows="1"></textarea>
+                <div class="chat-editor-wrapper">
+                    <div id="toolbar" class="chat-toolbar">
+                        <button class="ql-bold" title="Fett"></button>
+                        <button class="ql-italic" title="Kursiv"></button>
+                        <button class="ql-underline" title="Unterstrichen"></button>
+                        <button class="ql-strike" title="Durchgestrichen"></button>
+                        <button class="ql-list" value="ordered" title="Nummerierte Liste"></button>
+                        <button class="ql-list" value="bullet" title="Aufzählungsliste"></button>
+                        <select class="ql-size" title="Schriftgröße">
+                            <option value="small">Klein</option>
+                            <option selected>Normal</option>
+                            <option value="large">Groß</option>
+                            <option value="huge">Sehr Groß</option>
+                        </select>
+                        <select class="ql-color" title="Textfarbe"></select>
+                        <select class="ql-background" title="Hintergrundfarbe"></select>
+                        <button class="ql-link" title="Link einfügen"></button>
+                        <button class="ql-image" title="Bild hochladen"></button>
+                        <button class="ql-code-block" title="Code"></button>
+                        <button class="ql-clean" title="Formatierung entfernen"></button>
+                    </div>
+                    <div id="messageInput" class="chat-input-editor"></div>
+                </div>
                 <button id="sendMessageBtn" class="btn-send-message">
-                    <i class="fas fa-paper-plane"></i>
+                    <i class="fas fa-paper-plane"></i> Senden
                 </button>
             </div>
         </div>
@@ -158,6 +176,10 @@
         </div>
     </div>
 </div>
+
+<!-- Quill Editor -->
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat/chat-script.js"></script>

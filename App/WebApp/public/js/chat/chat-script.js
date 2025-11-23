@@ -3,6 +3,7 @@ let socket;
 let currentChatId = null;
 let currentUserId = null;
 let editingMessageId = null;
+let quill; // Quill editor instance
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
@@ -18,6 +19,9 @@ function initializeChat() {
     currentUserId = userElement.dataset.currentUserId;
   }
 
+  // Initialize Quill editor
+  initializeQuillEditor();
+
   // Initialize Socket.IO connection
   socket = io({
     transports: ["websocket", "polling"],
@@ -25,6 +29,58 @@ function initializeChat() {
 
   setupSocketListeners();
   setupEventListeners();
+}
+
+function initializeQuillEditor() {
+  // Configure Quill with custom image handler
+  quill = new Quill("#messageInput", {
+    theme: "snow",
+    modules: {
+      toolbar: {
+        container: "#toolbar",
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    },
+    placeholder: "Nachricht eingeben...",
+  });
+
+  // Custom image handler for base64 encoding
+  function imageHandler() {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          showNotification("Bild ist zu groß (max 5MB)", "error");
+          return;
+        }
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, "image", e.target.result);
+          quill.setSelection(range.index + 1);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+  }
+
+  // Submit on Ctrl+Enter
+  quill.root.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.ctrlKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 }
 
 function setupSocketListeners() {
@@ -104,26 +160,8 @@ function setupEventListeners() {
 
   // Send message
   const sendBtn = document.getElementById("sendMessageBtn");
-  const messageInput = document.getElementById("messageInput");
-
   if (sendBtn) {
     sendBtn.addEventListener("click", sendMessage);
-  }
-
-  if (messageInput) {
-    // Auto-resize textarea
-    messageInput.addEventListener("input", function () {
-      this.style.height = "auto";
-      this.style.height = this.scrollHeight + "px";
-    });
-
-    // Send on Enter (Shift+Enter for new line)
-    messageInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
   }
 
   // Delete chat buttons
@@ -250,11 +288,12 @@ function createMessageElement(message) {
   const bubbleDiv = document.createElement("div");
   bubbleDiv.className = "message-bubble";
 
-  const textP = document.createElement("p");
-  textP.className = "message-text";
-  textP.textContent = message.content;
+  const textDiv = document.createElement("div");
+  textDiv.className = "message-text";
+  // Use innerHTML to render rich content (Quill HTML)
+  textDiv.innerHTML = message.content;
 
-  bubbleDiv.appendChild(textP);
+  bubbleDiv.appendChild(textDiv);
 
   if (message.edited) {
     const editedSpan = document.createElement("span");
@@ -291,10 +330,12 @@ function createMessageElement(message) {
 }
 
 function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const content = input.value.trim();
+  // Get HTML content from Quill
+  const content = quill.root.innerHTML;
 
-  if (!content || !currentChatId) return;
+  // Check if there's actual content (Quill uses <p><br></p> for empty)
+  const text = quill.getText().trim();
+  if (!text || !currentChatId) return;
 
   if (editingMessageId) {
     // Edit existing message
@@ -313,15 +354,16 @@ function sendMessage() {
     });
   }
 
-  input.value = "";
-  input.style.height = "auto";
+  // Clear editor
+  quill.setContents([]);
 }
 
 function startEditMessage(messageId, currentContent) {
   editingMessageId = messageId;
-  const input = document.getElementById("messageInput");
-  input.value = currentContent;
-  input.focus();
+
+  // Set HTML content in Quill editor
+  quill.root.innerHTML = currentContent;
+  quill.focus();
 
   // Change send button to edit icon
   document.getElementById("sendMessageBtn").innerHTML =
@@ -340,7 +382,7 @@ function updateMessageInUI(message) {
   );
   if (messageElement) {
     const textElement = messageElement.querySelector(".message-text");
-    textElement.textContent = message.content;
+    textElement.innerHTML = message.content;
 
     // Add or update edited indicator
     let editedSpan = messageElement.querySelector(".message-edited");
@@ -370,9 +412,12 @@ function updateChatListItem(chatId, lastMessage) {
   if (chatItem) {
     const preview = chatItem.querySelector(".chat-item-preview");
     if (preview) {
-      const content = lastMessage.content;
+      // Strip HTML tags for preview
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = lastMessage.content;
+      const textContent = tempDiv.textContent || tempDiv.innerText || "";
       preview.textContent =
-        content.substring(0, 40) + (content.length > 40 ? "..." : "");
+        textContent.substring(0, 40) + (textContent.length > 40 ? "..." : "");
     }
 
     // Move to top of list

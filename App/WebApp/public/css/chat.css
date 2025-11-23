@@ -406,6 +406,56 @@
     margin: 0;
     font-size: 0.95rem;
     line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Rich text content in messages */
+.message-text img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.message-text ul, .message-text ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.message-text li {
+    margin: 4px 0;
+}
+
+.message-text a {
+    color: #6366f1;
+    text-decoration: underline;
+}
+
+.message.own-message .message-text a {
+    color: #c7d2fe;
+}
+
+.message-text pre {
+    background: #f3f4f6;
+    padding: 8px 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.message.own-message .message-text pre {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.message-text code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.message.own-message .message-text code {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .message-edited {
@@ -465,26 +515,64 @@
     background: white;
     border-top: 1px solid #e5e7eb;
     display: flex;
+    flex-direction: column;
     gap: 12px;
-    align-items: flex-end;
 }
 
-.chat-input {
+.chat-editor-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Quill Editor Toolbar */
+.chat-toolbar {
+    border: 1px solid #d1d5db;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    background: #f9fafb;
+    padding: 8px;
+}
+
+.chat-toolbar .ql-formats {
+    margin-right: 15px;
+}
+
+/* Quill Editor Input Area */
+.chat-input-editor {
     flex: 1;
     border: 1px solid #d1d5db;
-    border-radius: 12px;
-    padding: 12px 16px;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: white;
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
     font-size: 0.95rem;
     font-family: inherit;
-    resize: none;
-    max-height: 120px;
-    transition: all 0.2s;
 }
 
-.chat-input:focus {
-    outline: none;
+.chat-input-editor .ql-editor {
+    min-height: 120px;
+    max-height: 300px;
+    padding: 12px 16px;
+}
+
+.chat-input-editor .ql-editor.ql-blank::before {
+    color: #9ca3af;
+    font-style: normal;
+    left: 16px;
+}
+
+.chat-input-editor:focus-within {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Send button wrapper */
+.chat-input-send-wrapper {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .btn-send-message {
@@ -492,10 +580,11 @@
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 12px 20px;
+    padding: 12px 24px;
     cursor: pointer;
     font-size: 1.2rem;
     transition: all 0.2s;
+    align-self: flex-end;
 }
 
 .btn-send-message:hover {
@@ -505,6 +594,11 @@
 
 .btn-send-message:active {
     transform: translateY(0);
+}
+
+.btn-send-message:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Modal Styles */
