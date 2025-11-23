@@ -302,5 +302,8 @@
 	"ASSIGNING": "Wird zugewiesen...",
 	"ASSIGN_TO_YOURSELF_MESSAGE": "Sie können diese Aufgabe sich selbst zuweisen oder diesen Dialog schließen, um sie nicht zugewiesen zu lassen.",
 	"DATE_RANGE": "Zeitraum",
-	"TODAY": "Heute"
+	"TODAY": "Heute",
+	"CREATE_GROUP": "CREATE_GROUP",
+	"SEARCH_CHATS": "SEARCH_CHATS",
+	"TYPE_MESSAGE": "TYPE_MESSAGE"
 }

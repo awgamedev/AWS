@@ -1,0 +1,163 @@
+<div class="chat-container" data-current-user-id="<%= currentUserId %>">
+    <!-- Left Sidebar: User List and Groups -->
+    <div class="chat-sidebar">
+        <!-- Header with Create Group Button -->
+        <div class="chat-sidebar-header">
+            <h2 class="chat-sidebar-title">Chats</h2>
+            <button id="createGroupBtn" class="btn-create-group" title="<%= __('CREATE_GROUP') || 'Neue Gruppe erstellen' %>">
+                <i class="fas fa-plus"></i>
+                <i class="fas fa-users"></i>
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="chat-search-container">
+            <input type="text" id="chatSearch" class="chat-search-input" placeholder="<%= __('SEARCH_CHATS') || 'Chats durchsuchen...' %>">
+        </div>
+
+        <!-- Chat List -->
+        <div class="chat-list" id="chatList">
+            <!-- Existing Chats will be rendered here -->
+            <% if (userChats && userChats.length > 0) { %>
+                <% userChats.forEach(chat => { %>
+                    <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>">
+                        <div class="chat-item-avatar">
+                            <% if (chat.type === 'group') { %>
+                                <i class="fas fa-users"></i>
+                            <% } else { %>
+                                <% const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString()); %>
+                                <div class="user-initials"><%= otherUser ? otherUser.username.substring(0, 2).toUpperCase() : 'U' %></div>
+                            <% } %>
+                        </div>
+                        <div class="chat-item-content">
+                            <div class="chat-item-header">
+                                <span class="chat-item-name">
+                                    <% if (chat.type === 'group') { %>
+                                        <%= chat.name %>
+                                    <% } else { %>
+                                        <% const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString()); %>
+                                        <%= otherUser ? otherUser.username : 'User' %>
+                                    <% } %>
+                                </span>
+                                <% if (chat.type === 'group' && (chat.creatorId._id.toString() === currentUserId.toString() || userRole === 'admin')) { %>
+                                    <button class="btn-delete-chat" data-chat-id="<%= chat._id %>" title="<%= __('DELETE_CHAT') || 'Gruppe löschen' %>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                <% } %>
+                            </div>
+                            <% if (chat.lastMessage) { %>
+                                <p class="chat-item-preview"><%= chat.lastMessage.content.substring(0, 40) %><%= chat.lastMessage.content.length > 40 ? '...' : '' %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-chats-message">
+                    <i class="fas fa-comments"></i>
+                    <p>Keine Chats vorhanden</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- User List Section -->
+        <div class="user-list-section">
+            <h3 class="user-list-title">Benutzer</h3>
+            <div class="user-list" id="userList">
+                <% allUsers.forEach(user => { %>
+                    <% if (user._id.toString() !== currentUserId.toString()) { %>
+                        <div class="user-item" data-user-id="<%= user._id %>">
+                            <div class="user-item-avatar">
+                                <div class="user-initials"><%= user.username.substring(0, 2).toUpperCase() %></div>
+                            </div>
+                            <div class="user-item-content">
+                                <span class="user-item-name"><%= user.username %></span>
+                                <% if (user.role === 'admin') { %>
+                                    <span class="user-badge">Admin</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side: Chat Area -->
+    <div class="chat-main">
+        <!-- Welcome Screen (shown when no chat is selected) -->
+        <div id="welcomeScreen" class="chat-welcome">
+            <i class="fas fa-comments"></i>
+            <h2>Willkommen im Chat</h2>
+            <p>Wähle einen Chat aus der Liste oder starte eine neue Konversation</p>
+        </div>
+
+        <!-- Chat Window (hidden by default) -->
+        <div id="chatWindow" class="chat-window" style="display: none;">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <h3 id="chatTitle">Chat</h3>
+                    <p id="chatSubtitle"></p>
+                </div>
+                <button id="closeChatBtn" class="btn-close-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be dynamically inserted here -->
+            </div>
+
+            <!-- Message Input -->
+            <div class="chat-input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="chat-input" 
+                    placeholder="<%= __('TYPE_MESSAGE') || 'Nachricht eingeben...' %>"
+                    rows="1"></textarea>
+                <button id="sendMessageBtn" class="btn-send-message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Creating Group -->
+<div id="createGroupModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Neue Gruppe erstellen</h3>
+            <button class="modal-close" onclick="closeCreateGroupModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="groupName">Gruppenname</label>
+                <input type="text" id="groupName" class="form-input" placeholder="Gruppenname eingeben...">
+            </div>
+            <div class="form-group">
+                <label>Teilnehmer auswählen</label>
+                <div class="participant-list" id="participantList">
+                    <% allUsers.forEach(user => { %>
+                        <% if (user._id.toString() !== currentUserId.toString()) { %>
+                            <label class="participant-item">
+                                <input type="checkbox" value="<%= user._id %>" class="participant-checkbox">
+                                <span class="participant-name"><%= user.username %></span>
+                            </label>
+                        <% } %>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCreateGroupModal()">Abbrechen</button>
+            <button class="btn-primary" onclick="createGroup()">Erstellen</button>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat/chat-script.js"></script>

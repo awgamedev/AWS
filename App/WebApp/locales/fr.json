@@ -321,5 +321,8 @@
 	"ASSIGNING": "Attribution...",
 	"ASSIGN_TO_YOURSELF_MESSAGE": "Vous pouvez vous attribuer cette tâche ou fermer cette fenêtre pour la laisser non attribuée.",
 	"DATE_RANGE": "Période",
-	"TODAY": "TODAY"
+	"TODAY": "TODAY",
+	"CREATE_GROUP": "CREATE_GROUP",
+	"SEARCH_CHATS": "SEARCH_CHATS",
+	"TYPE_MESSAGE": "TYPE_MESSAGE"
 }

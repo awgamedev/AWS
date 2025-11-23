@@ -322,5 +322,8 @@
 	"ASSIGNING": "Assigning...",
 	"ASSIGN_TO_YOURSELF_MESSAGE": "You can assign this task to yourself or close this dialog to leave it unassigned.",
 	"DATE_RANGE": "Date Range",
-	"TODAY": "TODAY"
+	"TODAY": "TODAY",
+	"CREATE_GROUP": "CREATE_GROUP",
+	"SEARCH_CHATS": "SEARCH_CHATS",
+	"TYPE_MESSAGE": "TYPE_MESSAGE"
 }

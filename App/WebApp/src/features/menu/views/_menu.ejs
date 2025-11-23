@@ -21,6 +21,14 @@
         user: user
     }) %>
 
+    <%- include('_menu_item', { 
+        href: '/chat', 
+        icon: 'fa-solid fa-comments', 
+        text: 'Chat', 
+        currentPath: currentPath,
+        user: user
+    }) %>
+
     <%- include('_menu_dropdown', {
         prefix: '/time-tracking',
         icon: 'fa-solid fa-clock',
