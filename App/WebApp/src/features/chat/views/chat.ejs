@@ -4,7 +4,7 @@
         <!-- Header with Create Group Button -->
         <div class="chat-sidebar-header">
             <h2 class="chat-sidebar-title">Chats</h2>
-            <button id="createGroupBtn" class="btn-create-group" title="<%= __('CREATE_GROUP') || 'Neue Gruppe erstellen' %>">
+            <button id="createGroupBtn" class="btn-create-group" title="<%= __('CREATE_GROUP') %>">
                 <i class="fas fa-plus"></i>
                 <i class="fas fa-users"></i>
             </button>
@@ -12,7 +12,7 @@
 
         <!-- Search Bar -->
         <div class="chat-search-container">
-            <input type="text" id="chatSearch" class="chat-search-input" placeholder="<%= __('SEARCH_CHATS') || 'Chats durchsuchen...' %>">
+            <input type="text" id="chatSearch" class="chat-search-input" placeholder="<%= __('SEARCH_CHATS') %>">
         </div>
 
         <!-- Chat List -->
@@ -40,7 +40,7 @@
                                     <% } %>
                                 </span>
                                 <% if (chat.type === 'group' && (chat.creatorId._id.toString() === currentUserId.toString() || userRole === 'admin')) { %>
-                                    <button class="btn-delete-chat" data-chat-id="<%= chat._id %>" title="<%= __('DELETE_CHAT') || 'Gruppe löschen' %>">
+                                    <button class="btn-delete-chat" data-chat-id="<%= chat._id %>" title="<%= __('DELETE_CHAT') %>">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 <% } %>
@@ -58,7 +58,7 @@
             <% } else { %>
                 <div class="no-chats-message">
                     <i class="fas fa-comments"></i>
-                    <p>Keine Chats vorhanden</p>
+                    <p><%= __('NO_CHATS_AVAILABLE') %></p>
                 </div>
             <% } %>
         </div>
