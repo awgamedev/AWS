@@ -575,6 +575,55 @@
     justify-content: flex-end;
 }
 
+/* Custom toolbar button styling */
+.ql-custom {
+    width: auto !important;
+    padding: 0 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #444;
+}
+
+.ql-custom:hover {
+    color: #06c;
+}
+
+/* Fullscreen editor styles */
+/* Pseudo fullscreen (CSS only, avoids native fullscreen exit on file dialogs) */
+.pseudo-fullscreen-editor {
+    position: fixed;
+    inset: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+    background: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);
+}
+
+.pseudo-fullscreen-editor .chat-toolbar {
+    flex-shrink: 0;
+}
+
+.pseudo-fullscreen-editor .chat-input-editor {
+    flex: 1;
+    max-height: none !important;
+    height: auto !important;
+}
+
+.pseudo-fullscreen-editor .chat-input-editor .ql-editor {
+    max-height: none !important;
+    height: calc(100vh - 160px);
+    font-size: 1.05rem;
+}
+
+body.fullscreen-active {
+    overflow: hidden;
+}
+
 .btn-send-message {
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: white;

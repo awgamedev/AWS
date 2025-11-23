@@ -81,6 +81,41 @@ function initializeQuillEditor() {
       sendMessage();
     }
   });
+
+  // Setup fullscreen button
+  setupFullscreenEditor();
+}
+
+// CSS-based pseudo fullscreen to avoid exiting after file dialogs
+let isPseudoFullscreen = false;
+function setupFullscreenEditor() {
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const editorWrapper = document.querySelector(".chat-editor-wrapper");
+
+  if (!fullscreenBtn || !editorWrapper) return;
+
+  fullscreenBtn.addEventListener("click", () => {
+    isPseudoFullscreen = !isPseudoFullscreen;
+    if (isPseudoFullscreen) {
+      editorWrapper.classList.add("pseudo-fullscreen-editor");
+      document.body.classList.add("fullscreen-active");
+      fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+      editorWrapper.classList.remove("pseudo-fullscreen-editor");
+      document.body.classList.remove("fullscreen-active");
+      fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  });
+
+  // Re-apply class after image insertion if still flagged
+  quill.on("text-change", () => {
+    if (
+      isPseudoFullscreen &&
+      !editorWrapper.classList.contains("pseudo-fullscreen-editor")
+    ) {
+      editorWrapper.classList.add("pseudo-fullscreen-editor");
+    }
+  });
 }
 
 function setupSocketListeners() {
