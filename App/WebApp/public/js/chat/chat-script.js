@@ -4,6 +4,7 @@ let currentChatId = null;
 let currentUserId = null;
 let editingMessageId = null;
 let quill; // Quill editor instance
+let isRichMode = true; // editor mode state
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
@@ -29,6 +30,7 @@ function initializeChat() {
 
   setupSocketListeners();
   setupEventListeners();
+  setupEditorModeToggle();
 }
 
 function initializeQuillEditor() {
@@ -254,7 +256,11 @@ function openChat(chatId) {
   socket.emit("join-chat", chatId);
 
   // Clear message input
-  document.getElementById("messageInput").value = "";
+  if (quill) {
+    quill.setContents([]);
+  }
+  const simpleInput = document.getElementById("simpleChatInput");
+  if (simpleInput) simpleInput.value = "";
 }
 
 function closeChat() {
@@ -365,15 +371,24 @@ function createMessageElement(message) {
 }
 
 function sendMessage() {
-  // Get HTML content from Quill
-  const content = quill.root.innerHTML;
+  if (!currentChatId) return;
 
-  // Check if there's actual content (Quill uses <p><br></p> for empty)
-  const text = quill.getText().trim();
-  if (!text || !currentChatId) return;
+  let content;
+  if (isRichMode) {
+    // Rich mode: HTML from Quill
+    content = quill.root.innerHTML;
+    const text = quill.getText().trim();
+    if (!text || text === "") return;
+  } else {
+    // Simple mode: plain text input
+    const inputEl = document.getElementById("simpleChatInput");
+    if (!inputEl) return;
+    const raw = inputEl.value.trim();
+    if (!raw) return;
+    content = `<p>${escapeHtml(raw)}</p>`;
+  }
 
   if (editingMessageId) {
-    // Edit existing message
     socket.emit("edit-message", {
       messageId: editingMessageId,
       content: content,
@@ -382,15 +397,19 @@ function sendMessage() {
     document.getElementById("sendMessageBtn").innerHTML =
       '<i class="fas fa-paper-plane"></i>';
   } else {
-    // Send new message
     socket.emit("send-message", {
       chatId: currentChatId,
       content: content,
     });
   }
 
-  // Clear editor
-  quill.setContents([]);
+  // Clear appropriate editor
+  if (isRichMode) {
+    quill.setContents([]);
+  } else {
+    const inputEl = document.getElementById("simpleChatInput");
+    if (inputEl) inputEl.value = "";
+  }
 }
 
 function startEditMessage(messageId, currentContent) {
@@ -399,6 +418,12 @@ function startEditMessage(messageId, currentContent) {
   // Set HTML content in Quill editor
   quill.root.innerHTML = currentContent;
   quill.focus();
+
+  // Force rich mode for editing
+  if (!isRichMode) {
+    isRichMode = true;
+    applyEditorMode();
+  }
 
   // Change send button to edit icon
   document.getElementById("sendMessageBtn").innerHTML =
@@ -711,9 +736,31 @@ function scrollToBottom() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-function showNotification(message, type = "info") {
-  // Simple notification (you can enhance this with a proper notification library)
-  alert(message);
+function showNotification(message, type = "info", timeout = 4000) {
+  const container =
+    document.getElementById("toastContainer") || createToastContainer();
+  const toast = document.createElement("div");
+  toast.className = `toast-message ${type}`;
+  toast.innerHTML = `<span>${message}</span>`;
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "toast-close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.onclick = () => removeToast(toast);
+  toast.appendChild(closeBtn);
+  container.appendChild(toast);
+  setTimeout(() => removeToast(toast), timeout);
+}
+
+function createToastContainer() {
+  const div = document.createElement("div");
+  div.id = "toastContainer";
+  document.body.appendChild(div);
+  return div;
+}
+
+function removeToast(toast) {
+  toast.style.animation = "toastOut .3s ease forwards";
+  setTimeout(() => toast.remove(), 300);
 }
 
 // Add CSS for fade out animation
@@ -725,3 +772,40 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// --- Editor Mode Toggle ---
+function setupEditorModeToggle() {
+  const toggleBtn = document.getElementById("editorModeToggle");
+  if (!toggleBtn) return;
+  toggleBtn.addEventListener("click", () => {
+    isRichMode = !isRichMode;
+    applyEditorMode();
+  });
+  applyEditorMode();
+}
+
+function applyEditorMode() {
+  const container = document.querySelector(".chat-input-container");
+  const toggleBtn = document.getElementById("editorModeToggle");
+  if (!container || !toggleBtn) return;
+  if (isRichMode) {
+    container.classList.remove("simple-mode");
+    container.classList.add("rich-mode");
+    toggleBtn.innerHTML = '<i class="fas fa-align-left"></i> Einfach';
+    toggleBtn.classList.add("active");
+  } else {
+    container.classList.remove("rich-mode");
+    container.classList.add("simple-mode");
+    toggleBtn.innerHTML = '<i class="fas fa-paragraph"></i> Rich';
+    toggleBtn.classList.remove("active");
+  }
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}

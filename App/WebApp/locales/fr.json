@@ -326,4 +326,22 @@
 	"SEARCH_CHATS": "SEARCH_CHATS",
 	"TYPE_MESSAGE": "TYPE_MESSAGE",
 	"DELETE_CHAT": "DELETE_CHAT"
+	,"CHAT_TOGGLE_SIMPLE": "Simple"
+	,"CHAT_TOGGLE_RICH": "Rich"
+	,"CHAT_PLACEHOLDER_RICH": "Saisissez un message..."
+	,"CHAT_PLACEHOLDER_SIMPLE": "Entrez un message rapide..."
+	,"CHAT_EDITED": "(modifié)"
+	,"CHAT_CONFIRM_DELETE_MESSAGE": "Êtes-vous sûr de vouloir supprimer ce message?"
+	,"CHAT_CONFIRM_DELETE_CHAT": "Êtes-vous sûr de vouloir supprimer ce chat?"
+	,"CHAT_ERROR_IMAGE_TOO_LARGE": "L'image est trop grande (max 5 Mo)"
+	,"CHAT_GROUP_CREATED_SUCCESS": "Groupe créé avec succès"
+	,"CHAT_GROUP_NAME_REQUIRED": "Veuillez entrer un nom de groupe"
+	,"CHAT_GROUP_PARTICIPANTS_REQUIRED": "Veuillez sélectionner au moins un participant"
+	,"CHAT_DIRECT_CREATE_ERROR_PREFIX": "Erreur lors de la création de la discussion directe: "
+	,"CHAT_GROUP_CREATE_ERROR_PREFIX": "Erreur lors de la création du groupe: "
+	,"CHAT_DELETE_ERROR": "Erreur lors de la suppression du chat"
+	,"CHAT_DELETE_SUCCESS": "Chat supprimé avec succès"
+	,"CHAT_SEND_ERROR": "Erreur lors de l'envoi du message"
+	,"CHAT_MODE_SWITCHED_SIMPLE": "Mode simple activé"
+	,"CHAT_MODE_SWITCHED_RICH": "Éditeur riche activé"
 }

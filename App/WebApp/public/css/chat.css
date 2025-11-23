@@ -1,3 +1,47 @@
+#toastContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 2000;
+}
+.toast-message {
+    min-width: 240px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn .35s ease;
+}
+.toast-message.info { background: #6366f1; }
+.toast-message.success { background: #10b981; }
+.toast-message.error { background: #ef4444; }
+.toast-close {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: auto;
+    opacity: .8;
+    transition: opacity .15s;
+}
+.toast-close:hover { opacity: 1; }
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
 /* Chat Container Layout */
 .chat-container {
     display: flex;
@@ -648,6 +692,51 @@ body.fullscreen-active {
 .btn-send-message:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Simple input mode */
+.simple-input-wrapper {
+    display: none; /* toggled on in simple mode */
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+}
+.simple-chat-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: border-color .15s, box-shadow .15s;
+}
+.simple-chat-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+.simple-input-hint {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin: 0 2px;
+}
+.chat-input-container.simple-mode .chat-editor-wrapper,
+.chat-input-container.simple-mode .chat-toolbar,
+.chat-input-container.simple-mode .chat-input-send-wrapper {
+    display: none;
+}
+.chat-input-container.simple-mode #simpleInputWrapper {
+    display: flex !important;
+}
+.chat-input-container.rich-mode #simpleInputWrapper {
+    display: none;
+}
+.chat-input-container.rich-mode .chat-editor-wrapper,
+.chat-input-container.rich-mode .chat-toolbar,
+.chat-input-container.rich-mode .chat-input-send-wrapper {
+    display: flex;
+}
+#editorModeToggle.active {
+    color: #6366f1;
 }
 
 /* Modal Styles */

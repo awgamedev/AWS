@@ -109,8 +109,9 @@
                 <!-- Messages will be dynamically inserted here -->
             </div>
 
-            <!-- Message Input with Quill Editor -->
-            <div class="chat-input-container">
+            <!-- Message Input (Rich / Simple toggle) -->
+            <div class="chat-input-container rich-mode">
+                <div id="toastContainer" aria-live="polite"></div>
                 <div class="chat-editor-wrapper">
                     <div id="toolbar" class="chat-toolbar">
                         <button class="ql-bold" title="Fett"></button>
@@ -132,8 +133,15 @@
                         <button id="fullscreenBtn" class="ql-custom" title="Vollbild">
                             <i class="fas fa-expand"></i>
                         </button>
+                        <button id="editorModeToggle" class="ql-custom" title="Einfacher Modus">
+                            <i class="fas fa-minimize"></i>
+                        </button>
                     </div>
                     <div id="messageInput" class="chat-input-editor"></div>
+                </div>
+                <div id="simpleInputWrapper" class="simple-input-wrapper" style="display:none;">
+                    <input type="text" id="simpleMessageInput" class="simple-chat-input" placeholder="Kurze Nachricht eingeben..." autocomplete="off" />
+                    <div class="simple-hints text-xs text-gray-400 mt-1">Enter: senden · Shift+Enter: Rich öffnen</div>
                 </div>
                 <button id="sendMessageBtn" class="btn-send-message">
                     <i class="fas fa-paper-plane"></i> Senden
