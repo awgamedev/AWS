@@ -238,7 +238,7 @@
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 16px 20px 8px;
+    padding: 5px 20px 5px;
     margin: 0;
 }
 
@@ -250,7 +250,7 @@
 .user-item {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
+    padding: 5px 12px;
     margin-bottom: 2px;
     border-radius: 8px;
     cursor: pointer;
@@ -1141,17 +1141,17 @@ body.fullscreen-active {
 
     /* Chat list item adjustments */
     .chat-item {
-        padding: 10px;
+        padding: 5px;
     }
 
     .chat-item-avatar {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         font-size: 1rem;
     }
 
     .chat-sidebar-header {
-        padding: 16px;
+        padding: 10px;
     }
 
     .chat-sidebar-title {

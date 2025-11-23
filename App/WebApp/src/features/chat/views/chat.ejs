@@ -21,7 +21,7 @@
             <% if (userChats && userChats.length > 0) { %>
                 <% userChats.forEach(chat => { %>
                     <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>" data-creator-id="<%= chat.creatorId._id %>">
-                        <div class="chat-item-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden <%= chat.type === 'group' ? 'bg-indigo-400' : 'bg-indigo-600' %>">
+                        <div class="chat-item-avatar w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden <%= chat.type === 'group' ? 'bg-indigo-400' : 'bg-indigo-600' %>">
                             <% if (chat.type === 'group') { %>
                                 <i class="fas fa-users"></i>
                             <% } else { %>
