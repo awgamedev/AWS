@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     detailsDiv.innerHTML = "";
     try {
       const resp = await fetch(
-        `/reports/admin/list?year=${year}&month=${month}`
+        `reports/admin/list?year=${year}&month=${month}`
       );
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.msg || "Fehler");
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     detailsDiv.innerHTML = "";
     try {
       const resp = await fetch(
-        `/reports/admin/list-view?year=${year}&month=${month}`
+        `reports/admin/list-view?year=${year}&month=${month}`
       );
       const html = await resp.text();
       if (!resp.ok) throw new Error("Fehler");
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     openModalFromApi(
       "Meldungsdetails",
-      `/api/modal/report-details?${params.toString()}`,
+      `api/modal/report-details?${params.toString()}`,
       () => {
         // Setup action buttons
         const approveBtn = document.getElementById("approve-btn");
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
     msgDiv.textContent = "Sende...";
     msgDiv.className = "mt-3 text-sm text-center text-gray-600";
     try {
-      const resp = await fetch(`/reports/${id}/${action}`, { method: "POST" });
+      const resp = await fetch(`reports/${id}/${action}`, { method: "POST" });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.msg || "Fehler");
       msgDiv.textContent = data.msg;
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openCreateModal() {
     openModalFromApi(
       "Meldung erstellen",
-      "/api/modal/report-admin-create",
+      "api/modal/report-admin-create",
       () => {
         setupCreateForm();
       }
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const resp = await fetch("/api/reports/admin", {
+        const resp = await fetch("api/reports/admin", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),

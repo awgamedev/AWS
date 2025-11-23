@@ -81,7 +81,7 @@ const fillEditForm = (data) => {
 window.openEditReportModal = (id, type, startDate, endDate, description) => {
   openModalFromApi(
     "Meldung bearbeiten",
-    `/api/modal/report-edit?reportId=${id}`,
+    `api/modal/report-edit?reportId=${id}`,
     () => {
       fillEditForm({ id, type, startDate, endDate, description });
       setupDateValidation();
@@ -106,7 +106,7 @@ const handleReportSubmit = async (form) => {
     const payload = Object.fromEntries(new FormData(form).entries());
     console.log("Payload:", payload);
 
-    const url = isEditing ? `/api/reports/${reportId}` : "/api/reports";
+    const url = isEditing ? `api/reports/${reportId}` : "/api/reports";
     const method = isEditing ? "PUT" : "POST";
 
     console.log("Request:", { url, method });
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const createBtn = document.getElementById("open-report-modal");
   if (createBtn) {
     createBtn.addEventListener("click", () => {
-      openModalFromApi("Meldung anlegen", "/api/modal/report-create", () => {
+      openModalFromApi("Meldung anlegen", "api/modal/report-create", () => {
         clearErrors();
         // Initialize start and end date to current day
         const today = new Date().toISOString().split("T")[0];

@@ -96,7 +96,7 @@ const loadWeekData = async (offset) => {
   currentWeekOffset = offset;
 
   try {
-    const response = await api(`/api/task-board/week?offset=${offset}`);
+    const response = await api(`api/task-board/week?offset=${offset}`);
     if (response && response.ok && response.data) {
       const { html, weekRange, weekOffset } = response.data;
       updateTaskBoard(html, weekRange);
@@ -157,7 +157,7 @@ const loadListView = async (offset = currentWeekOffset) => {
   const contentContainer = byId("task-content-container");
 
   try {
-    const response = await api(`/api/task-list/view?offset=${offset}`);
+    const response = await api(`api/task-list/view?offset=${offset}`);
     if (response && response.ok && response.data) {
       const { html, weekRange, weekOffset } = response.data;
       if (contentContainer) {
@@ -258,7 +258,7 @@ const reattachTaskListeners = () => {
       const data = e.currentTarget.dataset;
       openModalFromApi(
         `Aufgabe bearbeiten: ${data.taskName}`,
-        "/api/modal/task-edit",
+        "api/modal/task-edit",
         () => {
           fillEditForm(data);
           setupDateValidation();
@@ -501,7 +501,7 @@ const handleContextMenuDelete = async () => {
   }
 
   try {
-    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskData.taskId}`, {
       method: "DELETE",
     });
 
@@ -536,7 +536,7 @@ const handleContextMenuChangePriority = async (newPriority) => {
       endDate: taskData.endDate || null,
     };
 
-    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskData.taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -573,7 +573,7 @@ const handleContextMenuChangeStatus = async (newStatus) => {
       endDate: taskData.endDate || null,
     };
 
-    const { ok, data } = await api(`/api/tasks/${taskData.taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskData.taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1009,7 +1009,7 @@ const applyTaskMove = async (taskId, newUserId, newStartDate, newEndDate) => {
       endDate: newEndDate || null,
     };
 
-    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1213,7 +1213,7 @@ function endCellDrag() {
 const openCreateModalWithDateRange = (userId, startDayName, endDayName) => {
   openModalFromApi(
     window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
-    "/api/modal/task-create",
+    "api/modal/task-create",
     () => {
       // Load templates into dropdown
       loadTemplatesIntoSelector();
@@ -1396,7 +1396,7 @@ const assignTaskToCurrentUser = async (taskId, taskData) => {
   try {
     // Get current user ID from the page (we can get it from any user cell or we'll fetch it)
     // For now, we'll get it from the server by making the update with null userId (server will set current user)
-    const response = await fetch("/api/user/current");
+    const response = await fetch("api/user/current");
     const userData = await response.json();
 
     if (!userData.ok || !userData.data || !userData.data._id) {
@@ -1416,7 +1416,7 @@ const assignTaskToCurrentUser = async (taskId, taskData) => {
       endDate: taskData.endDate || null,
     };
 
-    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1460,7 +1460,7 @@ async function loadTemplatesIntoSelector() {
   if (!templateSelector) return;
 
   try {
-    const response = await api("/api/task-templates");
+    const response = await api("api/task-templates");
     if (response && response.ok && response.data.templates) {
       const templates = response.data.templates;
 
@@ -1493,7 +1493,7 @@ function setupTemplateSelector() {
     if (!templateId) return;
 
     try {
-      const response = await api(`/api/task-templates/${templateId}`);
+      const response = await api(`api/task-templates/${templateId}`);
       if (response && response.ok && response.data.template) {
         const template = response.data.template;
 
@@ -1536,7 +1536,7 @@ function setupTemplateSelector() {
 const openCreateModalWithPreselect = (userId, dayName) => {
   openModalFromApi(
     window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
-    "/api/modal/task-create",
+    "api/modal/task-create",
     () => {
       // Load templates into dropdown
       loadTemplatesIntoSelector();
@@ -1640,7 +1640,7 @@ const handleCreateTask = async (form) => {
 
   try {
     const payload = toTaskPayload(form);
-    const { ok, data } = await api("/api/tasks", {
+    const { ok, data } = await api("api/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1680,7 +1680,7 @@ const handleUpdateTask = async (form) => {
 
   try {
     const payload = toTaskPayload(form);
-    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -1720,7 +1720,7 @@ const handleDeleteTask = async () => {
   setMessage(msg, "info", "Aufgabe wird gelöscht...");
 
   try {
-    const { ok, data } = await api(`/api/tasks/${taskId}`, {
+    const { ok, data } = await api(`api/tasks/${taskId}`, {
       method: "DELETE",
     });
 
@@ -1837,7 +1837,7 @@ document.addEventListener("DOMContentLoaded", () => {
     createBtn.addEventListener("click", () => {
       openModalFromApi(
         window.CREATE_MODAL_TITLE || "Neue Aufgabe erstellen",
-        "/api/modal/task-create",
+        "api/modal/task-create",
         () => {
           loadTemplatesIntoSelector();
           setupTemplateSelector();

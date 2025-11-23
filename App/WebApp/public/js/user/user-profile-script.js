@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const response = await fetch("/profile/update", {
+      const response = await fetch("profile/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function uploadProfilePicture(base64) {
     try {
-      const response = await fetch("/profile/upload-picture", {
+      const response = await fetch("profile/upload-picture", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function removeProfilePicture() {
     try {
-      const response = await fetch("/profile/remove-picture", {
+      const response = await fetch("profile/remove-picture", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

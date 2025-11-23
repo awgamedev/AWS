@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("open-create-modal").addEventListener("click", () => {
   openModalFromApi(
     "Create New Task", // Modal title
-    "/api/modal/task-create", // API endpoint
+    "api/modal/task-create", // API endpoint
     () => {
       // Callback after content loads
       setupDateValidation();
@@ -140,7 +140,7 @@ document.addEventListener("submit", async (e) => {
     const formData = new FormData(e.target);
     const payload = Object.fromEntries(formData.entries());
 
-    const { ok, data } = await api("/api/my-feature", {
+    const { ok, data } = await api("api/my-feature", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

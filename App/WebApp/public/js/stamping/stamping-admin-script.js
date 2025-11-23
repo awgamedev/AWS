@@ -44,7 +44,7 @@ const handleCreateStamping = async (form) => {
       outTime: formData.get("outTime") || null,
     };
 
-    const { ok, data } = await api("/api/stampings/pair", {
+    const { ok, data } = await api("api/stampings/pair", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -129,7 +129,7 @@ const handleEditStampingPair = async (form) => {
       outTime: formData.get("outTime") || null,
     };
 
-    const { ok, data } = await api("/api/stampings/pair", {
+    const { ok, data } = await api("api/stampings/pair", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       openModalFromApi(
         `Stempelung hinzufügen für ${username}`,
-        `/api/modal/stamping-create?userId=${userId}`
+        `api/modal/stamping-create?userId=${userId}`
       );
     });
   });
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       openModalFromApi(
         "Stempelpaar bearbeiten",
-        `/api/modal/stamping-edit?inId=${inId}&outId=${
+        `api/modal/stamping-edit?inId=${inId}&outId=${
           outId || ""
         }&date=${date}&inTime=${encodeURIComponent(
           inTimeFormatted
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       openModalFromApi(
         "Stempelung löschen",
-        `/api/modal/stamping-delete?inId=${inId}&outId=${outId}&pairDisplay=${encodeURIComponent(
+        `api/modal/stamping-delete?inId=${inId}&outId=${outId}&pairDisplay=${encodeURIComponent(
           pairDisplay
         )}`
       );

@@ -100,7 +100,7 @@ async function handleCreateTemplate(form) {
       return;
     }
 
-    const response = await api("/api/task-templates", {
+    const response = await api("api/task-templates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -149,7 +149,7 @@ async function handleCreateTemplate(form) {
 
 async function handleEditTemplate(templateId) {
   try {
-    const response = await api(`/api/task-templates/${templateId}`);
+    const response = await api(`api/task-templates/${templateId}`);
 
     if (response && response.ok && response.data.template) {
       const template = response.data.template;
@@ -217,7 +217,7 @@ async function handleUpdateTemplate(form) {
       return;
     }
 
-    const response = await api(`/api/task-templates/${templateId}`, {
+    const response = await api(`api/task-templates/${templateId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -270,7 +270,7 @@ async function handleDeleteTemplate(templateId) {
   }
 
   try {
-    const response = await api(`/api/task-templates/${templateId}`, {
+    const response = await api(`api/task-templates/${templateId}`, {
       method: "DELETE",
     });
 

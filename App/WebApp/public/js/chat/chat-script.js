@@ -546,7 +546,7 @@ function updateChatListItem(chatId, lastMessage) {
 async function createDirectMessage(userId) {
   try {
     console.log("Creating direct message with user:", userId);
-    const response = await fetch("/chat/direct", {
+    const response = await fetch("chat/direct", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -628,7 +628,7 @@ async function createGroup() {
       "participants:",
       participants
     );
-    const response = await fetch("/chat/group", {
+    const response = await fetch("chat/group", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -671,7 +671,7 @@ async function deleteChat(chatId) {
   }
 
   try {
-    const response = await fetch(`/chat/${chatId}`, {
+    const response = await fetch(`chat/${chatId}`, {
       method: "DELETE",
     });
 

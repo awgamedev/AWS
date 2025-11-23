@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const imageBase64 = event.target.result;
 
                 // Send to server
-                fetch('/profile/upload-picture', {
+                fetch('profile/upload-picture', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            fetch('/profile/remove-picture', {
+            fetch('profile/remove-picture', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
