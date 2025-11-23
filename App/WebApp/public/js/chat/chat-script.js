@@ -4,7 +4,7 @@ let currentChatId = null;
 let currentUserId = null;
 let editingMessageId = null;
 let quill; // Quill editor instance
-let isRichMode = true; // editor mode state
+let isRichMode = false; // default to simple mode now
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
@@ -200,6 +200,10 @@ function setupEventListeners() {
   if (sendBtn) {
     sendBtn.addEventListener("click", sendMessage);
   }
+  const sendBtnRich = document.getElementById("sendMessageBtnRich");
+  if (sendBtnRich) {
+    sendBtnRich.addEventListener("click", sendMessage);
+  }
 
   // Delete chat buttons
   document.querySelectorAll(".btn-delete-chat").forEach((btn) => {
@@ -259,7 +263,7 @@ function openChat(chatId) {
   if (quill) {
     quill.setContents([]);
   }
-  const simpleInput = document.getElementById("simpleChatInput");
+  const simpleInput = document.getElementById("simpleMessageInput");
   if (simpleInput) simpleInput.value = "";
 }
 
@@ -381,7 +385,7 @@ function sendMessage() {
     if (!text || text === "") return;
   } else {
     // Simple mode: plain text input
-    const inputEl = document.getElementById("simpleChatInput");
+    const inputEl = document.getElementById("simpleMessageInput");
     if (!inputEl) return;
     const raw = inputEl.value.trim();
     if (!raw) return;
@@ -407,7 +411,7 @@ function sendMessage() {
   if (isRichMode) {
     quill.setContents([]);
   } else {
-    const inputEl = document.getElementById("simpleChatInput");
+    const inputEl = document.getElementById("simpleMessageInput");
     if (inputEl) inputEl.value = "";
   }
 }
@@ -775,29 +779,44 @@ document.head.appendChild(style);
 
 // --- Editor Mode Toggle ---
 function setupEditorModeToggle() {
-  const toggleBtn = document.getElementById("editorModeToggle");
-  if (!toggleBtn) return;
-  toggleBtn.addEventListener("click", () => {
-    isRichMode = !isRichMode;
-    applyEditorMode();
-  });
+  const simpleToggle = document.getElementById("editorModeToggle");
+  const richToggle = document.getElementById("editorModeToggleRich");
+  if (simpleToggle) {
+    simpleToggle.addEventListener("click", () => {
+      isRichMode = true;
+      applyEditorMode();
+    });
+  }
+  if (richToggle) {
+    richToggle.addEventListener("click", () => {
+      isRichMode = false;
+      applyEditorMode();
+    });
+  }
   applyEditorMode();
 }
 
 function applyEditorMode() {
   const container = document.querySelector(".chat-input-container");
-  const toggleBtn = document.getElementById("editorModeToggle");
-  if (!container || !toggleBtn) return;
+  const simpleRow = document.getElementById("simpleRow");
+  const editorWrapper = document.querySelector(".chat-editor-wrapper");
+  const simpleToggle = document.getElementById("editorModeToggle");
+  const richToggle = document.getElementById("editorModeToggleRich");
+  if (!container) return;
   if (isRichMode) {
     container.classList.remove("simple-mode");
     container.classList.add("rich-mode");
-    toggleBtn.innerHTML = '<i class="fas fa-align-left"></i> Einfach';
-    toggleBtn.classList.add("active");
+    if (simpleRow) simpleRow.style.display = "none";
+    if (editorWrapper) editorWrapper.style.display = "flex";
+    if (simpleToggle) simpleToggle.classList.add("active");
+    if (richToggle) richToggle.classList.remove("active");
   } else {
     container.classList.remove("rich-mode");
     container.classList.add("simple-mode");
-    toggleBtn.innerHTML = '<i class="fas fa-paragraph"></i> Rich';
-    toggleBtn.classList.remove("active");
+    if (simpleRow) simpleRow.style.display = "flex";
+    if (editorWrapper) editorWrapper.style.display = "none";
+    if (simpleToggle) simpleToggle.classList.remove("active");
+    if (richToggle) richToggle.classList.add("active");
   }
 }
 
