@@ -18,6 +18,134 @@
     </div>
 </div>
 
+<!-- Collapsible Manual (German) -->
+<div class="mb-4 bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+    <button id="manual-toggle" class="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition duration-200">
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <span class="font-semibold text-gray-800">Bedienungsanleitung – Wie funktioniert diese Seite?</span>
+        </div>
+        <svg id="manual-chevron" class="w-5 h-5 text-gray-600 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+
+    <div id="manual-content" class="hidden px-4 py-4 bg-white border-top border-gray-200">
+        <div class="prose prose-sm max-w-none text-gray-700">
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Übersicht
+            </h3>
+            <p class="mb-4">
+                Diese Seite ist die <strong>Admin-Übersicht für Zeit­erfassung</strong>. Sie wählen einen <strong>Monat</strong> und ein <strong>Jahr</strong>, sehen die <strong>Gesamtstunden</strong> aller Mitarbeiter und erhalten pro Mitarbeiter eine detaillierte Aufstellung inklusive <strong>Stunden nach Grund</strong> und <strong>täglicher Stempelungen</strong>.
+            </p>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Zeitraum wählen
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Monat/Jahr</strong>: Oben können Sie den gewünschten Monat und das Jahr auswählen. Die Seite lädt mit den neuen Werten automatisch neu.</li>
+                <li><strong>Direkte Navigation</strong>: Die URL aktualisiert die Parameter (<code>month</code>, <code>year</code>), sodass Sie Ansichten teilen oder bookmarken können.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                Monatsübersicht
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Gesamtstunden</strong>: Zeigt die Summe aller erfassten Stunden aller Mitarbeiter für den gewählten Monat.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Mitarbeiterkarten
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Avatar/Initialen</strong>: Zeigt das Profilbild oder die Initialen des Mitarbeiters.</li>
+                <li><strong>Monatssumme</strong>: Dick gedruckte Stundenanzahl pro Mitarbeiter.</li>
+                <li><strong>Stunden nach Grund</strong>: Optionaler Block mit Aufschlüsselung (z. B. Projekt, Urlaub, Krankheit), falls Daten vorhanden sind.</li>
+                <li><strong>Stempelung hinzufügen</strong>: Über die <span class="font-semibold">Plus-Schaltfläche</span> fügen Sie dem Mitarbeiter schnell eine neue Stempelung hinzu.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                Tagesaufzeichnungen
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Auf-/Zuklappen</strong>: Mit der Zeile „Tagesaufzeichnungen im Monat …“ klappen Sie den Bereich ein/aus.</li>
+                <li><strong>Einträge</strong>: Pro Tag sehen Sie alle Paare von <em>Ein-/Ausstempelungen</em> inkl. optionalem Grund.</li>
+                <li><strong>Gesamtdauer pro Tag</strong>: Unter den Einträgen wird die Summe der Stunden des Tages angezeigt.</li>
+                <li><strong>Offene Stempelungen</strong>: Fehlt eine Ausstempelung, wird keine Dauer angezeigt, bis die Stempelung abgeschlossen ist.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Stempelungen bearbeiten
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Bearbeiten</strong>: Klicken Sie das <em>Stift-Icon</em>, um Zeiten, Datum oder Grund eines Paares anzupassen.</li>
+                <li><strong>Löschen</strong>: Entfernen Sie ein Paar über das <em>Mülleimer-Icon</em>. Es erscheint eine Sicherheitsabfrage.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Stempelung hinzufügen
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Plus-Schaltfläche</strong>: Oben rechts auf der Mitarbeiterkarte eine neue Stempelung erfassen.</li>
+                <li><strong>Details</strong>: Uhrzeiten, Datum und optional einen Grund vergeben.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Besondere Funktionen
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Scrollbare Bereiche</strong>: Lange Tageslisten sind kompakt dargestellt und scrollbar.</li>
+                <li><strong>Profilbilder</strong>: Anzeige des Profilbilds, ansonsten Initialen.</li>
+                <li><strong>Responsives Layout</strong>: Funktioniert auf Desktop und Mobilgeräten übersichtlich.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold text-indigo-700 mb-3 mt-5 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                Tipps & Tricks
+            </h3>
+            <ul class="list-disc list-inside space-y-2 mb-2">
+                <li><strong>Datumsnavigation</strong>: Wechseln Sie Monat/Jahr direkt – die Ansicht aktualisiert sich automatisch.</li>
+                <li><strong>Vergleiche</strong>: Nutzen Sie die Gesamtstunden oben, um Teams oder Monate zu vergleichen.</li>
+                <li><strong>Datenqualität</strong>: Achten Sie auf offene Stempelungen und ergänzen Sie fehlende Ausstempelungen zeitnah.</li>
+            </ul>
+
+            <div class="mt-4 p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded">
+                <p class="text-sm">
+                    <strong>💡 Hinweis:</strong> Verwenden Sie die Bearbeiten-/Löschen-Aktionen verantwortungsvoll, da Änderungen direkt in die Monatsstatistik einfließen.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg shadow-sm mb-3">
     <h2 class="text-xs sm:text-sm font-medium mb-1 text-gray-700"><%= __('TOTAL_MONTHLY_HOURS_ALL_EMPLOYEES').replace('%s', monthName) %></h2>
     <p class="text-xl sm:text-2xl font-bold text-blue-600"><%= totalMonthlyHours %> <%= __('HOURS_SHORT') %></p>
@@ -143,6 +271,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         const monthSelect = document.getElementById('month-select');
         const yearSelect = document.getElementById('year-select');
+        const manualToggle = document.getElementById('manual-toggle');
+        const manualContent = document.getElementById('manual-content');
+        const manualChevron = document.getElementById('manual-chevron');
         
         const navigateToSelectedMonth = () => {
             const selectedMonth = monthSelect.value;
@@ -153,6 +284,20 @@
 
         monthSelect.addEventListener('change', navigateToSelectedMonth);
         yearSelect.addEventListener('change', navigateToSelectedMonth);
+
+        // Manual: expand/collapse
+        if (manualToggle && manualContent && manualChevron) {
+            manualToggle.addEventListener('click', () => {
+                const isHidden = manualContent.classList.contains('hidden');
+                if (isHidden) {
+                    manualContent.classList.remove('hidden');
+                    manualChevron.style.transform = 'rotate(180deg)';
+                } else {
+                    manualContent.classList.add('hidden');
+                    manualChevron.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
 
         // Toggle daily records collapsible sections
         document.querySelectorAll('.toggle-daily-records').forEach(button => {
