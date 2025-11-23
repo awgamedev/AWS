@@ -1,3 +1,12 @@
+/* Hide chat-main on mobile if no chat is selected */
+@media (max-width: 768px) {
+    .chat-main:not(.chat-main-visible) {
+        display: none !important;
+    }
+    .chat-main.chat-main-visible {
+        display: flex !important;
+    }
+}
 #toastContainer {
     position: fixed;
     bottom: 24px;
@@ -1025,10 +1034,7 @@ body.fullscreen-active {
     }
 
     .chat-sidebar {
-        position: absolute;
-        /* width: 100%;
-        max-width: 100%; */
-        height: 80%;
+        width: -webkit-fill-available;
         z-index: 40;
         transition: transform 0.3s ease;
     }
@@ -1192,7 +1198,7 @@ body.fullscreen-active {
 
 @media (max-width: 480px) {
     .chat-container {
-        height: calc(100vh - 100px);
+        height: calc(100vh - 170px);
         border-radius: 0;
     }
 

@@ -102,7 +102,7 @@
     </div>
 
     <!-- Right Side: Chat Area -->
-    <div class="chat-main">
+    <div class="chat-main" id="chatMain">
         <!-- Welcome Screen (shown when no chat is selected) -->
         <div id="welcomeScreen" class="chat-welcome">
             <i class="fas fa-comments"></i>
@@ -271,7 +271,7 @@ function toggleUserListSection() {
         icon.style.transform = '';
     }
 }
-// Ensure collapsed by default
+// Ensure collapsed by default and handle chat-main visibility on mobile
 document.addEventListener('DOMContentLoaded', function() {
     var section = document.getElementById('userListSection');
     var list = document.getElementById('userList');
@@ -280,6 +280,32 @@ document.addEventListener('DOMContentLoaded', function() {
         section.classList.add('collapsed');
         list.style.display = 'none';
         icon.style.transform = '';
+    }
+
+    // Mobile: Hide chat-main if no chat selected
+    function updateChatMainVisibility() {
+        var chatMain = document.getElementById('chatMain');
+        var chatWindow = document.getElementById('chatWindow');
+        if (!chatMain || !chatWindow) return;
+        var isMobile = window.matchMedia('(max-width: 768px)').matches;
+        if (isMobile) {
+            if (chatWindow.style.display === 'none' || chatWindow.hidden) {
+                chatMain.classList.remove('chat-main-visible');
+            } else {
+                chatMain.classList.add('chat-main-visible');
+            }
+        } else {
+            chatMain.classList.add('chat-main-visible'); // Always visible on desktop
+        }
+    }
+    updateChatMainVisibility();
+    window.addEventListener('resize', updateChatMainVisibility);
+
+    // Observe chatWindow display changes
+    var chatWindow = document.getElementById('chatWindow');
+    if (chatWindow) {
+        var observer = new MutationObserver(updateChatMainVisibility);
+        observer.observe(chatWindow, { attributes: true, attributeFilter: ['style', 'hidden', 'class'] });
     }
 });
 </script>
