@@ -208,6 +208,19 @@ function setupEventListeners() {
     closeChatBtn.addEventListener("click", closeChat);
   }
 
+  // Back button (mobile)
+  const backBtn = document.getElementById("backToListBtn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      closeChat();
+      // On mobile, show sidebar
+      const sidebar = document.querySelector(".chat-sidebar");
+      if (sidebar && window.innerWidth <= 768) {
+        sidebar.classList.remove("mobile-hidden");
+      }
+    });
+  }
+
   // Send message
   const sendBtn = document.getElementById("sendMessageBtn");
   if (sendBtn) {
@@ -253,6 +266,12 @@ function openChat(chatId) {
   // Update UI
   document.getElementById("welcomeScreen").style.display = "none";
   document.getElementById("chatWindow").style.display = "flex";
+
+  // On mobile, hide sidebar when opening chat
+  const sidebar = document.querySelector(".chat-sidebar");
+  if (sidebar && window.innerWidth <= 768) {
+    sidebar.classList.add("mobile-hidden");
+  }
 
   // Update active chat in sidebar
   document.querySelectorAll(".chat-item").forEach((item) => {

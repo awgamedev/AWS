@@ -384,7 +384,8 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-.btn-close-chat {
+.btn-close-chat,
+.btn-back-mobile {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
@@ -395,8 +396,13 @@
     transition: all 0.2s;
 }
 
-.btn-close-chat:hover {
+.btn-close-chat:hover,
+.btn-back-mobile:hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-back-mobile {
+    display: none;
 }
 
 /* Messages Area */
@@ -990,12 +996,206 @@ body.fullscreen-active {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .chat-sidebar {
-        width: 100%;
-        max-width: 300px;
+    .chat-container {
+        height: calc(100vh - 120px);
     }
-    
+
+    .chat-sidebar {
+        position: absolute;
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        z-index: 100;
+        transition: transform 0.3s ease;
+    }
+
+    .chat-sidebar.mobile-hidden {
+        transform: translateX(-100%);
+    }
+
+    .chat-main {
+        width: 100%;
+    }
+
+    /* Show back button on mobile when chat is open */
+    .btn-back-mobile {
+        display: block !important;
+    }
+
+    .chat-header {
+        padding: 12px 16px;
+    }
+
+    .chat-header-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .chat-header-info p {
+        font-size: 0.75rem;
+    }
+
+    .btn-close-chat,
+    .btn-rename-chat {
+        padding: 6px 10px;
+        font-size: 1rem;
+    }
+
+    .chat-messages {
+        padding: 16px;
+    }
+
     .message-content {
-        max-width: 80%;
+        max-width: 85%;
+    }
+
+    .message-bubble {
+        padding: 10px 14px;
+    }
+
+    .chat-input-container {
+        padding: 12px 16px;
+    }
+
+    .chat-simple-row {
+        gap: 6px;
+    }
+
+    .simple-chat-input,
+    .btn-toggle-mode,
+    .btn-send-message {
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .chat-toolbar {
+        padding: 6px;
+        overflow-x: auto;
+    }
+
+    .chat-toolbar .ql-formats {
+        margin-right: 8px;
+    }
+
+    .chat-input-editor {
+        min-height: 100px;
+    }
+
+    .chat-input-editor .ql-editor {
+        min-height: 100px;
+        padding: 10px 14px;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 0 10px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-footer {
+        padding: 12px 16px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    /* User list adjustments */
+    .user-list-section {
+        max-height: 200px;
+    }
+
+    /* Chat list item adjustments */
+    .chat-item {
+        padding: 10px;
+    }
+
+    .chat-item-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .chat-sidebar-header {
+        padding: 16px;
+    }
+
+    .chat-sidebar-title {
+        font-size: 1.3rem;
+    }
+
+    .btn-create-group {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .chat-search-container {
+        padding: 12px 16px;
+    }
+
+    /* Message actions positioning */
+    .message-actions {
+        position: static;
+        display: flex !important;
+        gap: 6px;
+        margin-top: 8px;
+        justify-content: flex-end;
+    }
+
+    .message.own-message .message-actions {
+        left: auto;
+    }
+
+    .message:hover .message-actions {
+        display: flex;
+    }
+
+    .message-action-btn {
+        padding: 6px 8px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-container {
+        height: calc(100vh - 100px);
+        border-radius: 0;
+    }
+
+    .chat-header {
+        padding: 10px 12px;
+        border-radius: 0;
+    }
+
+    .chat-header-actions {
+        gap: 4px;
+    }
+
+    .message-content {
+        max-width: 90%;
+    }
+
+    .message-bubble {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .chat-input-container {
+        padding: 10px 12px;
+    }
+
+    .simple-chat-input {
+        font-size: 0.85rem;
+    }
+
+    .btn-send-message,
+    .btn-toggle-mode {
+        padding: 0 12px;
     }
 }
