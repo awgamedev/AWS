@@ -315,5 +315,6 @@
 	"ASSIGN_TO_ME": "M'attribuer",
 	"ASSIGNING": "Attribution...",
 	"ASSIGN_TO_YOURSELF_MESSAGE": "Vous pouvez vous attribuer cette tâche ou fermer cette fenêtre pour la laisser non attribuée.",
-	"DATE_RANGE": "Période"
+	"DATE_RANGE": "Période",
+	"TODAY": "TODAY"
 }

@@ -296,5 +296,6 @@
 	"ASSIGN_TO_ME": "Mir zuweisen",
 	"ASSIGNING": "Wird zugewiesen...",
 	"ASSIGN_TO_YOURSELF_MESSAGE": "Sie können diese Aufgabe sich selbst zuweisen oder diesen Dialog schließen, um sie nicht zugewiesen zu lassen.",
-	"DATE_RANGE": "Zeitraum"
+	"DATE_RANGE": "Zeitraum",
+	"TODAY": "Heute"
 }

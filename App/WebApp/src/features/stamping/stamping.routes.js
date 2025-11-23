@@ -30,12 +30,68 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
       lastStampingTime = formatTime(lastStamping.date);
     }
 
-    // 2. Stempel-Paare für die Liste abrufen
-    const stampings = await Stamping.find({ userId })
+    // 2. Get current month's start and end dates
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    // 3. Fetch stampings only for current month
+    const stampings = await Stamping.find({
+      userId,
+      date: { $gte: startOfMonth, $lte: endOfMonth },
+    })
       .sort({ date: 1 }) // Wichtig: Aufsteigend sortieren
       .exec();
 
-    stampingPairs = await getStampingPairs(stampings);
+    const allPairs = await getStampingPairs(stampings);
+
+    // 4. Create a map of dates to stamping pairs
+    const pairsByDate = new Map();
+    allPairs.forEach((pair) => {
+      const dateKey = formatDate(pair.come.date);
+      if (!pairsByDate.has(dateKey)) {
+        pairsByDate.set(dateKey, []);
+      }
+      pairsByDate.get(dateKey).push(pair);
+    });
+
+    // 5. Generate all days from start of month to today
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayKey = formatDate(today);
+    const daysList = [];
+    const dayNames = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
+
+    for (
+      let d = new Date(startOfMonth);
+      d <= today;
+      d.setDate(d.getDate() + 1)
+    ) {
+      const currentDate = new Date(d);
+      const dateKey = formatDate(currentDate);
+      const dayOfWeek = currentDate.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const isToday = dateKey === todayKey;
+
+      daysList.push({
+        date: currentDate,
+        dateStr: dateKey,
+        dayName: dayNames[dayOfWeek],
+        isWeekend: isWeekend,
+        isToday: isToday,
+        pairs: pairsByDate.get(dateKey) || [],
+      });
+    }
+
+    // Reverse to show most recent first
+    stampingPairs = daysList.reverse();
   } catch (error) {
     console.error("Fehler beim Abrufen der Stempeldaten:", error.message);
     // Fehlerseite rendern

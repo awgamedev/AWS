@@ -68,32 +68,38 @@
     <div class="overflow-y-auto" style="max-height: 35vh;">
         <ul class="space-y-1">
             <% if (stampingPairs && stampingPairs.length > 0) { %>
-                <% stampingPairs.forEach(function(pair) { 
-                    const dateStr = formatDate(pair.come.date); 
-                    const comeTime = formatTime(pair.come.date);
-                    const goTime = pair.go ? formatTime(pair.go.date) : ""; 
-                    const reason = pair.come.stampingReason || (__("NA_SHORT") || "N/A");
-                    const timeDisplay = pair.go ? `${comeTime} - ${goTime}` : `${comeTime} - <strong>${__("OPEN_SHIFT")}</strong>`;
-                    const statusText = pair.go ? (__("STATUS_CLOSED")) : (__("STATUS_ACTIVE"));
-                    const statusColor = pair.go ? "text-gray-600 bg-gray-100" : "text-white bg-blue-600";
-                    const statusPadding = "px-2 py-0.5";
-                    const comeId = pair.come._id.toString();
-                    const goId = pair.go ? pair.go._id.toString() : "";
-                    const comeDate = pair.come.date.toISOString().substring(0, 16);
-                    const goDate = pair.go ? pair.go.date.toISOString().substring(0, 16) : "";
-                %>
-                <li class="stamping-item p-2 rounded-md hover:bg-gray-50 transition duration-100 border border-gray-100">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs font-semibold text-gray-700"><%= dateStr %></span>
-                        <span class="inline-flex items-center rounded-full <%= statusColor %> <%= statusPadding %> text-xs font-medium">
-                            <%= statusText %>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="text-sm text-gray-900"><%- timeDisplay %></div>
-                        <span class="text-xs text-gray-500"><%= reason %></span>
-                    </div>
-                </li>
+                <% stampingPairs.forEach(function(dayData) { %>
+                    <li class="p-2 rounded-md border <%= dayData.isToday ? 'border-blue-400 bg-blue-50' : (dayData.isWeekend ? 'border-gray-200 bg-gray-50' : 'border-gray-100') %>">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs font-medium <%= dayData.isWeekend ? 'text-gray-500' : 'text-gray-600' %>"><%= dayData.dayName %></span>
+                            <span class="text-xs font-semibold <%= dayData.isToday ? 'text-blue-700' : 'text-gray-700' %>"><%= dayData.dateStr %></span>
+                            <% if (dayData.isToday) { %>
+                                <span class="text-xs font-medium text-blue-600">● <%= __('TODAY') || 'Heute' %></span>
+                            <% } %>
+                        </div>
+                        <% if (dayData.pairs.length > 0) { %>
+                            <% dayData.pairs.forEach(function(pair, index) { 
+                                const comeTime = formatTime(pair.come.date);
+                                const goTime = pair.go ? formatTime(pair.go.date) : ""; 
+                                const reason = pair.come.stampingReason || (__("NA_SHORT") || "N/A");
+                                const timeDisplay = pair.go ? `${comeTime} - ${goTime}` : `${comeTime} - <strong>${__("OPEN_SHIFT")}</strong>`;
+                                const statusText = pair.go ? (__("STATUS_CLOSED")) : (__("STATUS_ACTIVE"));
+                                const statusColor = pair.go ? "text-gray-600 bg-gray-100" : "text-white bg-blue-600";
+                            %>
+                            <div class="<%= index > 0 ? 'mt-2 pt-2 border-t border-gray-200' : '' %> hover:bg-gray-50 transition duration-100 rounded">
+                                <div class="flex justify-between items-center mb-1">
+                                    <div class="text-sm text-gray-900"><%- timeDisplay %></div>
+                                    <span class="inline-flex items-center rounded-full <%= statusColor %> px-2 py-0.5 text-xs font-medium">
+                                        <%= statusText %>
+                                    </span>
+                                </div>
+                                <div class="text-xs text-gray-500"><%= reason %></div>
+                            </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="text-xs text-gray-400 italic"><%= __("NO_STAMPINGS") %></div>
+                        <% } %>
+                    </li>
                 <% }); %>
             <% } else { %>
                 <li class="py-4 text-center text-sm text-gray-500"><%= __("NO_STAMPINGS") %></li>
