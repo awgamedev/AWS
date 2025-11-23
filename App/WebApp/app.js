@@ -201,15 +201,18 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json({ limit: "10mb" })); // To handle JSON payloads (increased for image uploads)
 
 // NEU: Session-Konfiguration (MUSS vor passport.session() erfolgen)
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "a-strong-default-secret", // Verwenden Sie ein echtes Geheimnis aus der .env
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET || "a-strong-default-secret", // Verwenden Sie ein echtes Geheimnis aus der .env
+  resave: false,
+  saveUninitialized: false,
+});
+
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session()); // NEU: Aktiviert Session-Unterstützung für Passport
+
+// Export session middleware for Socket.IO
+app.set("sessionMiddleware", sessionMiddleware);
 
 // --- NEUE MIDDLEWARE FÜR EJS GLOBALE VARIABLEN ---
 // Diese Middleware macht allgemeine Variablen für alle EJS-Templates verfügbar (res.locals)

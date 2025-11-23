@@ -6,7 +6,6 @@ const http = require("http");
 const app = require("./app");
 const { Server } = require("socket.io");
 const { initializeChatSocket } = require("./src/features/chat/chat.socket");
-const session = require("express-session");
 
 // Define the port the server will listen on
 const PORT = process.env.PORT;
@@ -22,14 +21,13 @@ const io = new Server(server, {
   },
 });
 
-// Share session with socket.io
-const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET || "a-strong-default-secret",
-  resave: false,
-  saveUninitialized: false,
-});
+// Get the session middleware from app
+const sessionMiddleware = app.get("sessionMiddleware");
 
-io.engine.use(sessionMiddleware);
+// Wrap session middleware for Socket.IO
+io.engine.use((req, res, next) => {
+  sessionMiddleware(req, res, next);
+});
 
 // Initialize chat socket handlers
 initializeChatSocket(io);

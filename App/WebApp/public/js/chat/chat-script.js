@@ -383,6 +383,7 @@ function updateChatListItem(chatId, lastMessage) {
 
 async function createDirectMessage(userId) {
   try {
+    console.log("Creating direct message with user:", userId);
     const response = await fetch("/chat/direct", {
       method: "POST",
       headers: {
@@ -391,7 +392,16 @@ async function createDirectMessage(userId) {
       body: JSON.stringify({ userId }),
     });
 
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Response error:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
+    console.log("Response data:", data);
 
     if (data.success) {
       // Check if chat already exists in list
@@ -411,7 +421,11 @@ async function createDirectMessage(userId) {
     }
   } catch (error) {
     console.error("Error creating direct message:", error);
-    showNotification("Fehler beim Erstellen der Direktnachricht", "error");
+    console.error("Error details:", error.message, error.stack);
+    showNotification(
+      "Fehler beim Erstellen der Direktnachricht: " + error.message,
+      "error"
+    );
   }
 }
 
@@ -446,6 +460,12 @@ async function createGroup() {
   }
 
   try {
+    console.log(
+      "Creating group with name:",
+      name,
+      "participants:",
+      participants
+    );
     const response = await fetch("/chat/group", {
       method: "POST",
       headers: {
@@ -454,7 +474,16 @@ async function createGroup() {
       body: JSON.stringify({ name, participants }),
     });
 
+    console.log("Group response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Group response error:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const data = await response.json();
+    console.log("Group response data:", data);
 
     if (data.success) {
       closeCreateGroupModal();
@@ -466,7 +495,11 @@ async function createGroup() {
     }
   } catch (error) {
     console.error("Error creating group:", error);
-    showNotification("Fehler beim Erstellen der Gruppe", "error");
+    console.error("Error details:", error.message, error.stack);
+    showNotification(
+      "Fehler beim Erstellen der Gruppe: " + error.message,
+      "error"
+    );
   }
 }
 

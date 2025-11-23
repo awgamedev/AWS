@@ -10,11 +10,17 @@ function initializeChatSocket(io) {
 
   io.on("connection", (socket) => {
     console.log(`🔌 User connected: ${socket.id}`);
+    console.log("Session data:", socket.request.session);
+    console.log("Session passport:", socket.request.session?.passport);
 
     // Authenticate user from session
     const userId = socket.request.session?.passport?.user;
     if (!userId) {
-      console.log("⚠️ Unauthenticated socket connection");
+      console.log("⚠️ Unauthenticated socket connection - no user in session");
+      console.log(
+        "Available session keys:",
+        Object.keys(socket.request.session || {})
+      );
       socket.disconnect();
       return;
     }

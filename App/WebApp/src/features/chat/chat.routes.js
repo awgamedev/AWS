@@ -50,10 +50,15 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
  * POST /chat/group - Create a new group chat
  */
 router.post("/chat/group", ensureAuthenticated, async (req, res) => {
+  console.log("📨 POST /chat/group - Request received");
+  console.log("User:", req.user?.id, req.user?.username);
+  console.log("Body:", req.body);
+
   try {
     const { name, participants } = req.body;
 
     if (!name || !name.trim()) {
+      console.log("❌ No group name provided");
       return res.status(400).json({ error: "Group name is required" });
     }
 
@@ -62,20 +67,28 @@ router.post("/chat/group", ensureAuthenticated, async (req, res) => {
       !Array.isArray(participants) ||
       participants.length === 0
     ) {
+      console.log("❌ No participants provided");
       return res
         .status(400)
         .json({ error: "At least one participant is required" });
     }
 
+    console.log(
+      "✅ Creating group chat:",
+      name,
+      "with participants:",
+      participants
+    );
     const chat = await chatRepository.createGroupChat(
       name.trim(),
       req.user.id,
       participants
     );
 
+    console.log("✅ Group chat created:", chat._id);
     res.status(201).json({ success: true, chat });
   } catch (error) {
-    console.error("Error creating group chat:", error);
+    console.error("❌ Error creating group chat:", error);
     res.status(500).json({ error: "Error creating group chat" });
   }
 });
@@ -84,27 +97,40 @@ router.post("/chat/group", ensureAuthenticated, async (req, res) => {
  * POST /chat/direct - Create or get a direct message chat
  */
 router.post("/chat/direct", ensureAuthenticated, async (req, res) => {
+  console.log("📨 POST /chat/direct - Request received");
+  console.log("User:", req.user?.id, req.user?.username);
+  console.log("Body:", req.body);
+
   try {
     const { userId } = req.body;
 
     if (!userId) {
+      console.log("❌ No userId provided");
       return res.status(400).json({ error: "User ID is required" });
     }
 
     if (userId === req.user.id.toString()) {
+      console.log("❌ Trying to chat with self");
       return res
         .status(400)
         .json({ error: "Cannot create chat with yourself" });
     }
 
+    console.log(
+      "✅ Creating/getting direct chat between",
+      req.user.id,
+      "and",
+      userId
+    );
     const chat = await chatRepository.getOrCreateDirectChat(
       req.user.id,
       userId
     );
 
+    console.log("✅ Chat created/retrieved:", chat._id);
     res.json({ success: true, chat });
   } catch (error) {
-    console.error("Error creating direct chat:", error);
+    console.error("❌ Error creating direct chat:", error);
     res.status(500).json({ error: "Error creating direct chat" });
   }
 });
