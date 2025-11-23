@@ -68,7 +68,7 @@ Write-Host "Starting: docker compose up --build"
 
 Set-Location -Path $PSScriptRoot
 
-Start-Process "http://localhost:4000"
+Start-Process "http://localhost/onis/"
 
 $exitCode = $LASTEXITCODE
 exit $exitCode
