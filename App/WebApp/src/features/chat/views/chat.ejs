@@ -3,7 +3,7 @@
     <div class="chat-sidebar">
         <!-- Header with Create Group Button -->
         <div class="chat-sidebar-header">
-            <h2 class="chat-sidebar-title">Chats</h2>
+            <h2 class="chat-sidebar-title"><%= __('CHAT_SIDEBAR_TITLE') %></h2>
             <button id="createGroupBtn" class="btn-create-group" title="<%= __('CREATE_GROUP') %>">
                 <i class="fas fa-plus"></i>
                 <i class="fas fa-users"></i>
@@ -101,8 +101,8 @@
         <!-- Welcome Screen (shown when no chat is selected) -->
         <div id="welcomeScreen" class="chat-welcome">
             <i class="fas fa-comments"></i>
-            <h2>Willkommen im Chat</h2>
-            <p>Wähle einen Chat aus der Liste oder starte eine neue Konversation</p>
+              <h2><%= __('CHAT_WELCOME_TITLE') %></h2>
+              <p><%= __('CHAT_WELCOME_SUBTITLE') %></p>
         </div>
 
         <!-- Chat Window (hidden by default) -->
@@ -113,7 +113,7 @@
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div class="chat-header-info">
-                    <h3 id="chatTitle">Chat</h3>
+                        <h3 id="chatTitle"><%= __('CHAT_HEADER_TITLE') %></h3>
                     <p id="chatSubtitle"></p>
                 </div>
                 <div class="chat-header-actions">
@@ -125,9 +125,11 @@
                         <% } %>
                     </div>
                     <button id="renameGroupBtn" class="btn-rename-chat" style="display:none;" title="Gruppennamen ändern">
+                        <button id="renameGroupBtn" class="btn-rename-chat" style="display:none;" title="<%= __('CHAT_HEADER_RENAME') %>">
                         <i class="fas fa-pen"></i>
                     </button>
                     <button id="closeChatBtn" class="btn-close-chat">
+                        <button id="closeChatBtn" class="btn-close-chat" title="<%= __('CHAT_HEADER_CLOSE') %>">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -143,11 +145,11 @@
                 <div id="toastContainer" aria-live="polite"></div>
                 <!-- Simple row: input + toggle + send -->
                 <div class="chat-simple-row" id="simpleRow">
-                    <input type="text" id="simpleMessageInput" class="simple-chat-input" placeholder="Kurze Nachricht eingeben..." autocomplete="off" />
+                    <input type="text" id="simpleMessageInput" class="simple-chat-input" placeholder="<%= __('CHAT_SIMPLE_INPUT_PLACEHOLDER') %>" autocomplete="off" />
                     <button id="editorModeToggle" class="btn-toggle-mode" title="Rich-Editor öffnen">
                         <i class="fas fa-expand"></i>
                     </button>
-                    <button id="sendMessageBtn" class="btn-send-message" title="Senden">
+                    <button id="sendMessageBtn" class="btn-send-message" title="<%= __('CHAT_SEND_TITLE') %>">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -177,9 +179,11 @@
                     <div id="messageInput" class="chat-input-editor"></div>
                     <div class="chat-input-send-wrapper">
                         <button id="editorModeToggleRich" class="btn-toggle-mode" title="Einfachen Modus aktivieren">
+                            <button id="editorModeToggleRich" class="btn-toggle-mode" title="<%= __('CHAT_SIMPLE_TOGGLE_TITLE') %>">
                             <i class="fas fa-compress"></i>
                         </button>
                         <button id="sendMessageBtnRich" class="btn-send-message" title="Senden">
+                            <button id="sendMessageBtnRich" class="btn-send-message" title="<%= __('CHAT_SEND_TITLE') %>">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -193,18 +197,18 @@
 <div id="renameGroupModal" class="modal-overlay" style="display:none;">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Gruppennamen ändern</h3>
-      <button class="modal-close" onclick="closeRenameGroupModal()"><i class="fas fa-times"></i></button>
+        <h3><%= __('CHAT_GROUP_RENAME_TITLE') %></h3>
+            <button class="modal-close" onclick="closeRenameGroupModal()" title="<%= __('CHAT_HEADER_CLOSE') %>"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label for="renameGroupInput">Neuer Name</label>
-        <input type="text" id="renameGroupInput" class="form-input" placeholder="Neuen Gruppennamen eingeben..." />
+        <label for="renameGroupInput"><%= __('CHAT_GROUP_RENAME_LABEL') %></label>
+        <input type="text" id="renameGroupInput" class="form-input" placeholder="<%= __('CHAT_GROUP_RENAME_PLACEHOLDER') %>" />
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeRenameGroupModal()">Abbrechen</button>
-      <button class="btn-primary" onclick="submitRenameGroup()">Speichern</button>
+    <button class="btn-secondary" onclick="closeRenameGroupModal()"><%= __('CHAT_GROUP_RENAME_CANCEL') %></button>
+    <button class="btn-primary" onclick="submitRenameGroup()"><%= __('CHAT_GROUP_RENAME_SAVE') %></button>
     </div>
   </div>
 </div>
@@ -213,18 +217,18 @@
 <div id="createGroupModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Neue Gruppe erstellen</h3>
+            <h3><%= __('CHAT_GROUP_CREATE_TITLE') %></h3>
             <button class="modal-close" onclick="closeCreateGroupModal()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label for="groupName">Gruppenname</label>
-                <input type="text" id="groupName" class="form-input" placeholder="Gruppenname eingeben...">
+                <label for="groupName"><%= __('CHAT_GROUP_CREATE_LABEL') %></label>
+                <input type="text" id="groupName" class="form-input" placeholder="<%= __('CHAT_GROUP_CREATE_PLACEHOLDER') %>">
             </div>
             <div class="form-group">
-                <label>Teilnehmer auswählen</label>
+                <label><%= __('CHAT_GROUP_CREATE_PARTICIPANTS') %></label>
                 <div class="participant-list" id="participantList">
                     <% allUsers.forEach(user => { %>
                         <% if (user._id.toString() !== currentUserId.toString()) { %>
@@ -238,8 +242,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="closeCreateGroupModal()">Abbrechen</button>
-            <button class="btn-primary" onclick="createGroup()">Erstellen</button>
+            <button class="btn-secondary" onclick="closeCreateGroupModal()"><%= __('CHAT_GROUP_CREATE_CANCEL') %></button>
+            <button class="btn-primary" onclick="createGroup()"><%= __('CHAT_GROUP_CREATE_CREATE') %></button>
         </div>
     </div>
 </div>
