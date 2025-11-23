@@ -40,5 +40,16 @@ npm-debug.log
 .env
 .DS_Store
 
+# certificates
+certs/
+*.pem
+*.crt
+*.key
+*.p12
+*.jks
+*.keystore
+*.csr
+*.srl
+
 # Exclude library files
 lib/
