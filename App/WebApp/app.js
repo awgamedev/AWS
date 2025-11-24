@@ -255,7 +255,7 @@ app.use(async (req, res, next) => {
 
 // mTLS auto-login BEFORE dev auto-login so production prefers certificate auth
 app.use(mtlsAutoLogin);
-app.use(devAutoLogin);
+// app.use(devAutoLogin);
 
 // 2. Dynamisch geladene Router (inkl. Unterordner)
 routerFiles.forEach((file) => {
