@@ -10,7 +10,8 @@ const session = require("express-session"); // NEU: Session-Middleware importier
 const winston = require("winston");
 const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
-const { devAutoLogin } = require("./src/middleware/devAutoLogin"); // Importieren
+const { devAutoLogin } = require("./src/middleware/devAutoLogin"); // Development auto-login
+const { mtlsAutoLogin } = require("./src/middleware/mtlsAutoLogin"); // mTLS auto-login
 const fs = require("fs");
 const path = require("path");
 const i18n = require("i18n");
@@ -252,6 +253,8 @@ app.use(async (req, res, next) => {
 });
 // ---------------------------------------------------
 
+// mTLS auto-login BEFORE dev auto-login so production prefers certificate auth
+app.use(mtlsAutoLogin);
 app.use(devAutoLogin);
 
 // 2. Dynamisch geladene Router (inkl. Unterordner)
