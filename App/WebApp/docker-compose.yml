@@ -15,7 +15,9 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
     volumes:
-      - .:/usr/src/app 
+      - .:/usr/src/app
+      - ./certs:/usr/src/app/certs:ro
+      - ./scripts:/usr/src/app/scripts:ro
       - /usr/src/app/node_modules
     command: ["npm", "run", "dev"]
     # WICHTIG: Verwende den Standard-Logging-Driver

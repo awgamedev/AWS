@@ -36,6 +36,11 @@ FROM node:24-slim AS final
 
 WORKDIR /usr/src/app
 
+# Install openssl and bash for certificate generation script
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl bash \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app .
 

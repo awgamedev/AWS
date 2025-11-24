@@ -350,5 +350,6 @@
 	"CHAT_SEND_ERROR": "Fehler beim Senden der Nachricht",
 	"CHAT_MODE_SWITCHED_SIMPLE": "Einfacher Modus aktiviert",
 	"CHAT_MODE_SWITCHED_RICH": "Rich-Editor aktiviert",
-	"NO_CHATS_AVAILABLE": "Keine Chats verfügbar."
+	"NO_CHATS_AVAILABLE": "Keine Chats verfügbar.",
+	"CREATE_CERTIFICATE_BUTTON": "Zertifikat erstellen"
 }

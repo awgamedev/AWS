@@ -1,7 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const User = require("./user.model");
-const { ensureAuthenticated } = require("../../middleware/auth");
+const { ensureAuthenticated, checkRole } = require("../../middleware/auth");
+// --- Certificate Generation (Admin only) ---
+const userCertController = require("./userCert.controller");
+// POST /user/:id/create-cert (admin only)
+router.post(
+  "/user/:id/create-cert",
+  ensureAuthenticated,
+  checkRole("admin"),
+  userCertController.createUserCert
+);
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const { hashPassword } = require("../../utils/password-utils");
 const { validateUserData } = require("./user.validations");

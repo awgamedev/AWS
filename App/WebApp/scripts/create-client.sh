@@ -39,7 +39,7 @@ if set -o 2>/dev/null | grep -q pipefail; then
 fi
 
 # --- Defaults (override via flags) -------------------------------------------------
-CA_PASSWORD="MySecureCAPassword123!"      # or export CA_PASSWORD before running
+CA_PASSWORD="${CA_PASSWORD:-MySecureCAPassword123!}"      # Can be overridden via env
 CLIENT_NAME="client_device"              # will append random suffix if not overridden
 CLIENT_EMAIL=""                          # optional email for EMAILADDRESS + SAN
 CLIENT_ROLE="Device"                     # stored in OU for informational purposes
@@ -50,8 +50,11 @@ KEY_BITS=2048
 KEEP_KEY_AND_CERT="false"                # set to true to keep .key/.crt (recommended server-side)
 OUT_DIR="."                              # output directory
 
-CA_KEY="ca.key"
-CA_CRT="ca.crt"
+# Determine script directory to reference certs no matter the current working dir
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+CA_DIR="${SCRIPT_DIR}/../certs"
+CA_KEY="${CA_DIR}/ca.key"
+CA_CRT="${CA_DIR}/ca.crt"
 
 # --- Parse flags ------------------------------------------------------------------
 while [[ $# -gt 0 ]]; do
@@ -77,7 +80,7 @@ if [[ -z "${CLIENT_NAME}" ]]; then
 fi
 
 if [[ ! -f "$CA_KEY" || ! -f "$CA_CRT" ]]; then
-    echo "❌ CA key/cert ($CA_KEY / $CA_CRT) not found. Place them here or specify paths inside script.";
+    echo "❌ CA key/cert ($CA_KEY / $CA_CRT) not found. Expected under WebApp/certs. Set CA_DIR or place files correctly.";
     exit 1;
 fi
 
@@ -133,10 +136,19 @@ echo "-> Generating CSR"
 openssl req -new -key "${FINAL_NAME}.key" -out "${FINAL_NAME}.csr" -config "client_${FINAL_NAME}.conf"
 
 echo "-> Signing certificate with CA"
-openssl x509 -req -in "${FINAL_NAME}.csr" -CA "$CA_CRT" -CAkey "$CA_KEY" -passin pass:"$CA_PASSWORD" -CAcreateserial -out "${FINAL_NAME}.crt" -days "$DAYS_CERT" -sha256 -extensions v3_usr -extfile "client_${FINAL_NAME}_ext.conf"
+# Use writable serial file outside read-only certs directory to avoid BIO_new_file errors
+CA_SERIAL_PATH="${OUT_DIR}/ca_serial.srl"
+if [[ ! -f "$CA_SERIAL_PATH" ]]; then echo "01" > "$CA_SERIAL_PATH"; fi
+openssl x509 -req -in "${FINAL_NAME}.csr" -CA "$CA_CRT" -CAkey "$CA_KEY" -passin pass:"$CA_PASSWORD" -CAserial "$CA_SERIAL_PATH" -out "${FINAL_NAME}.crt" -days "$DAYS_CERT" -sha256 -extensions v3_usr -extfile "client_${FINAL_NAME}_ext.conf"
 
-echo "-> Exporting PKCS#12 (.p12) (enter export password when prompted)"
-openssl pkcs12 -export -out "${FINAL_NAME}.p12" -inkey "${FINAL_NAME}.key" -in "${FINAL_NAME}.crt" -certfile "$CA_CRT"
+EXPORT_PW="${PKCS12_EXPORT_PASSWORD:-}"
+if [[ -n "$EXPORT_PW" ]]; then
+    echo "-> Exporting PKCS#12 (.p12) (non-interactive)"
+    openssl pkcs12 -export -out "${FINAL_NAME}.p12" -inkey "${FINAL_NAME}.key" -in "${FINAL_NAME}.crt" -certfile "$CA_CRT" -passout pass:"$EXPORT_PW"
+else
+    echo "-> Exporting PKCS#12 (.p12) (interactive prompt)"
+    openssl pkcs12 -export -out "${FINAL_NAME}.p12" -inkey "${FINAL_NAME}.key" -in "${FINAL_NAME}.crt" -certfile "$CA_CRT"
+fi
 
 echo "-> Cleaning temporary CSR + config"
 rm -f "${FINAL_NAME}.csr" "client_${FINAL_NAME}.conf" "client_${FINAL_NAME}_ext.conf"

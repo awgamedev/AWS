@@ -30,6 +30,7 @@ class UserController {
         user: user.toObject(),
         userProfile,
         errors: {},
+        userRole: req.user ? req.user.role : null,
       });
     } catch (err) {
       req.logger.error("Error fetching user details:", err);
@@ -92,6 +93,7 @@ class UserController {
             vacationDaysPerYear: vacationDaysPerYear || 20,
           },
           errors: validationErrors,
+          userRole: req.user ? req.user.role : null,
         });
       }
 
