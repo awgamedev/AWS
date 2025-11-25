@@ -83,9 +83,11 @@ exports.createUserCert = async (req, res) => {
           .json({ ok: false, msg: "Certificate file not found", files });
       }
       const p12Path = path.join(outDir, p12File);
+      // Use a clean, user-friendly filename for download
+      const cleanFilename = `${user.username}_certificate.p12`;
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename=\"${p12File}\"`
+        `attachment; filename=\"${cleanFilename}\"`
       );
       res.setHeader("Content-Type", "application/x-pkcs12");
       res.setHeader("X-P12-Password", exportPassword);
