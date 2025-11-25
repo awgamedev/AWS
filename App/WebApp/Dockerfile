@@ -38,11 +38,19 @@ WORKDIR /usr/src/app
 
 # Install openssl and bash for certificate generation script
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends openssl bash \
+    && apt-get install -y --no-install-recommends openssl bash dos2unix \
     && rm -rf /var/lib/apt/lists/*
+
+## Normalize line endings for all shell scripts (prevent CRLF issues)
+## Safe even if already LF; dos2unix exits 0 when no changes.
+## Run after code copy (added below) but builder stage already contains scripts; we will run again after COPY.
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app .
+
+RUN if [ -d "/usr/src/app/scripts" ]; then \
+    find /usr/src/app/scripts -type f -name '*.sh' -exec dos2unix {} +; \
+    fi
 
 # 6. Expose Port: Inform Docker that the container listens on this port.
 EXPOSE 4000
