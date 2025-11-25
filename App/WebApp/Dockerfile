@@ -36,20 +36,17 @@ FROM node:24-slim AS final
 
 WORKDIR /usr/src/app
 
-# Install openssl and bash for certificate generation script
+# Install openssl, bash, and dos2unix for certificate generation script
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssl bash dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
-## Normalize line endings for all shell scripts (prevent CRLF issues)
-## Safe even if already LF; dos2unix exits 0 when no changes.
-## Run after code copy (added below) but builder stage already contains scripts; we will run again after COPY.
-
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app .
 
+# Normalize line endings for all shell scripts (prevent CRLF issues)
 RUN if [ -d "/usr/src/app/scripts" ]; then \
-    find /usr/src/app/scripts -type f -name '*.sh' -exec dos2unix {} +; \
+    find /usr/src/app/scripts -type f -name '*.sh' -exec dos2unix {} + 2>/dev/null || true; \
     fi
 
 # 6. Expose Port: Inform Docker that the container listens on this port.
