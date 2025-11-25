@@ -297,7 +297,6 @@
 	"DEFAULT_DURATION_LABEL": "Standarddauer (Tage)",
 	"ACTIONS": "Aktionen",
 	"NO_TEMPLATES_FOUND": "Keine Vorlagen gefunden. Erstelle deine erste Vorlage!",
-	"CREATE_TEMPLATE_MODAL_TITLE": "Vorlage erstellen",
 	"EDIT_TEMPLATE_MODAL_TITLE": "Vorlage bearbeiten",
 	"SAVE_TEMPLATE_BUTTON": "Vorlage speichern",
 	"TEMPLATE_CREATED_SUCCESS": "Vorlage erfolgreich erstellt.",
@@ -373,5 +372,6 @@
 	"CERTIFICATE_COPY_EMAIL_TEMPLATE": "E-Mail-Vorlage kopieren",
 	"CERTIFICATE_PASSWORD_COPIED": "Passwort in Zwischenablage kopiert!",
 	"CERTIFICATE_EMAIL_COPIED": "E-Mail-Vorlage in Zwischenablage kopiert!",
-	"CERTIFICATE_BACK_TO_USER": "Zurück zum Benutzer"
+	"CERTIFICATE_BACK_TO_USER": "Zurück zum Benutzer",
+	"CREATE_TEMPLATE_MODAL_TITLE": "Vorlage erstellen"
 }
