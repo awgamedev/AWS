@@ -1,4 +1,3 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8 px-2 sm:px-4">
     <div class="max-w-5xl mx-auto">
         <!-- Header -->
         <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
@@ -95,8 +94,9 @@
                 </a>
             </div>
             <div class="mt-2 text-xs text-gray-700 text-center">
-                <span>Installiere das <b>CA-Zertifikat</b> auf deinem Gerät, damit diesem Server vertraut wird. <a href="/manuals/mTLS.md" target="_blank" class="underline text-blue-700">Anleitung</a></span>
+                <span>Installiere das <b>CA-Zertifikat</b> auf deinem Gerät, damit diesem Server vertraut wird.
             </div>
+
         </div>
 
         <!-- Email Template -->
@@ -113,7 +113,21 @@
 
             <div id="email-template" style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; line-height: 1.5; color: #374151; padding: 20px; border: 1px solid #d1d5db; background-color: #f9fafb;">
 
+
     <h2 style="font-size: 1.5rem; font-weight: 700; color: #1d4ed8;">🔒 Anleitung: Client-Zertifikat-Installation</h2>
+
+    <div style="background-color: #e0f2fe; border: 1px solid #38bdf8; padding: 1rem; margin-top: 1.5rem; border-radius: 0.5rem;">
+        <b>WICHTIG: Damit dein Gerät dieser Webseite vertraut, installiere bitte zuerst das beigefügte <u>CA-Zertifikat</u> (ca.crt) auf deinem Gerät!</b>
+        <ul style="margin-top: 0.7rem; margin-bottom: 0; padding-left: 1.2rem; color: #0369a1; font-size: 0.98em;">
+            <li style="margin-bottom: 0.4rem;"><b>Windows:</b> Öffne die Datei <b>ca.crt</b> per Doppelklick und folge den Anweisungen. Wähle "Vertrauenswürdige Stammzertifizierungsstelle".</li>
+            <li style="margin-bottom: 0.4rem;"><b>Android:</b> Öffne die Datei <b>ca.crt</b> auf deinem Gerät und installiere sie als "VPN und Apps"-Zertifikat.</li>
+            <li style="margin-bottom: 0.4rem;"><b>iPhone/iPad:</b> Öffne die Datei <b>ca.crt</b>, installiere das Profil und aktiviere das Zertifikat unter Einstellungen &gt; Info &gt; Zertifikatsvertrauenseinstellungen.</li>
+            <li style="margin-bottom: 0.4rem;"><b>Mac:</b> Öffne die Datei <b>ca.crt</b> per Doppelklick und wähle "Immer vertrauen".</li>
+        </ul>
+        <div style="margin-top: 0.7rem; color: #0e7490; font-size: 0.97em;">
+            <span style="font-size: 0.95em;">Nur nach der Installation erkennt dein Gerät diese Webseite als sicher und du kannst dein persönliches Zertifikat nutzen.</span>
+        </div>
+    </div>
 
     <p style="margin-top: 1rem;">Diese Anleitung enthält alle Informationen, die du für die Installation deines persönlichen Client-Zertifikats benötigst.</p>
 
@@ -171,7 +185,6 @@
 </div>
         </div>
     </div>
-</div>
 
 <script>
 function copyPassword() {
