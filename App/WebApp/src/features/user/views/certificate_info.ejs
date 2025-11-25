@@ -122,7 +122,7 @@
 
     <div style="background-color: #ffffff; border: 1px dashed #9ca3af; padding: 1rem; margin-top: 1rem; text-align: center;">
         <p style="margin: 0; color: #4b5563;">Das Passwort zum Importieren des Zertifikats lautet:</p>
-        <p style="font-size: 1.5rem; font-weight: 700; color: #dc2626; margin: 0.5rem 0 0;">[PASSWORT HIER EINFÜGEN]</p>
+        <p style="font-size: 1.5rem; font-weight: 700; color: #dc2626; margin: 0.5rem 0 0;"><%= certInfo.password %></p>
     </div>
 
     <div style="background-color: #fffbeb; border: 1px solid #fcd34d; padding: 1rem; margin-top: 1.5rem;">
@@ -177,7 +177,7 @@
     <p>Bei Fragen oder Problemen während der Installation wende dich bitte an den Support.</p>
 
     <p style="margin-top: 1.5rem;">Mit freundlichen Grüßen,<br>
-    <strong style="font-weight: 700;">[DEIN NAME]</strong></p>
+    <strong style="font-weight: 700;"><%= user && user.displayName ? user.displayName : (user && user.username ? user.username : '') %></strong></p>
 
 </div>
         </div>
