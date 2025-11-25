@@ -1,173 +1,185 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8 px-2 sm:px-4">
     <div class="max-w-5xl mx-auto">
         <!-- Header -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                        <i class="fas fa-certificate text-green-600 mr-3"></i>
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="w-full sm:w-auto">
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                         <%= __('CERTIFICATE_INFO_TITLE') %>
                     </h1>
-                    <p class="text-gray-600"><%= __('CERTIFICATE_INFO_SUBTITLE') %></p>
+                    <p class="text-xs sm:text-sm text-gray-600"><%= __('CERTIFICATE_INFO_SUBTITLE') %></p>
                 </div>
                 <a href="/user/details/<%= certInfo.userId %>" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    <%= __('CERTIFICATE_BACK_TO_USER') %>
+                   class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 touch-action-manipulation min-h-[40px]">
+                    ← <%= __('CERTIFICATE_BACK_TO_USER') %>
                 </a>
             </div>
-            <div class="mt-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
-                <p class="text-green-700 font-semibold">
+            <div class="mt-3 p-2 bg-green-50 rounded">
+                <p class="text-green-700 text-xs sm:text-sm font-semibold">
                     <%= __('CERTIFICATE_CREATED_SUCCESS') %>
                 </p>
             </div>
         </div>
 
         <!-- Certificate Details -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
+            <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-2">
                 <%= __('CERTIFICATE_DETAILS_SECTION') %>
             </h2>
-            <p class="text-gray-600 mb-4"><%= __('CERTIFICATE_ENCODED_INFO') %></p>
+            <p class="text-xs text-gray-600 mb-3"><%= __('CERTIFICATE_ENCODED_INFO') %></p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_CN') %></dt>
-                    <dd class="text-lg font-mono text-gray-900"><%= certInfo.certificateDetails.CN %></dd>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="bg-gray-50 p-2 rounded">
+                    <dt class="text-xs font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_CN') %></dt>
+                    <dd class="text-sm font-mono text-gray-900 break-all"><%= certInfo.certificateDetails.CN %></dd>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_EMAIL') %></dt>
-                    <dd class="text-lg font-mono text-gray-900"><%= certInfo.certificateDetails.EMAIL %></dd>
+                <div class="bg-gray-50 p-2 rounded">
+                    <dt class="text-xs font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_EMAIL') %></dt>
+                    <dd class="text-sm font-mono text-gray-900 break-all"><%= certInfo.certificateDetails.EMAIL %></dd>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_OU') %></dt>
-                    <dd class="text-lg font-mono text-gray-900"><%= certInfo.certificateDetails.OU %></dd>
+                <div class="bg-gray-50 p-2 rounded">
+                    <dt class="text-xs font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_OU') %></dt>
+                    <dd class="text-sm font-mono text-gray-900 break-all"><%= certInfo.certificateDetails.OU %></dd>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_O') %></dt>
-                    <dd class="text-lg font-mono text-gray-900"><%= certInfo.certificateDetails.O %></dd>
+                <div class="bg-gray-50 p-2 rounded">
+                    <dt class="text-xs font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_O') %></dt>
+                    <dd class="text-sm font-mono text-gray-900 break-all"><%= certInfo.certificateDetails.O %></dd>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_C') %></dt>
-                    <dd class="text-lg font-mono text-gray-900"><%= certInfo.certificateDetails.C %></dd>
+                <div class="bg-gray-50 p-2 rounded">
+                    <dt class="text-xs font-medium text-gray-500 mb-1"><%= __('CERTIFICATE_C') %></dt>
+                    <dd class="text-sm font-mono text-gray-900 break-all"><%= certInfo.certificateDetails.C %></dd>
                 </div>
             </div>
         </div>
 
         <!-- Password Section -->
-        <div class="bg-red-50 border-2 border-red-400 rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-red-900 mb-3">
-                <i class="fas fa-key text-red-600 mr-2"></i>
+        <div class="bg-red-50 border border-red-400 rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
+            <h2 class="text-base sm:text-lg font-bold text-red-900 mb-2">
                 <%= __('CERTIFICATE_PASSWORD_SECTION') %>
             </h2>
-            <div class="bg-red-100 border-l-4 border-red-600 p-4 mb-4 rounded">
-                <p class="text-red-800 font-bold text-lg">
+            <div class="bg-red-100 p-2 mb-2 rounded">
+                <p class="text-red-800 font-bold text-xs sm:text-sm">
                     <%= __('CERTIFICATE_PASSWORD_WARNING') %>
                 </p>
             </div>
-            <p class="text-gray-700 mb-4"><%= __('CERTIFICATE_PASSWORD_INFO') %></p>
+            <p class="text-xs text-gray-700 mb-3"><%= __('CERTIFICATE_PASSWORD_INFO') %></p>
             
-            <div class="bg-white p-4 rounded-lg border-2 border-red-300">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="bg-white p-2 rounded border border-red-300">
+                <label class="block text-xs font-medium text-gray-700 mb-1">
                     <%= __('CERTIFICATE_PASSWORD_LABEL') %>
                 </label>
-                <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                     <input type="text" 
                            id="cert-password" 
                            value="<%= certInfo.password %>" 
                            readonly
-                           class="flex-1 px-4 py-3 text-2xl font-mono font-bold bg-gray-100 border-2 border-gray-300 rounded-lg text-center select-all"
+                           class="flex-1 px-2 py-2 text-base sm:text-lg font-mono font-bold bg-gray-100 border border-gray-300 rounded text-center select-all min-h-[40px]"
                            onclick="this.select()">
                     <button onclick="copyPassword()" 
-                            class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
-                        <i class="fas fa-copy mr-2"></i>
-                        <%= __('CERTIFICATE_COPY_PASSWORD') %>
+                            class="w-full sm:w-auto px-3 py-2 bg-blue-600 text-white text-xs sm:text-sm font-semibold rounded hover:bg-blue-700 transition touch-action-manipulation min-h-[40px]">
+                        <span class="hidden sm:inline"><%= __('CERTIFICATE_COPY_PASSWORD') %></span>
+                        <span class="sm:hidden">Kopieren</span>
                     </button>
                 </div>
             </div>
 
             <!-- Download Button -->
-            <div class="mt-6 text-center">
+            <div class="mt-3 text-center">
                 <a href="/user/<%= certInfo.userId %>/download-certificate" 
-                   class="inline-flex items-center px-8 py-4 bg-green-600 text-white text-lg font-bold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg transition transform hover:scale-105">
-                    <i class="fas fa-download mr-3"></i>
-                    <%= __('CERTIFICATE_DOWNLOAD_BUTTON') %>
+                   class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition touch-action-manipulation min-h-[40px]">
+                    ↓ <%= __('CERTIFICATE_DOWNLOAD_BUTTON') %>
                 </a>
             </div>
         </div>
 
         <!-- Email Template -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-3">
-                <i class="fas fa-envelope text-indigo-600 mr-2"></i>
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
+            <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-2">
                 <%= __('CERTIFICATE_EMAIL_TEMPLATE_SECTION') %>
             </h2>
-            <p class="text-gray-600 mb-4"><%= __('CERTIFICATE_EMAIL_TEMPLATE_INFO') %></p>
+            <p class="text-xs text-gray-600 mb-2"><%= __('CERTIFICATE_EMAIL_TEMPLATE_INFO') %></p>
             
             <button onclick="copyEmailTemplate()" 
-                    class="mb-4 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
-                <i class="fas fa-copy mr-2"></i>
+                    class="mb-2 w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white text-xs sm:text-sm font-semibold rounded hover:bg-indigo-700 transition touch-action-manipulation min-h-[40px]">
                 <%= __('CERTIFICATE_COPY_EMAIL_TEMPLATE') %>
             </button>
 
-            <div id="email-template" class="bg-gray-50 p-6 rounded-lg border border-gray-300 font-mono text-sm whitespace-pre-wrap select-all">
-<strong>Betreff:</strong> <%= __('CERTIFICATE_EMAIL_SUBJECT') %>
+            <div style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; line-height: 1.5; color: #374151; padding: 20px; border: 1px solid #d1d5db; background-color: #f9fafb;">
 
-<%= __('CERTIFICATE_EMAIL_GREETING') %> <%= certInfo.username %>,
+    <p style="font-size: 1.125rem; font-weight: 700;">Betreff: Dein Client-Zertifikat für sicheren Zugriff</p>
 
-<%= __('CERTIFICATE_EMAIL_INTRO') %>
+    <p style="margin-top: 1rem;">Hallo <%= certInfo.username %>,</p>
 
-<strong><%= __('CERTIFICATE_EMAIL_FILE_INFO') %>:</strong> <%= certInfo.filename %>
-<%= __('CERTIFICATE_EMAIL_FILE_ATTACHED') %>
+    <p>Dein persönliches **Client-Zertifikat** wurde erfolgreich erstellt. Dieses Zertifikat ermöglicht dir einen **sicheren Zugriff** auf unsere Systeme mittels Mutual TLS (**mTLS**) Authentifizierung.</p>
 
-<strong><%= __('CERTIFICATE_EMAIL_PASSWORD_INFO') %></strong>
-<%= __('CERTIFICATE_EMAIL_PASSWORD_PLACEHOLDER') %>
+    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
 
-<strong>⚠️ Sicherheitshinweis:</strong>
-<%= __('CERTIFICATE_EMAIL_SECURITY_NOTE') %>
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1d4ed8;">🔑 ZERTIFIKATSDATEI & PASSWORT</h3>
+    <p>
+        <strong style="font-weight: 700;">Dateiname:</strong> <%= certInfo.filename %><br>
+        Die Datei ist dieser E-Mail als Anhang beigefügt.
+    </p>
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    <div style="background-color: #ffffff; border: 1px dashed #9ca3af; padding: 1rem; margin-top: 1rem; text-align: center;">
+        <p style="margin: 0; color: #4b5563;">Das Passwort zum Importieren des Zertifikats lautet:</p>
+        <p style="font-size: 1.5rem; font-weight: 700; color: #dc2626; margin: 0.5rem 0 0;">[PASSWORT HIER EINFÜGEN]</p>
+    </div>
 
-<strong><%= __('CERTIFICATE_INSTALL_INSTRUCTIONS') %></strong>
+    <div style="background-color: #fffbeb; border: 1px solid #fcd34d; padding: 1rem; margin-top: 1.5rem;">
+        <p style="margin: 0; font-weight: 700; color: #b45309;">⚠️ WICHTIGER SICHERHEITSHINWEIS</p>
+        <p style="margin: 0.5rem 0 0; color: #78350f;">Bitte behandle dieses Zertifikat und das zugehörige Passwort vertraulich. Teile diese Informationen niemals mit Dritten. Das Passwort wird nur einmal angezeigt und kann nicht wiederhergestellt werden.</p>
+    </div>
 
-<strong>🪟 <%= __('CERTIFICATE_INSTALL_WINDOWS') %></strong>
+    <hr style="border: 0; border-top: 1px solid #d1d5db; margin: 2rem 0;">
 
-1. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP1') %>
-2. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP2') %>
-3. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP3') %>
-4. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP4') %>
-5. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP5') %>
-6. <%= __('CERTIFICATE_INSTALL_WINDOWS_STEP6') %>
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1d4ed8;">⚙️ INSTALLATIONSANLEITUNGEN</h2>
 
-<strong>🤖 <%= __('CERTIFICATE_INSTALL_ANDROID') %></strong>
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6; margin-top: 1.5rem;">🖼️ INSTALLATION UNTER WINDOWS</h3>
+    <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">Doppelklicke auf die .p12-Datei, die du als Anhang erhalten hast.</li>
+        <li style="margin-bottom: 0.5rem;">Im Zertifikatimport-Assistenten wähle "Aktueller Benutzer" aus und klicke auf "Weiter".</li>
+        <li style="margin-bottom: 0.5rem;">Bestätige den Dateipfad der .p12-Datei und klicke erneut auf "Weiter".</li>
+        <li style="margin-bottom: 0.5rem;">Gib das oben angegebene Passwort in das Eingabefeld ein.</li>
+        <li style="margin-bottom: 0.5rem;">Wähle "Alle Zertifikate in folgendem Speicher speichern", klicke auf "Durchsuchen" und wähle "Eigene Zertifikate" aus.</li>
+        <li style="margin-bottom: 0.5rem;">Schließe den Assistenten ab, indem du auf "Fertig stellen" klickst.</li>
+    </ol>
 
-1. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP1') %>
-2. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP2') %>
-3. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP3') %>
-4. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP4') %>
-5. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP5') %>
-6. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP6') %>
-7. <%= __('CERTIFICATE_INSTALL_ANDROID_STEP7') %>
+    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
 
-<strong>🍎 <%= __('CERTIFICATE_INSTALL_IOS') %></strong>
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6;">🤖 INSTALLATION UNTER ANDROID</h3>
+    <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">Übertrage die .p12-Datei auf dein Android-Gerät.</li>
+        <li style="margin-bottom: 0.5rem;">Öffne die Einstellungen. Navigiere zu: **Sicherheit** → **Verschlüsselung & Anmeldedaten**.</li>
+        <li style="margin-bottom: 0.5rem;">Tippe auf "Zertifikat installieren" oder "Von Gerätespeicher installieren".</li>
+        <li style="margin-bottom: 0.5rem;">Wähle "CA-Zertifikat" oder "VPN- und App-Benutzerzertifikat" aus.</li>
+        <li style="margin-bottom: 0.5rem;">Navigiere zum Speicherort der .p12-Datei und wähle sie aus.</li>
+        <li style="margin-bottom: 0.5rem;">Gib das Passwort ein, wenn du dazu aufgefordert wirst.</li>
+        <li style="margin-bottom: 0.5rem;">Vergib einen aussagekräftigen Namen (z.B. "Firmen-Zugang") und bestätige die Installation.</li>
+    </ol>
 
-1. <%= __('CERTIFICATE_INSTALL_IOS_STEP1') %>
-2. <%= __('CERTIFICATE_INSTALL_IOS_STEP2') %>
-3. <%= __('CERTIFICATE_INSTALL_IOS_STEP3') %>
-4. <%= __('CERTIFICATE_INSTALL_IOS_STEP4') %>
-5. <%= __('CERTIFICATE_INSTALL_IOS_STEP5') %>
-6. <%= __('CERTIFICATE_INSTALL_IOS_STEP6') %>
-7. <%= __('CERTIFICATE_INSTALL_IOS_STEP7') %>
-8. <%= __('CERTIFICATE_INSTALL_IOS_STEP8') %>
+    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6;">📱 INSTALLATION UNTER iOS/iPadOS</h3>
+    <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">Sende die .p12-Datei per E-Mail an dich selbst oder lade sie in iCloud Drive hoch.</li>
+        <li style="margin-bottom: 0.5rem;">Öffne die Datei auf deinem iOS-Gerät (z.B. aus der Mail-App).</li>
+        <li style="margin-bottom: 0.5rem;">iOS erkennt das Zertifikat und fordert dich zur Installation auf.</li>
+        <li style="margin-bottom: 0.5rem;">Gib das Passwort ein, wenn du dazu aufgefordert wirst.</li>
+        <li style="margin-bottom: 0.5rem;">Gehe zu den Einstellungen deines Geräts. Navigiere zu: **Allgemein** → **VPN und Geräteverwaltung**.</li>
+        <li style="margin-bottom: 0.5rem;">Wähle das neu installierte Profil aus der Liste aus und tippe auf "Installieren".</li>
+        <li style="margin-bottom: 0.5rem;">Gib deinen Geräte-Passcode ein, wenn du dazu aufgefordert wirst.</li>
+        <li style="margin-bottom: 0.5rem;">Bestätige die Installation des Zertifikats.</li>
+    </ol>
 
-<%= __('CERTIFICATE_EMAIL_SUPPORT') %>
+    <hr style="border: 0; border-top: 1px solid #d1d5db; margin: 2rem 0;">
 
-<%= __('CERTIFICATE_EMAIL_GREETING_END') %>,
-<%= __('CERTIFICATE_EMAIL_TEAM') %>
-            </div>
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1d4ed8;">❓ SUPPORT</h3>
+    <p>Bei Fragen oder Problemen während der Installation wende dich bitte an den Support.</p>
+
+    <p style="margin-top: 1.5rem;">Mit freundlichen Grüßen,<br>
+    <strong style="font-weight: 700;">[DEIN NAME]</strong></p>
+
+</div>
         </div>
     </div>
 </div>
