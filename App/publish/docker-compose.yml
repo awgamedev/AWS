@@ -10,9 +10,6 @@ services:
       - mongo
     environment:
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
-    volumes:
-      - ./certs:/usr/src/app/certs:ro
-      - ./scripts:/usr/src/app/scripts:ro
     command: ["npm", "start"]
     logging:
       driver: "json-file"
