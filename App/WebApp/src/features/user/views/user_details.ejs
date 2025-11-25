@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-// Intercept cert creation button to trigger download without page reload
+// Intercept cert creation button to navigate to certificate info page
 document.addEventListener('DOMContentLoaded', function() {
     var certBtn = document.getElementById('create-cert-btn');
     if (certBtn) {
@@ -315,25 +315,32 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             var userId = '<%= user._id %>';
             var url = 'user/' + userId + '/create-cert';
+            
+            // Show loading state
+            certBtn.disabled = true;
+            certBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Erstelle Zertifikat...';
+            
             fetch(url, {
                 method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                },
             })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to generate certificate');
-                return response.blob();
-            })
-            .then(blob => {
-                var a = document.createElement('a');
-                a.href = window.URL.createObjectURL(blob);
-                var username = '<%= user.username %>';
-                a.download = username + '_certificate.p12';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { document.body.removeChild(a); }, 100);
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok && data.redirect) {
+                    // Navigate to certificate info page
+                    window.location.href = data.redirect;
+                } else {
+                    throw new Error(data.msg || 'Failed to generate certificate');
+                }
             })
             .catch(err => {
-                alert('Certificate generation failed: ' + err.message);
+                alert('Zertifikatserstellung fehlgeschlagen: ' + err.message);
+                // Reset button state
+                certBtn.disabled = false;
+                certBtn.innerHTML = '<i class="fas fa-certificate mr-2"></i> <%= __("CREATE_CERTIFICATE_BUTTON") || "Create Certificate" %>';
             });
         });
     }

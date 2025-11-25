@@ -11,6 +11,20 @@ router.post(
   checkRole("admin"),
   userCertController.createUserCert
 );
+// GET /user/:id/certificate-info (admin only)
+router.get(
+  "/user/:id/certificate-info",
+  ensureAuthenticated,
+  checkRole("admin"),
+  userCertController.showCertificateInfo
+);
+// GET /user/:id/download-certificate (admin only)
+router.get(
+  "/user/:id/download-certificate",
+  ensureAuthenticated,
+  checkRole("admin"),
+  userCertController.downloadCertificate
+);
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const { hashPassword } = require("../../utils/password-utils");
 const { validateUserData } = require("./user.validations");
