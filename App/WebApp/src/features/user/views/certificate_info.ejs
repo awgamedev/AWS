@@ -95,96 +95,72 @@
         <!-- Email Template -->
         <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-3 sm:mb-4">
             <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-2">
-                <%= __('CERTIFICATE_EMAIL_TEMPLATE_SECTION') %>
+                <%= __('CERTIFICATE_TEMPLATE_SECTION') %>
             </h2>
-            <p class="text-xs text-gray-600 mb-2"><%= __('CERTIFICATE_EMAIL_TEMPLATE_INFO') %></p>
+            <p class="text-xs text-gray-600 mb-2"><%= __('CERTIFICATE_TEMPLATE_INFO') %></p>
             
             <button onclick="copyEmailTemplateScreenshot()"
                     class="mb-2 w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 bg-pink-600 text-white text-xs sm:text-sm font-semibold rounded hover:bg-pink-700 transition touch-action-manipulation min-h-[40px]">
                 Als Screenshot kopieren
             </button>
 
-
             <div id="email-template" style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; line-height: 1.5; color: #374151; padding: 20px; border: 1px solid #d1d5db; background-color: #f9fafb;">
 
-    <p style="font-size: 1.125rem; font-weight: 700;">Betreff: Dein Client-Zertifikat für sicheren Zugriff</p>
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1d4ed8;">🔒 Anleitung: Client-Zertifikat-Installation</h2>
 
-    <p style="margin-top: 1rem;">Hallo <%= certInfo.username %>,</p>
+    <p style="margin-top: 1rem;">Diese Anleitung enthält alle Informationen, die du für die Installation deines persönlichen Client-Zertifikats benötigst.</p>
 
-    <p>Dein persönliches **Client-Zertifikat** wurde erfolgreich erstellt. Dieses Zertifikat ermöglicht dir einen **sicheren Zugriff** auf unsere Systeme mittels Mutual TLS (**mTLS**) Authentifizierung.</p>
-
-    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
-
-    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1d4ed8;">🔑 ZERTIFIKATSDATEI & PASSWORT</h3>
-    <p>
-        <strong style="font-weight: 700;">Dateiname:</strong> <%= certInfo.filename %><br>
-        Die Datei ist dieser E-Mail als Anhang beigefügt.
-    </p>
+    <div style="background-color: #f3f4f6; border: 1px solid #d1d5db; padding: 1rem; margin-top: 1.5rem;">
+        <p style="margin: 0; font-weight: 700; color: #374151;">Dateiname des Zertifikats:</p>
+        <p style="margin: 0.5rem 0 0; font-size: 1.1rem; font-weight: 700; color: #1d4ed8;"><%= certInfo.filename %></p>
+    </div>
 
     <div style="background-color: #ffffff; border: 1px dashed #9ca3af; padding: 1rem; margin-top: 1rem; text-align: center;">
-        <p style="margin: 0; color: #4b5563;">Das Passwort zum Importieren des Zertifikats lautet:</p>
+        <p style="margin: 0; color: #4b5563;">Passwort zum Importieren des Zertifikats:</p>
         <p style="font-size: 1.5rem; font-weight: 700; color: #dc2626; margin: 0.5rem 0 0;"><%= certInfo.password %></p>
     </div>
 
-
     <div style="background-color: #fffbeb; border: 1px solid #fcd34d; padding: 1rem; margin-top: 1.5rem;">
-        <p style="margin: 0; font-weight: 700; color: #b45309;">⚠️ WICHTIGER SICHERHEITSHINWEIS</p>
-        <p style="margin: 0.5rem 0 0; color: #78350f;">Bitte behandle dieses Zertifikat und das zugehörige Passwort vertraulich. Teile diese Informationen niemals mit Dritten. Das Passwort wird nur einmal angezeigt und kann nicht wiederhergestellt werden.</p>
-    </div>
-
-    <div style="background-color: #fff1f2; border: 1px solid #fca5a5; padding: 1rem; margin-top: 1.5rem;">
-        <p style="margin: 0; font-weight: 700; color: #dc2626;">❗ WICHTIG: Lösche diese E-Mail nach der Installation des Zertifikats aus deinem Posteingang und Papierkorb, um die Sicherheit deiner Zugangsdaten zu gewährleisten.</p>
+        <p style="margin: 0; font-weight: 700; color: #b45309;">⚠️ Wichtiger Sicherheitshinweis</p>
+        <p style="margin: 0.5rem 0 0; color: #78350f;">Bewahre das Zertifikat und das Passwort sicher auf. Teile diese Informationen niemals mit Dritten. Das Passwort wird nur einmal angezeigt und kann nicht wiederhergestellt werden.</p>
     </div>
 
     <hr style="border: 0; border-top: 1px solid #d1d5db; margin: 2rem 0;">
 
-    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1d4ed8;">⚙️ INSTALLATIONSANLEITUNGEN</h2>
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1d4ed8;">⚙️ Installationsanleitungen</h3>
 
-    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6; margin-top: 1.5rem;">🖼️ INSTALLATION UNTER WINDOWS</h3>
+    <h4 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6; margin-top: 1.5rem;">🖼️ Windows</h4>
     <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">Doppelklicke auf die .p12-Datei, die du als Anhang erhalten hast.</li>
-        <li style="margin-bottom: 0.5rem;">Im Zertifikatimport-Assistenten wähle "Aktueller Benutzer" aus und klicke auf "Weiter".</li>
-        <li style="margin-bottom: 0.5rem;">Bestätige den Dateipfad der .p12-Datei und klicke erneut auf "Weiter".</li>
-        <li style="margin-bottom: 0.5rem;">Gib das oben angegebene Passwort in das Eingabefeld ein.</li>
-        <li style="margin-bottom: 0.5rem;">Wähle "Alle Zertifikate in folgendem Speicher speichern", klicke auf "Durchsuchen" und wähle "Eigene Zertifikate" aus.</li>
-        <li style="margin-bottom: 0.5rem;">Schließe den Assistenten ab, indem du auf "Fertig stellen" klickst.</li>
+        <li style="margin-bottom: 0.5rem;">Doppelklicke auf die .p12-Datei.</li>
+        <li style="margin-bottom: 0.5rem;">Im Zertifikatimport-Assistenten "Aktueller Benutzer" auswählen und auf "Weiter" klicken.</li>
+        <li style="margin-bottom: 0.5rem;">Dateipfad bestätigen und erneut auf "Weiter" klicken.</li>
+        <li style="margin-bottom: 0.5rem;">Das oben angegebene Passwort eingeben.</li>
+        <li style="margin-bottom: 0.5rem;">"Alle Zertifikate in folgendem Speicher speichern" wählen, auf "Durchsuchen" klicken und "Eigene Zertifikate" auswählen.</li>
+        <li style="margin-bottom: 0.5rem;">Assistent mit "Fertig stellen" abschließen.</li>
     </ol>
 
-    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
-
-    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6;">🤖 INSTALLATION UNTER ANDROID</h3>
+    <h4 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6; margin-top: 1.5rem;">🤖 Android</h4>
     <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">Übertrage die .p12-Datei auf dein Android-Gerät.</li>
-        <li style="margin-bottom: 0.5rem;">Öffne die Einstellungen. Navigiere zu: **Sicherheit** → **Verschlüsselung & Anmeldedaten**.</li>
-        <li style="margin-bottom: 0.5rem;">Tippe auf "Zertifikat installieren" oder "Von Gerätespeicher installieren".</li>
-        <li style="margin-bottom: 0.5rem;">Wähle "CA-Zertifikat" oder "VPN- und App-Benutzerzertifikat" aus.</li>
-        <li style="margin-bottom: 0.5rem;">Navigiere zum Speicherort der .p12-Datei und wähle sie aus.</li>
-        <li style="margin-bottom: 0.5rem;">Gib das Passwort ein, wenn du dazu aufgefordert wirst.</li>
-        <li style="margin-bottom: 0.5rem;">Vergib einen aussagekräftigen Namen (z.B. "Firmen-Zugang") und bestätige die Installation.</li>
+        <li style="margin-bottom: 0.5rem;">.p12-Datei auf das Android-Gerät übertragen.</li>
+        <li style="margin-bottom: 0.5rem;">Einstellungen öffnen: <b>Sicherheit</b> → <b>Verschlüsselung & Anmeldedaten</b>.</li>
+        <li style="margin-bottom: 0.5rem;">"Zertifikat installieren" oder "Von Gerätespeicher installieren" wählen.</li>
+        <li style="margin-bottom: 0.5rem;">"CA-Zertifikat" oder "VPN- und App-Benutzerzertifikat" auswählen.</li>
+        <li style="margin-bottom: 0.5rem;">Zum Speicherort der .p12-Datei navigieren und auswählen.</li>
+        <li style="margin-bottom: 0.5rem;">Passwort eingeben, wenn dazu aufgefordert.</li>
+        <li style="margin-bottom: 0.5rem;">Einen Namen vergeben (z.B. "Firmen-Zugang") und Installation bestätigen.</li>
     </ol>
 
-    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0;">
-
-    <h3 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6;">📱 INSTALLATION UNTER iOS/iPadOS</h3>
+    <h4 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6; margin-top: 1.5rem;">📱 iOS/iPadOS</h4>
     <ol style="list-style-type: decimal; margin-left: 1.5rem; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">Sende die .p12-Datei per E-Mail an dich selbst oder lade sie in iCloud Drive hoch.</li>
-        <li style="margin-bottom: 0.5rem;">Öffne die Datei auf deinem iOS-Gerät (z.B. aus der Mail-App).</li>
-        <li style="margin-bottom: 0.5rem;">iOS erkennt das Zertifikat und fordert dich zur Installation auf.</li>
-        <li style="margin-bottom: 0.5rem;">Gib das Passwort ein, wenn du dazu aufgefordert wirst.</li>
-        <li style="margin-bottom: 0.5rem;">Gehe zu den Einstellungen deines Geräts. Navigiere zu: **Allgemein** → **VPN und Geräteverwaltung**.</li>
-        <li style="margin-bottom: 0.5rem;">Wähle das neu installierte Profil aus der Liste aus und tippe auf "Installieren".</li>
-        <li style="margin-bottom: 0.5rem;">Gib deinen Geräte-Passcode ein, wenn du dazu aufgefordert wirst.</li>
-        <li style="margin-bottom: 0.5rem;">Bestätige die Installation des Zertifikats.</li>
+        <li style="margin-bottom: 0.5rem;">.p12-Datei per E-Mail an dich selbst senden oder in iCloud Drive hochladen.</li>
+        <li style="margin-bottom: 0.5rem;">Datei auf dem iOS-Gerät öffnen (z.B. aus der Mail-App).</li>
+        <li style="margin-bottom: 0.5rem;">iOS erkennt das Zertifikat und fordert zur Installation auf.</li>
+        <li style="margin-bottom: 0.5rem;">Passwort eingeben, wenn dazu aufgefordert.</li>
+        <li style="margin-bottom: 0.5rem;">Einstellungen öffnen: <b>Allgemein</b> → <b>VPN und Geräteverwaltung</b>.</li>
+        <li style="margin-bottom: 0.5rem;">Neues Profil aus der Liste auswählen und auf "Installieren" tippen.</li>
+        <li style="margin-bottom: 0.5rem;">Geräte-Passcode eingeben, wenn dazu aufgefordert.</li>
+        <li style="margin-bottom: 0.5rem;">Installation bestätigen.</li>
     </ol>
-
-    <hr style="border: 0; border-top: 1px solid #d1d5db; margin: 2rem 0;">
-
-    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1d4ed8;">❓ SUPPORT</h3>
-    <p>Bei Fragen oder Problemen während der Installation wende dich bitte an den Support.</p>
-
-    <p style="margin-top: 1.5rem;">Mit freundlichen Grüßen,<br>
-    <strong style="font-weight: 700;"><%= user && user.displayName ? user.displayName : (user && user.username ? user.username : '') %></strong></p>
-
 </div>
         </div>
     </div>
