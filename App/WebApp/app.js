@@ -179,7 +179,7 @@ app.set("views", viewDirectories); // WICHTIG: Übergibt das Array an Express
 
 app.locals.rmWhitespace = true;
 
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+// app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 app.use(cookieParser()); // 🍪 Jetzt werden Cookies geparst und in req.cookies gespeichert
 
