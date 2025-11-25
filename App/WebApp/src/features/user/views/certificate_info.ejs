@@ -99,10 +99,11 @@
             </h2>
             <p class="text-xs text-gray-600 mb-2"><%= __('CERTIFICATE_EMAIL_TEMPLATE_INFO') %></p>
             
-            <button onclick="copyEmailTemplateHtml()"
-                    class="mb-2 w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white text-xs sm:text-sm font-semibold rounded hover:bg-indigo-700 transition touch-action-manipulation min-h-[40px]">
-                <%= __('CERTIFICATE_COPY_EMAIL_TEMPLATE') %>
+            <button onclick="copyEmailTemplateScreenshot()"
+                    class="mb-2 w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 bg-pink-600 text-white text-xs sm:text-sm font-semibold rounded hover:bg-pink-700 transition touch-action-manipulation min-h-[40px]">
+                Als Screenshot kopieren
             </button>
+
 
             <div id="email-template" style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; line-height: 1.5; color: #374151; padding: 20px; border: 1px solid #d1d5db; background-color: #f9fafb;">
 
@@ -206,31 +207,27 @@ document.addEventListener('DOMContentLoaded', function() {
     passwordInput.select();
 });
 
-// Copy as Rich Text (HTML)
-async function copyEmailTemplateHtml() {
+// Copy email template as screenshot to clipboard
+async function copyEmailTemplateScreenshot() {
     const el = document.getElementById('email-template');
     if (!el) return;
-    const html = el.outerHTML;
-    const text = el.innerText || el.textContent;
-    if (navigator.clipboard && window.ClipboardItem) {
-        const blobHtml = new Blob([html], { type: 'text/html' });
-        const blobText = new Blob([text], { type: 'text/plain' });
-        await navigator.clipboard.write([
-            new ClipboardItem({
-                'text/html': blobHtml,
-                'text/plain': blobText
-            })
-        ]);
-    } else {
-        // fallback: select and copy
-        const range = document.createRange();
-        range.selectNode(el);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        document.execCommand('copy');
-        sel.removeAllRanges();
-    }
+    html2canvas(el, {backgroundColor: null, scale: 2}).then(async canvas => {
+        canvas.toBlob(async function(blob) {
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    alert('Screenshot wurde in die Zwischenablage kopiert!');
+                } catch (err) {
+                    alert('Kopieren als Bild nicht unterstützt: ' + err);
+                }
+            } else {
+                alert('Kopieren als Bild wird von diesem Browser nicht unterstützt.');
+            }
+        }, 'image/png');
+    });
 }
 </script>
+
 
