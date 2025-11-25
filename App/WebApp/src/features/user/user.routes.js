@@ -25,6 +25,9 @@ router.get(
   checkRole("admin"),
   userCertController.downloadCertificate
 );
+
+// GET /user/ca/download (public, for device trust)
+router.get("/user/ca/download", userCertController.downloadCA);
 const { renderView, renderErrorView } = require("../../utils/view-renderer");
 const { hashPassword } = require("../../utils/password-utils");
 const { validateUserData } = require("./user.validations");

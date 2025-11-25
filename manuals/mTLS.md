@@ -1,3 +1,52 @@
+# 6. 📥 CA-Zertifikat (ca.crt) aus der WebApp herunterladen und auf Geräten installieren
+
+Damit ein Gerät (Windows, Android, iOS, macOS) Eurer WebApp vertraut, muss das Root-CA-Zertifikat installiert werden. Die WebApp stellt das CA-Zertifikat zum Download bereit:
+
+**Download-Link:**
+
+    https://<DEINE_WEBAPP_URL>/user/ca/download
+
+Ersetze `<DEINE_WEBAPP_URL>` durch die Adresse Deiner WebApp. (Der genaue Pfad kann je nach Routing abweichen, z.B. `/user/ca/download`)
+
+## Installation des CA-Zertifikats auf verschiedenen Plattformen
+
+### 🪟 Windows
+
+1. Lade die Datei `ca.crt` über die WebApp herunter.
+2. Doppelklicke auf die Datei und wähle "Zertifikat installieren".
+3. Wähle "Lokaler Computer" und dann "Vertrauenswürdige Stammzertifizierungsstellen" als Speicherort.
+4. Bestätige die Installation.
+
+**Alternativ per PowerShell:**
+
+```powershell
+Import-Certificate -FilePath "Pfad\zu\ca.crt" -CertStoreLocation Cert:\LocalMachine\Root
+```
+
+### 🤖 Android
+
+1. Sende die Datei `ca.crt` an das Gerät (z.B. per E-Mail oder USB).
+2. Öffne die Datei auf dem Gerät. Android erkennt das Zertifikat und bietet die Installation an.
+3. Wähle "VPN und Apps" als Zertifikatstyp.
+4. Bestätige die Installation (ggf. Geräte-PIN eingeben).
+
+### 🍏 iOS (iPhone/iPad)
+
+1. Sende die Datei `ca.crt` an das Gerät (z.B. per E-Mail oder AirDrop).
+2. Tippe auf die Datei und wähle "Profil installieren".
+3. Gehe zu Einstellungen > Allgemein > Profil und installiere das Profil.
+4. Gehe zu Einstellungen > Info > Zertifikatsvertrauenseinstellungen und aktiviere vollständiges Vertrauen für das Zertifikat.
+
+### 🍎 macOS
+
+1. Doppelklicke auf die Datei `ca.crt`.
+2. Wähle "System" als Schlüsselbund und bestätige.
+3. Öffne das Zertifikat im Schlüsselbund und setze "Beim Verwenden dieses Zertifikats: Immer vertrauen".
+
+---
+
+**Hinweis:** Nach der Installation des CA-Zertifikats vertraut das Gerät allen von dieser CA ausgestellten Zertifikaten – also auch Eurer WebApp und den Client-Zertifikaten für mTLS.
+
 # 🔒 mTLS-Einrichtung für Nginx Reverse Proxy
 
 Diese Anleitung führt Dich durch die Erstellung einer Root Certificate Authority (CA), Server-Zertifikaten und Client-Zertifikaten und die Konfiguration von Nginx zur Erzwingung von Mutual TLS (mTLS), sodass nur autorisierte Geräte Zugriff erhalten.

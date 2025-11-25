@@ -216,3 +216,23 @@ exports.downloadCertificate = async (req, res) => {
     res.status(500).json({ ok: false, msg: "Serverfehler" });
   }
 };
+
+// Download the CA certificate (ca.crt) for device trust installation
+exports.downloadCA = (req, res) => {
+  try {
+    // Path: .../scripts/../cert/ca.crt
+    const caPath = path.resolve(__dirname, "../../../certs/ca.crt");
+    if (!fs.existsSync(caPath)) {
+      return res
+        .status(404)
+        .json({ ok: false, msg: "CA-Zertifikat nicht gefunden." });
+    }
+    res.setHeader("Content-Disposition", 'attachment; filename="ca.crt"');
+    res.setHeader("Content-Type", "application/x-x509-ca-cert");
+    const stream = fs.createReadStream(caPath);
+    stream.pipe(res);
+  } catch (err) {
+    req.logger && req.logger.error("Error downloading CA certificate:", err);
+    res.status(500).json({ ok: false, msg: "Serverfehler" });
+  }
+};
