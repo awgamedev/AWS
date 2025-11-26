@@ -39,22 +39,158 @@ function parseDistinguishedName(dnRaw) {
   return map;
 }
 
+// Returns true if auto-provisioning of users is enabled and not explicitly disabled
+function isAutoProvisioningAllowed() {
+  return (
+    process.env.MTLS_AUTO_PROVISION_ENABLED === "true" &&
+    process.env.MTLS_AUTO_PROVISION_ALLOW !== "false"
+  );
+}
+
+// Extracts the candidate value from the DN map, falling back to serialHeader if needed
+function getCandidateFromDN(dn, dnAttribute, serialHeader) {
+  let candidate = dn[dnAttribute];
+  // If the attribute is SERIALNUMBER and not present in DN, use the serial header
+  if (!candidate && dnAttribute === "SERIALNUMBER") candidate = serialHeader;
+  return candidate;
+}
+
+// Attempts to find a user by the candidate value, using email or username as appropriate
+async function findUserByCandidate(candidate, matchFieldEnv, looksLikeEmail) {
+  let user = null;
+  // If candidate looks like an email and fallback is enabled, try email first
+  if (looksLikeEmail && process.env.MTLS_FALLBACK_TO_EMAIL === "true") {
+    user = await User.findOne({ email: candidate });
+  }
+  if (!user) {
+    if (matchFieldEnv === "email") {
+      user = await User.findOne({ email: candidate });
+    } else {
+      // Try username, then (if candidate looks like email) try email again
+      user =
+        (await User.findOne({ username: candidate })) ||
+        (looksLikeEmail ? await User.findOne({ email: candidate }) : null);
+    }
+  }
+  return user;
+}
+
+// Attempts to auto-provision a user if not found, based on DN and environment config
+// Returns the new user, an existing user (if race condition), or null if not possible
+async function autoProvisionUser({
+  candidate,
+  matchFieldEnv,
+  looksLikeEmail,
+  dn,
+  req,
+}) {
+  // Determine role to assign (default or from OU if allowed)
+  const defaultRole = process.env.MTLS_AUTO_PROVISION_DEFAULT_ROLE || "user";
+  let roleToAssign = defaultRole;
+  const dnRoleCandidate = dn["OU"];
+  if (
+    process.env.MTLS_AUTO_PROVISION_USE_OU_FOR_ROLE === "true" &&
+    dnRoleCandidate &&
+    ["user", "admin"].includes(dnRoleCandidate)
+  ) {
+    roleToAssign = dnRoleCandidate;
+  }
+
+  // Determine username and email
+  let username = candidate;
+  let email = looksLikeEmail ? candidate : null;
+  // If matching field is email but candidate is not an email, skip provisioning
+  if (!email && matchFieldEnv === "email") {
+    if (req.logger)
+      req.logger.warn(
+        `[mTLS AutoLogin] Auto-provision skipped: candidate '${candidate}' not an email while MTLS_MATCH_FIELD=email.`
+      );
+    return null;
+  }
+  // If no email, fabricate a deterministic placeholder
+  if (!email) {
+    email = `${candidate}@cert.local`;
+  }
+
+  try {
+    // Generate a random password (required by schema)
+    const pwdLength = parseInt(
+      process.env.MTLS_AUTO_PROVISION_RANDOM_PASSWORD_LENGTH || "32",
+      10
+    );
+    const rawPassword = crypto
+      .randomBytes(Math.ceil(pwdLength / 2))
+      .toString("hex")
+      .slice(0, pwdLength);
+    const hashedPassword = await bcrypt.hash(rawPassword, 12);
+
+    // Create the user
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      role: roleToAssign,
+    });
+    if (req.logger)
+      req.logger.info(
+        `[mTLS AutoLogin] Auto-provisioned new user '${username}' role='${roleToAssign}' (email='${email}').`
+      );
+    return user;
+  } catch (provisionErr) {
+    // Handle race condition: user was created in parallel
+    if (provisionErr && provisionErr.code === 11000) {
+      const user = await User.findOne({
+        $or: [{ username }, { email }],
+      });
+      if (req.logger)
+        req.logger.info(
+          `[mTLS AutoLogin] Duplicate during provisioning; re-fetched existing user '${user?.username}'.`
+        );
+      return user;
+    } else {
+      if (req.logger)
+        req.logger.error(
+          `[mTLS AutoLogin] Auto-provision failed for '${candidate}':`,
+          provisionErr
+        );
+      return null;
+    }
+  }
+}
+
+// Checks if the user's role is allowed for auto-login (if restriction is set)
+function isRoleAllowed(user) {
+  const allowedRolesRaw = process.env.MTLS_ALLOWED_ROLES;
+  if (!allowedRolesRaw) return true;
+  const allowed = allowedRolesRaw.split(",").map((r) => r.trim());
+  return allowed.includes(user.role);
+}
+
+// Logs a message using req.logger if available
+function logAndNext(req, msg) {
+  if (req.logger) req.logger.info(msg);
+}
+
+// Main Express middleware for mTLS auto-login
+// Attempts to authenticate a user based on client certificate headers
 async function mtlsAutoLogin(req, res, next) {
   try {
-    // Fast exits
-    if (req.isAuthenticated()) return next();
+    // Fast exit if already authenticated or feature is disabled
+    if (req.isAuthenticated()) {
+      return next();
+    }
 
-    if (process.env.MTLS_AUTO_LOGIN_ENABLED !== "true") return next();
+    if (process.env.MTLS_AUTO_LOGIN_ENABLED !== "true") {
+      return next();
+    }
 
-    // Ensure request came through TLS reverse proxy (heuristic)
-    // Optionally you could check req.secure or add a shared secret header.
-
+    // Extract mTLS headers
     const verifyHeader = req.get("X-Ssl-Client-Verify");
     const subjectHeader = req.get("X-Ssl-Client-Subject");
     const serialHeader = req.get("X-Ssl-Client-Serial");
+    if (!subjectHeader) return next();
 
-    if (!subjectHeader) return next(); // nothing to parse
-
+    // If strict success required, only proceed if client verified
     if (
       process.env.MTLS_REQUIRE_SUCCESS === "true" &&
       verifyHeader !== "SUCCESS"
@@ -62,130 +198,61 @@ async function mtlsAutoLogin(req, res, next) {
       return next();
     }
 
+    // Parse the DN from the subject header
     const dn = parseDistinguishedName(subjectHeader);
     if (!Object.keys(dn).length) return next();
-
     const dnAttribute = (process.env.MTLS_DN_ATTRIBUTE || "CN").toUpperCase();
-    let candidate = dn[dnAttribute];
-    if (!candidate && dnAttribute === "SERIALNUMBER") candidate = serialHeader; // fallback to serial header
+    const candidate = getCandidateFromDN(dn, dnAttribute, serialHeader);
     if (!candidate) return next();
 
+    // Determine if candidate looks like an email and which field to match
     const looksLikeEmail = /@/.test(candidate);
     const matchFieldEnv = (
       process.env.MTLS_MATCH_FIELD || "username"
     ).toLowerCase();
 
-    let user = null;
-    // Fallback logic: if value looks like an email use email first (configurable)
-    if (looksLikeEmail && process.env.MTLS_FALLBACK_TO_EMAIL === "true") {
-      user = await User.findOne({ email: candidate });
-    }
-    if (!user) {
-      if (matchFieldEnv === "email") {
-        user = await User.findOne({ email: candidate });
-      } else {
-        // username
-        user =
-          (await User.findOne({ username: candidate })) ||
-          (looksLikeEmail ? await User.findOne({ email: candidate }) : null);
-      }
-    }
+    // Try to find an existing user
+    let user = await findUserByCandidate(
+      candidate,
+      matchFieldEnv,
+      looksLikeEmail
+    );
 
-    if (!user) {
-      // Attempt auto-provisioning if enabled
-      if (process.env.MTLS_AUTO_PROVISION_ENABLED === "true") {
-        const defaultRole =
-          process.env.MTLS_AUTO_PROVISION_DEFAULT_ROLE || "user";
-        let roleToAssign = defaultRole;
-        const dnRoleCandidate = dn["OU"];
-        if (
-          process.env.MTLS_AUTO_PROVISION_USE_OU_FOR_ROLE === "true" &&
-          dnRoleCandidate &&
-          ["user", "admin"].includes(dnRoleCandidate)
-        ) {
-          roleToAssign = dnRoleCandidate; // Only accept known roles
-        }
-
-        // Determine username & email to store
-        let username = candidate;
-        let email = looksLikeEmail ? candidate : null;
-        if (!email && matchFieldEnv === "email") {
-          // Candidate is not an email but matching field says email; cannot provision
-          if (req.logger)
-            req.logger.warn(
-              `[mTLS AutoLogin] Auto-provision skipped: candidate '${candidate}' not an email while MTLS_MATCH_FIELD=email.`
-            );
-          return next();
-        }
-        if (!email) {
-          // fabricate an email for systems expecting unique email; store placeholder domain
-          email = `${candidate}@cert.local`; // deterministic mapping
-        }
-
-        try {
-          // Generate random password (hashed) because schema requires password
-          const pwdLength = parseInt(
-            process.env.MTLS_AUTO_PROVISION_RANDOM_PASSWORD_LENGTH || "32",
-            10
-          );
-          const rawPassword = crypto
-            .randomBytes(Math.ceil(pwdLength / 2))
-            .toString("hex")
-            .slice(0, pwdLength);
-          const hashedPassword = await bcrypt.hash(rawPassword, 12);
-
-          user = await User.create({
-            username,
-            email,
-            password: hashedPassword,
-            role: roleToAssign,
-          });
-          if (req.logger)
-            req.logger.info(
-              `[mTLS AutoLogin] Auto-provisioned new user '${username}' role='${roleToAssign}' (email='${email}').`
-            );
-        } catch (provisionErr) {
-          // Handle race condition on unique index
-          if (provisionErr && provisionErr.code === 11000 /* duplicate key */) {
-            user = await User.findOne({
-              $or: [{ username }, { email }],
-            });
-            if (req.logger)
-              req.logger.info(
-                `[mTLS AutoLogin] Duplicate during provisioning; re-fetched existing user '${user?.username}'.`
-              );
-          } else {
-            if (req.logger)
-              req.logger.error(
-                `[mTLS AutoLogin] Auto-provision failed for '${candidate}':`,
-                provisionErr
-              );
-            return next();
-          }
-        }
-      } else {
-        if (req.logger)
-          req.logger.info(
-            `[mTLS AutoLogin] No user matched for DN attribute '${dnAttribute}' value '${candidate}'.`
-          );
+    // If not found, try auto-provisioning if allowed
+    if (!user && isAutoProvisioningAllowed()) {
+      user = await autoProvisionUser({
+        candidate,
+        matchFieldEnv,
+        looksLikeEmail,
+        dn,
+        req,
+      });
+      if (!user) {
+        logAndNext(
+          req,
+          `[mTLS AutoLogin] No user matched for DN attribute '${dnAttribute}' value '${candidate}'. Auto-provisioning is disabled or failed.`
+        );
         return next();
       }
+    } else if (!user) {
+      // No user found and auto-provisioning not allowed
+      logAndNext(
+        req,
+        `[mTLS AutoLogin] No user matched for DN attribute '${dnAttribute}' value '${candidate}'. Auto-provisioning is disabled.`
+      );
+      return next();
     }
 
-    // Optional role restriction
-    const allowedRolesRaw = process.env.MTLS_ALLOWED_ROLES;
-    if (allowedRolesRaw) {
-      const allowed = allowedRolesRaw.split(",").map((r) => r.trim());
-      if (!allowed.includes(user.role)) {
-        if (req.logger)
-          req.logger.info(
-            `[mTLS AutoLogin] User '${user.username}' role '${user.role}' not in allowed roles.`
-          );
-        return next();
-      }
+    // Check if user's role is allowed
+    if (!isRoleAllowed(user)) {
+      logAndNext(
+        req,
+        `[mTLS AutoLogin] User '${user.username}' role '${user.role}' not in allowed roles.`
+      );
+      return next();
     }
 
-    // Perform passport login
+    // Log the user in using Passport
     req.login(user, (err) => {
       if (err) {
         if (req.logger)
