@@ -31,16 +31,18 @@ const createTaskTitle = __("CREATE_NEW_TASK");
         </div>
         
         <div class="w-full sm:w-auto sm:ml-auto flex flex-row items-stretch items-center gap-1 sm:gap-3">
-            <button id="switch-to-list-view" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[9px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation">
-                <%= __('SWITCH_TO_LIST_VIEW') %>
-            </button>
-            <button id="open-task-modal" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[9px] sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation flex items-center justify-center">
-                <svg class="w-3 h-3 sm:w-5 sm:h-5 mr-0.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <!-- <button id="switch-to-list-view" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
+                <span class="inline-block sm:hidden"><i class="fa fa-list"></i></span>
+                <span class="hidden sm:inline"><%= __('SWITCH_TO_LIST_VIEW') %></span>
+            </button> -->
+            <button id="open-task-modal" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation flex items-center justify-center">
                 <%= __("CREATE_TASK_BUTTON") %>
             </button>
-            <button id="today-week" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[9px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
-                <svg class="w-3 h-3 sm:w-5 sm:h-5 mr-0.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <%= __("THIS_WEEK") %>
+            <button id="today-week" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
+                <span class="inline-block sm:hidden"><i class="fa fa-calendar-week"></i></span>
+                <span class="hidden sm:inline">
+                    <%= __("THIS_WEEK") %>
+                </span>
             </button>
         </div>
     </div>
