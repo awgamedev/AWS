@@ -91,11 +91,11 @@ const handleDeleteStampingPair = async () => {
     const deletePromises = [];
 
     if (inId) {
-      deletePromises.push(api(`/api/stampings/${inId}`, { method: "DELETE" }));
+      deletePromises.push(api(`api/stampings/${inId}`, { method: "DELETE" }));
     }
 
     if (outId) {
-      deletePromises.push(api(`/api/stampings/${outId}`, { method: "DELETE" }));
+      deletePromises.push(api(`api/stampings/${outId}`, { method: "DELETE" }));
     }
 
     const results = await Promise.all(deletePromises);

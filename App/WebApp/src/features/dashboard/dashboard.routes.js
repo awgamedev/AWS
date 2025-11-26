@@ -70,7 +70,7 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
 
 // --- A simple API route (GET /api/status) ---
 // API routes do not need the HTML layout
-router.get("/api/status", (req, res) => {
+router.get("api/status", (req, res) => {
   res.json({
     status: "ok",
     message: "The server is healthy and responding.",

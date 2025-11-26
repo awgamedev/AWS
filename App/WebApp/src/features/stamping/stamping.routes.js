@@ -27,22 +27,26 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
   let currentStatus = "out";
   let lastStampingTime = "N/A";
   let stampingPairs = [];
+  let canStampInToday = true;
+  let canStampOutToday = false;
 
   try {
     const userId = req.user.id;
+    const now = new Date();
+    const todayKey = formatDate(
+      new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    );
 
     // 1. Letzten Stempel-Eintrag abrufen
     const lastStamping = await Stamping.findOne({ userId })
       .sort({ date: -1 })
       .exec();
-
     if (lastStamping) {
       currentStatus = lastStamping.stampingType;
       lastStampingTime = formatTime(lastStamping.date);
     }
 
     // 2. Get current month's start and end dates
-    const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(
       now.getFullYear(),
@@ -59,7 +63,7 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
       userId,
       date: { $gte: startOfMonth, $lte: endOfMonth },
     })
-      .sort({ date: 1 }) // Wichtig: Aufsteigend sortieren
+      .sort({ date: 1 })
       .exec();
 
     const allPairs = await getStampingPairs(stampings);
@@ -76,7 +80,6 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
 
     // 5. Generate all days from start of month to today
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayKey = formatDate(today);
     const daysList = [];
     const dayNames = ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."];
 
@@ -103,9 +106,43 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
 
     // Reverse to show most recent first
     stampingPairs = daysList.reverse();
+
+    // --- Button logic ---
+    // Find last 'in' stamping
+    const lastInStamping = await Stamping.findOne({
+      userId,
+      stampingType: "in",
+    })
+      .sort({ date: -1 })
+      .exec();
+    let lastInIsToday = false;
+    if (lastInStamping) {
+      const lastInDate = lastInStamping.date;
+      const nowY = now.getFullYear(),
+        nowM = now.getMonth(),
+        nowD = now.getDate();
+      const inY = lastInDate.getFullYear(),
+        inM = lastInDate.getMonth(),
+        inD = lastInDate.getDate();
+      lastInIsToday = nowY === inY && nowM === inM && nowD === inD;
+    }
+    // Find the last stamping (any type)
+    // Only allow 'out' if last 'in' is from today and is the last stamping
+    if (
+      lastInStamping &&
+      lastInIsToday &&
+      lastStamping &&
+      lastStamping.stampingType === "in" &&
+      String(lastStamping._id) === String(lastInStamping._id)
+    ) {
+      canStampOutToday = true;
+      canStampInToday = false;
+    } else {
+      canStampOutToday = false;
+      canStampInToday = true;
+    }
   } catch (error) {
     console.error("Fehler beim Abrufen der Stempeldaten:", error.message);
-    // Fehlerseite rendern
     return renderView(
       req,
       res,
@@ -128,6 +165,8 @@ router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
     allowedReasons: ALLOWED_STAMPING_REASONS,
     formatDate: formatDate,
     formatTime: formatTime,
+    canStampInToday,
+    canStampOutToday,
   });
 });
 
@@ -141,8 +180,6 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
       req,
       ALLOWED_STAMPING_REASONS
     );
-
-    // If there are validation errors, re-render the form with errors
     if (Object.keys(validationErrors).length > 0) {
       return res
         .status(400)
@@ -152,13 +189,71 @@ router.post("/stamp", ensureAuthenticated, async (req, res) => {
     // Current timestamp for this stamping
     const nowDate = new Date();
 
+    // Find the last 'in' stamping for this user
+    const lastInStamping = await Stamping.findOne({
+      userId,
+      stampingType: "in",
+    })
+      .sort({ date: -1 })
+      .exec();
+    let lastInIsToday = false;
+    if (lastInStamping) {
+      const lastInDate = lastInStamping.date;
+      const nowY = nowDate.getFullYear(),
+        nowM = nowDate.getMonth(),
+        nowD = nowDate.getDate();
+      const inY = lastInDate.getFullYear(),
+        inM = lastInDate.getMonth(),
+        inD = lastInDate.getDate();
+      lastInIsToday = nowY === inY && nowM === inM && nowD === inD;
+    }
+
+    // Find the last stamping (any type)
+    const lastStamping = await Stamping.findOne({ userId })
+      .sort({ date: -1 })
+      .exec();
+
+    // Only allow 'out' if last 'in' is from today and is the last stamping
+    if (stampingType === "out") {
+      if (
+        !lastInStamping ||
+        !lastInIsToday ||
+        !lastStamping ||
+        lastStamping.stampingType !== "in" ||
+        String(lastStamping._id) !== String(lastInStamping._id)
+      ) {
+        return res.status(400).json({
+          msg: "Du kannst nur heute ausstempeln, wenn du heute eingestempelt hast.",
+          errors: {
+            stampingSequence:
+              "Ausgestempelt werden ist nur am selben Tag wie das Einstempeln erlaubt.",
+          },
+        });
+      }
+    }
+
+    // Allow 'in' if last 'in' is not today, even if last 'out' is missing
+    if (stampingType === "in") {
+      if (
+        lastInStamping &&
+        lastInIsToday &&
+        lastStamping &&
+        lastStamping.stampingType === "in" &&
+        String(lastStamping._id) === String(lastInStamping._id)
+      ) {
+        return res.status(400).json({
+          msg: "Du bist heute bereits eingestempelt.",
+          errors: { stampingSequence: "Du bist heute bereits eingestempelt." },
+        });
+      }
+    }
+
     // Chronology validation: ensure there is no later stamping today
     const chronologyErrors = await validateLatestChronological(
       req,
       userId,
       nowDate
     );
-
     const allErrors = { ...validationErrors, ...chronologyErrors };
     if (Object.keys(allErrors).length > 0) {
       return res

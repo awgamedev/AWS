@@ -106,7 +106,7 @@ const handleReportSubmit = async (form) => {
     const payload = Object.fromEntries(new FormData(form).entries());
     console.log("Payload:", payload);
 
-    const url = isEditing ? `api/reports/${reportId}` : "/api/reports";
+    const url = isEditing ? `api/reports/${reportId}` : "api/reports";
     const method = isEditing ? "PUT" : "POST";
 
     console.log("Request:", { url, method });

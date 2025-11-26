@@ -46,8 +46,8 @@
         <button 
             id="stamp-in-btn"
             data-type="in"
-            class="flex-1 py-2 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-sm <%= currentStatus === "in" ? "opacity-50 cursor-not-allowed" : "" %>"
-            <%= currentStatus === "in" ? "disabled" : "" %>
+            class="flex-1 py-2 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-sm <%= !canStampInToday ? "opacity-50 cursor-not-allowed" : "" %>"
+            <%= !canStampInToday ? "disabled" : "" %>
         >
             <%= __("STAMP_IN_BUTTON") %>
         </button>
@@ -55,8 +55,8 @@
         <button 
             id="stamp-out-btn"
             data-type="out"
-            class="flex-1 py-2 px-4 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-sm <%= currentStatus === "out" ? "opacity-50 cursor-not-allowed" : "" %>"
-            <%= currentStatus === "out" ? "disabled" : "" %>
+            class="flex-1 py-2 px-4 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-sm <%= !canStampOutToday ? "opacity-50 cursor-not-allowed" : "" %>"
+            <%= !canStampOutToday ? "disabled" : "" %>
         >
             <%= __("STAMP_OUT_BUTTON") %>
         </button>

@@ -45,7 +45,16 @@ async function validateStampingData(
     lastStamping &&
     lastStamping.stampingType === "in"
   ) {
-    errors.stampingSequence = req.__("ERROR_ALREADY_STAMPED_IN");
+    // Only block if last 'in' is from today
+    const now = new Date();
+    const lastDate = lastStamping.date;
+    if (
+      now.getFullYear() === lastDate.getFullYear() &&
+      now.getMonth() === lastDate.getMonth() &&
+      now.getDate() === lastDate.getDate()
+    ) {
+      errors.stampingSequence = req.__("ERROR_ALREADY_STAMPED_IN");
+    }
   }
 
   if (
