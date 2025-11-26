@@ -51,7 +51,9 @@
 
     <!-- Links (ersetzt getAuthLinks(true)) -->
     <div class="mt-6 flex justify-between text-sm">
-        <a href="/register" class="text-indigo-600 hover:text-indigo-500">→ Hier registrieren</a>
+        <% if (typeof registrationEnabled === 'undefined' || registrationEnabled) { %>
+            <a href="/register" class="text-indigo-600 hover:text-indigo-500">→ Hier registrieren</a>
+        <% } %>
         <a href="/" class="text-gray-600 hover:text-gray-500">Zur Startseite</a>
     </div>
 </div>

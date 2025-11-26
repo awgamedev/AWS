@@ -8,6 +8,7 @@ const passport = require("passport");
 const User = require("../user/user.model"); // NEU: User-Modell für Registrierung
 const bcrypt = require("bcryptjs"); // used for password hashing
 const { renderView } = require("../../utils/view-renderer"); // NEU: Import der View-Renderer Utility
+const registrationEnabled = process.env.REGISTRATION_ENABLED !== "false";
 
 // ------------------------------------------------------------------
 // --- Login-Seite (GET /login) ---
@@ -28,6 +29,7 @@ router.get("/login", (req, res) => {
     redirectPath: redirectPath,
     email: email,
     success: success.length > 0 ? success[0] : null,
+    registrationEnabled: registrationEnabled,
   });
 });
 
@@ -68,6 +70,9 @@ router.post("/logout", (req, res) => {
 // ------------------------------------------------------------------
 // --- Registrierungs-Formular (GET /register) ---
 router.get("/register", (req, res) => {
+  if (!registrationEnabled) {
+    return res.status(403).send("Registrierung ist deaktiviert.");
+  }
   // Verwende renderView anstelle von res.render
   renderView(req, res, "register", "Registrierung", {
     // Fehler und alte Formulardaten (falls POST fehlschlägt und man zurückgeleitet wird)
@@ -78,6 +83,9 @@ router.get("/register", (req, res) => {
 
 // --- Registrierungs-Daten verarbeiten (POST /register) ---
 router.post("/register", async (req, res) => {
+  if (!registrationEnabled) {
+    return res.status(403).send("Registrierung ist deaktiviert.");
+  }
   const { username, email, password, confirmPassword } = req.body;
 
   let errors = [];
