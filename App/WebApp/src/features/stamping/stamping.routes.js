@@ -13,6 +13,14 @@ const {
 // Centralized allowed reasons
 const { ALLOWED_STAMPING_REASONS } = require("./stamping.constants");
 
+/**
+ * Home redirect – keep root path lean and forward to the dashboard.
+ * This keeps bookmark/backwards compatibility while making `/dashboard` canonical.
+ */
+router.get("/", (req, res) => {
+  return res.redirect("/time-tracking/stamping");
+});
+
 // ⏳ GET Route: Stempel-Interface anzeigen (/stamping)
 router.get("/time-tracking/stamping", ensureAuthenticated, async (req, res) => {
   const title = req.__("STAMPING_PAGE_TITLE");

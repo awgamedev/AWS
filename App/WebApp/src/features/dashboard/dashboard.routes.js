@@ -6,14 +6,6 @@ const Stamping = require("../stamping/stamping.model");
 const User = require("../user/user.model");
 
 /**
- * Home redirect – keep root path lean and forward to the dashboard.
- * This keeps bookmark/backwards compatibility while making `/dashboard` canonical.
- */
-router.get("/", (req, res) => {
-  return res.redirect("/dashboard");
-});
-
-/**
  * Dashboard Route (GET /dashboard)
  * Shows high level system widgets (users, stampings) and recent activity.
  * Uses the shared renderView utility to inject the dashboard view into the layout.

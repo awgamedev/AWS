@@ -5,28 +5,12 @@
 <nav class="p-4 space-y-1">
     
     <%- include('_menu_item', { 
-        href: '/', 
+        href: '/dashboard', 
         icon: 'fas fa-home', 
         text: 'Dashboard',
         currentPath: currentPath,
         user: user
         // roles: undefined bedeutet: für alle sichtbar
-    }) %>
-
-        <%- include('_menu_item', { 
-        href: '/profile', 
-        icon: 'fa-solid fa-user-circle', 
-        text: 'Profil', 
-        currentPath: currentPath,
-        user: user
-    }) %>
-
-    <%- include('_menu_item', { 
-        href: '/chat', 
-        icon: 'fa-solid fa-comments', 
-        text: 'Chat', 
-        currentPath: currentPath,
-        user: user
     }) %>
 
     <%- include('_menu_dropdown', {
@@ -105,6 +89,14 @@
                 roles: 'admin'
             })
         ]
+    }) %>
+
+    <%- include('_menu_item', { 
+        href: '/chat', 
+        icon: 'fa-solid fa-comments', 
+        text: 'Chat', 
+        currentPath: currentPath,
+        user: user
     }) %>
 
     <%- include('_menu_item', { 

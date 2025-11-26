@@ -7,13 +7,11 @@ const session = require("express-session");
 const winston = require("winston");
 const { requestTimer } = require("./src/middleware/requestTimer");
 const { notFoundHandler } = require("./src/middleware/notFound");
-const { devAutoLogin } = require("./src/middleware/devAutoLogin");
 const { mtlsAutoLogin } = require("./src/middleware/mtlsAutoLogin");
 const fs = require("fs");
 const path = require("path");
 const i18n = require("i18n");
 const cookieParser = require("cookie-parser");
-const favicon = require("serve-favicon");
 const flash = require("connect-flash");
 const userProfileRepository = require("./src/features/user-profile/user-profile.repository");
 
