@@ -20,6 +20,10 @@ const MessageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     edited: {
       type: Boolean,
       default: false,

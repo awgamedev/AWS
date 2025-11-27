@@ -152,9 +152,9 @@ function setupSocketListeners() {
     }
   });
 
-  socket.on("message-deleted", ({ chatId, messageId }) => {
+  socket.on("message-deleted", ({ chatId, message }) => {
     if (chatId === currentChatId) {
-      removeMessageFromUI(messageId);
+      updateMessageInUI(message);
     }
   });
 
@@ -359,7 +359,8 @@ function appendMessage(message, animate = true) {
 }
 
 function createMessageElement(message) {
-  const isOwnMessage = message.senderId._id === currentUserId;
+  const isOwnMessage =
+    message.senderId && message.senderId._id === currentUserId;
 
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${isOwnMessage ? "own-message" : ""}`;
@@ -374,7 +375,10 @@ function createMessageElement(message) {
 
   const senderSpan = document.createElement("span");
   senderSpan.className = "message-sender";
-  senderSpan.textContent = message.senderId.username;
+  senderSpan.textContent =
+    message.senderId && message.senderId.username
+      ? message.senderId.username
+      : "";
 
   const timeSpan = document.createElement("span");
   timeSpan.className = "message-time";
@@ -389,12 +393,19 @@ function createMessageElement(message) {
 
   const textDiv = document.createElement("div");
   textDiv.className = "message-text";
-  // Use innerHTML to render rich content (Quill HTML)
-  textDiv.innerHTML = message.content;
+
+  if (message.isDeleted) {
+    textDiv.innerHTML =
+      '<span class="deleted-message-hint">Diese Nachricht wurde gelöscht.</span>';
+    bubbleDiv.classList.add("deleted-message");
+  } else {
+    // Use innerHTML to render rich content (Quill HTML)
+    textDiv.innerHTML = message.content;
+  }
 
   bubbleDiv.appendChild(textDiv);
 
-  if (message.edited) {
+  if (message.edited && !message.isDeleted) {
     const editedSpan = document.createElement("span");
     editedSpan.className = "message-edited";
     editedSpan.textContent = "(bearbeitet)";
@@ -404,8 +415,8 @@ function createMessageElement(message) {
   contentDiv.appendChild(headerDiv);
   contentDiv.appendChild(bubbleDiv);
 
-  // Add edit/delete buttons for own messages
-  if (isOwnMessage) {
+  // Add edit/delete buttons for own messages (not for deleted)
+  if (isOwnMessage && !message.isDeleted) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "message-actions";
 
@@ -494,34 +505,34 @@ function deleteMessage(messageId) {
   }
 }
 
-function updateMessageInUI(message) {
-  const messageElement = document.querySelector(
+function updateMessageInUI(message, isDelete = false) {
+  // Find the message element in the DOM
+  const messageDiv = document.querySelector(
     `.message[data-message-id="${message._id}"]`
   );
-  if (messageElement) {
-    const textElement = messageElement.querySelector(".message-text");
-    textElement.innerHTML = message.content;
+  if (!messageDiv) return;
 
-    // Add or update edited indicator
-    let editedSpan = messageElement.querySelector(".message-edited");
-    if (!editedSpan) {
-      editedSpan = document.createElement("span");
-      editedSpan.className = "message-edited";
-      editedSpan.textContent = "(bearbeitet)";
-      messageElement.querySelector(".message-bubble").appendChild(editedSpan);
-    }
-  }
+  // Replace with new element (to update content and deleted state)
+  const newMessageDiv = createMessageElement(message);
+  messageDiv.parentNode.replaceChild(newMessageDiv, messageDiv);
 }
 
-function removeMessageFromUI(messageId) {
-  const messageElement = document.querySelector(
-    `.message[data-message-id="${messageId}"]`
-  );
-  if (messageElement) {
-    messageElement.style.animation = "fadeOut 0.3s ease-out";
-    setTimeout(() => messageElement.remove(), 300);
+// No longer used: removeMessageFromUI
+// Add CSS for deleted message hint
+const deletedStyle = document.createElement("style");
+deletedStyle.textContent = `
+  .deleted-message-hint {
+    color: #888;
+    font-style: italic;
+    font-size: 0.95em;
+    user-select: none;
   }
-}
+  .deleted-message {
+    background: #f5f5f5;
+    border: 1px dashed #ccc;
+  }
+`;
+document.head.appendChild(deletedStyle);
 
 function updateChatListItem(chatId, lastMessage) {
   const chatItem = document.querySelector(

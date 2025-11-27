@@ -216,8 +216,12 @@ router.get("/chat/:chatId/messages", ensureAuthenticated, async (req, res) => {
     }
 
     const messages = await messageRepository.findByChatId(chatId);
-
-    res.json({ success: true, messages });
+    // Ensure isDeleted is present in all messages (for legacy data)
+    const safeMessages = messages.map((msg) => ({
+      ...msg,
+      isDeleted: typeof msg.isDeleted === "boolean" ? msg.isDeleted : false,
+    }));
+    res.json({ success: true, messages: safeMessages });
   } catch (error) {
     console.error("Error fetching messages:", error);
     res.status(500).json({ error: "Error fetching messages" });

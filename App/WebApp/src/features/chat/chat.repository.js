@@ -158,11 +158,16 @@ class MessageRepository {
    */
   async findByChatId(chatId, limit = 100) {
     try {
-      return await Message.find({ chatId })
+      const messages = await Message.find({ chatId })
         .populate("senderId", "username email")
         .sort({ createdAt: 1 })
         .limit(limit)
         .lean();
+      // Ensure isDeleted is present for all messages (for legacy data)
+      return messages.map((msg) => ({
+        ...msg,
+        isDeleted: typeof msg.isDeleted === "boolean" ? msg.isDeleted : false,
+      }));
     } catch (error) {
       throw new Error(`Error finding messages: ${error.message}`);
     }
@@ -209,11 +214,22 @@ class MessageRepository {
   }
 
   /**
-   * Delete a message
+   * Soft-delete a message (set isDeleted, clear content)
    */
   async deleteMessage(messageId) {
     try {
-      return await Message.findByIdAndDelete(messageId);
+      return await Message.findByIdAndUpdate(
+        messageId,
+        {
+          content: "",
+          isDeleted: true,
+          edited: true,
+          editedAt: new Date(),
+        },
+        { new: true }
+      )
+        .populate("senderId", "username email")
+        .lean();
     } catch (error) {
       throw new Error(`Error deleting message: ${error.message}`);
     }

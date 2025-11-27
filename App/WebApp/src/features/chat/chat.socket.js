@@ -152,7 +152,7 @@ function initializeChatSocket(io) {
     });
 
     /**
-     * Delete a message
+     * Soft-delete a message
      */
     socket.on("delete-message", async ({ messageId }) => {
       try {
@@ -171,13 +171,13 @@ function initializeChatSocket(io) {
           return;
         }
 
-        // Delete message
-        await messageRepository.deleteMessage(messageId);
+        // Soft-delete message
+        const deletedMessage = await messageRepository.deleteMessage(messageId);
 
         // Broadcast to all users in the chat room
         io.to(`chat:${message.chatId}`).emit("message-deleted", {
           chatId: message.chatId,
-          messageId,
+          message: deletedMessage,
         });
       } catch (error) {
         console.error("Error deleting message:", error);
