@@ -122,13 +122,6 @@
                     <p id="chatSubtitle"></p>
                 </div>
                 <div class="chat-header-actions">
-                    <div class="chat-current-user-avatar w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden bg-indigo-600" title="">
-                        <% if (userProfile && userProfile.profilePictureBase64) { %>
-                            <img src="<%= userProfile.profilePictureBase64 %>" alt="Avatar" class="w-full h-full object-cover" />
-                        <% } else { %>
-                            <%= userInitials %>
-                        <% } %>
-                    </div>
                     <button id="renameGroupBtn" class="btn-rename-chat" style="display:none;" title="<%= __('CHAT_HEADER_RENAME') %>">
                         <i class="fas fa-pen"></i>
                     </button>

@@ -37,7 +37,6 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
         userProfiles[profile.userId.toString()] = profile;
     });
 
-    const userProfile = userProfiles[req.user.id.toString()] || null;
     const userInitials = req.user.username
       ? req.user.username.substring(0, 2).toUpperCase()
       : "";
@@ -52,7 +51,6 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
         userChats,
         currentUserId: req.user.id,
         userRole: req.user.role,
-        userProfile,
         userInitials,
         userProfiles, // pass all user profiles for sidebar avatars
       },
