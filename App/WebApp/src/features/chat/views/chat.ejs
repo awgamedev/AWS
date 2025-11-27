@@ -21,9 +21,13 @@
             <% if (userChats && userChats.length > 0) { %>
                 <% userChats.forEach(chat => { %>
                     <div class="chat-item" data-chat-id="<%= chat._id %>" data-chat-type="<%= chat.type %>" data-creator-id="<%= chat.creatorId._id %>">
-                        <div class="chat-item-avatar w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden <%= chat.type === 'group' ? 'bg-indigo-400' : 'bg-indigo-600' %>">
+                        <div class="chat-item-avatar w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden <%= chat.type === 'group' ? 'bg-indigo-400' : 'bg-indigo-600' %> group-avatar-wrapper relative" data-chat-id="<%= chat._id %>">
                             <% if (chat.type === 'group') { %>
-                                <i class="fas fa-users"></i>
+                                <% if (chat.groupImageBase64) { %>
+                                    <img src="<%= chat.groupImageBase64 %>" alt="Group" class="w-full h-full object-cover group-avatar-img" />
+                                <% } else { %>
+                                    <i class="fas fa-users group-avatar-icon"></i>
+                                <% } %>
                             <% } else { %>
                                 <% const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString());
                                    const otherProfile = otherUser && userProfiles && userProfiles[otherUser._id.toString()]; %>
@@ -117,8 +121,8 @@
                 <button id="backToListBtn" class="btn-back-mobile" style="display:none;" title="Zurück zur Liste">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <div class="chat-header-info">
-                        <h3 id="chatTitle"><%= __('CHAT_HEADER_TITLE') %></h3>
+                <div class="chat-header-info flex items-center gap-3">
+                    <h3 id="chatTitle"><%= __('CHAT_HEADER_TITLE') %></h3>
                     <p id="chatSubtitle"></p>
                 </div>
                 <div class="chat-header-actions">

@@ -33,6 +33,10 @@ const ChatSchema = new mongoose.Schema(
     lastMessageAt: {
       type: Date,
     },
+    groupImageBase64: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

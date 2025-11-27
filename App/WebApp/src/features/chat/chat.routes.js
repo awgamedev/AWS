@@ -6,6 +6,76 @@ const { chatRepository, messageRepository } = require("./chat.repository");
 const { userProfileRepository } = require("../user-profile");
 
 /**
+ * POST /chat/:chatId/group-image - Upload group chat image (admin/creator only)
+ */
+router.post(
+  "/chat/:chatId/group-image",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { chatId } = req.params;
+      const { imageBase64 } = req.body;
+      if (!imageBase64 || typeof imageBase64 !== "string") {
+        return res.status(400).json({ error: "No image provided" });
+      }
+      const chat = await chatRepository.findById(chatId);
+      if (!chat) return res.status(404).json({ error: "Chat not found" });
+      const isCreator =
+        chat.creatorId._id.toString() === req.user.id.toString();
+      const isAdmin = req.user.role === "admin";
+      if (!isCreator && !isAdmin) {
+        return res.status(403).json({
+          error: "Only the creator or an admin can upload a group image",
+        });
+      }
+      if (chat.type !== "group") {
+        return res
+          .status(400)
+          .json({ error: "Only group chats can have a group image" });
+      }
+      await chatRepository.setGroupImage(chatId, imageBase64);
+      res.json({ success: true, message: "Group image uploaded" });
+    } catch (error) {
+      console.error("Error uploading group image:", error);
+      res.status(500).json({ error: "Error uploading group image" });
+    }
+  }
+);
+
+/**
+ * DELETE /chat/:chatId/group-image - Delete group chat image (admin/creator only)
+ */
+router.delete(
+  "/chat/:chatId/group-image",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { chatId } = req.params;
+      const chat = await chatRepository.findById(chatId);
+      if (!chat) return res.status(404).json({ error: "Chat not found" });
+      const isCreator =
+        chat.creatorId._id.toString() === req.user.id.toString();
+      const isAdmin = req.user.role === "admin";
+      if (!isCreator && !isAdmin) {
+        return res.status(403).json({
+          error: "Only the creator or an admin can delete a group image",
+        });
+      }
+      if (chat.type !== "group") {
+        return res
+          .status(400)
+          .json({ error: "Only group chats can have a group image" });
+      }
+      await chatRepository.setGroupImage(chatId, null);
+      res.json({ success: true, message: "Group image deleted" });
+    } catch (error) {
+      console.error("Error deleting group image:", error);
+      res.status(500).json({ error: "Error deleting group image" });
+    }
+  }
+);
+
+/**
  * GET /chat - Main chat interface
  */
 router.get("/chat", ensureAuthenticated, async (req, res) => {

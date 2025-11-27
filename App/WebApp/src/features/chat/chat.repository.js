@@ -2,10 +2,21 @@ const Chat = require("./chat.model");
 const Message = require("./message.model");
 const User = require("../user/user.model");
 
-/**
- * Repository for Chat operations
- */
 class ChatRepository {
+  /**
+   * Set group image (base64 or null)
+   */
+  async setGroupImage(chatId, imageBase64) {
+    try {
+      return await Chat.findByIdAndUpdate(
+        chatId,
+        { groupImageBase64: imageBase64 },
+        { new: true }
+      );
+    } catch (error) {
+      throw new Error(`Error setting group image: ${error.message}`);
+    }
+  }
   /**
    * Find all chats for a specific user
    */

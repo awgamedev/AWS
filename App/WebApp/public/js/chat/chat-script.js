@@ -7,9 +7,224 @@ let quill; // Quill editor instance
 let isRichMode = false; // default to simple mode now
 
 // Initialize on page load
+
 document.addEventListener("DOMContentLoaded", function () {
   initializeChat();
+  setupGroupImageActions();
+  setupDynamicHeaderAvatar();
 });
+
+// -------------------------------
+// Dynamic Group Chat Header Avatar
+// -------------------------------
+function setupDynamicHeaderAvatar() {
+  // Patch openChat to also render the header avatar
+  const origOpenChat = window.openChat;
+  window.openChat = function (chatId) {
+    if (typeof origOpenChat === "function") origOpenChat(chatId);
+    renderHeaderAvatar(chatId);
+  };
+}
+
+async function renderHeaderAvatar(chatId) {
+  const activeChatItem = document.querySelector(
+    `.chat-item[data-chat-id="${chatId}"]`
+  );
+  const chatHeaderInfo = document.querySelector(".chat-header-info");
+  if (!activeChatItem || !chatHeaderInfo) return;
+
+  // Remove any previous avatar
+  let oldAvatar = chatHeaderInfo.querySelector(".chat-header-avatar");
+  if (oldAvatar) oldAvatar.remove();
+
+  const chatType = activeChatItem.dataset.chatType;
+  if (chatType !== "group") return;
+
+  // Get group image or fallback
+  let groupImg = activeChatItem.querySelector(".group-avatar-img");
+  let groupIcon = activeChatItem.querySelector(".group-avatar-icon");
+  let groupImageBase64 = groupImg ? groupImg.src : null;
+
+  // Permissions
+  const creatorId = activeChatItem.dataset.creatorId;
+  const container = document.querySelector(".chat-container");
+  const userRole = container ? container.dataset.userRole : null;
+  const isAdminOrCreator = creatorId === currentUserId || userRole === "admin";
+
+  // Create avatar wrapper
+  const avatarWrapper = document.createElement("div");
+  avatarWrapper.className =
+    "chat-header-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-indigo-400 overflow-hidden bg-indigo-400 relative group";
+  avatarWrapper.style.position = "relative";
+  avatarWrapper.style.cursor = isAdminOrCreator ? "pointer" : "default";
+
+  if (groupImageBase64) {
+    const img = document.createElement("img");
+    img.src = groupImageBase64;
+    img.alt = "Group";
+    img.className = "w-full h-full object-cover";
+    avatarWrapper.appendChild(img);
+  } else {
+    const icon = document.createElement("i");
+    icon.className = "fas fa-users text-2xl group-avatar-icon";
+    avatarWrapper.appendChild(icon);
+  }
+
+  // Only show actions for admin/creator
+  if (isAdminOrCreator) {
+    // Upload button (always shown)
+    const uploadBtn = document.createElement("button");
+    uploadBtn.className =
+      "group-upload-btn absolute z-10 bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100 transition-opacity opacity-0 group-hover:opacity-100";
+    uploadBtn.title = "Gruppenbild hochladen";
+    uploadBtn.style.left = "-10px";
+    uploadBtn.style.top = "50%";
+    uploadBtn.style.transform = "translateY(-50%)";
+    uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
+    uploadBtn.dataset.chatId = chatId;
+    // Hidden file input
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.className = "group-image-input";
+    fileInput.style.display = "none";
+    fileInput.dataset.chatId = chatId;
+    uploadBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    fileInput.addEventListener("change", async function (e) {
+      const file = this.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        alert("Bitte ein gültiges Bild wählen.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Bild darf maximal 5MB groß sein.");
+        return;
+      }
+      const base64 = await fileToBase64(file);
+      await uploadGroupImage(chatId, base64);
+    });
+    avatarWrapper.appendChild(uploadBtn);
+    avatarWrapper.appendChild(fileInput);
+
+    // Delete button (only if image exists)
+    if (groupImageBase64) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className =
+        "group-delete-btn absolute z-10 bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100 transition-opacity opacity-0 group-hover:opacity-100";
+      deleteBtn.title = "Gruppenbild entfernen";
+      deleteBtn.style.right = "-10px";
+      deleteBtn.style.top = "50%";
+      deleteBtn.style.transform = "translateY(-50%)";
+      deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
+      deleteBtn.dataset.chatId = chatId;
+      deleteBtn.addEventListener("click", async function (e) {
+        e.stopPropagation();
+        if (!confirm("Gruppenbild wirklich entfernen?")) return;
+        await deleteGroupImage(chatId);
+      });
+      avatarWrapper.appendChild(deleteBtn);
+    }
+  }
+
+  // Insert avatar before chat title
+  const chatTitle = document.getElementById("chatTitle");
+  if (chatTitle) {
+    chatHeaderInfo.insertBefore(avatarWrapper, chatTitle);
+  }
+}
+// Group chat image upload/delete logic
+function setupGroupImageActions() {
+  // Delegate for upload button
+  document.querySelectorAll(".group-upload-btn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const chatId = this.dataset.chatId;
+      const input = document.querySelector(
+        `.group-image-input[data-chat-id="${chatId}"]`
+      );
+      if (input) input.click();
+    });
+  });
+
+  // Delegate for file input
+  document.querySelectorAll(".group-image-input").forEach((input) => {
+    input.addEventListener("change", async function (e) {
+      const chatId = this.dataset.chatId;
+      const file = this.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        alert("Bitte ein gültiges Bild wählen.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Bild darf maximal 5MB groß sein.");
+        return;
+      }
+      const base64 = await fileToBase64(file);
+      await uploadGroupImage(chatId, base64);
+    });
+  });
+
+  // Delegate for delete button
+  document.querySelectorAll(".group-delete-btn").forEach((btn) => {
+    btn.addEventListener("click", async function (e) {
+      e.stopPropagation();
+      const chatId = this.dataset.chatId;
+      if (!confirm("Gruppenbild wirklich entfernen?")) return;
+      await deleteGroupImage(chatId);
+    });
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadGroupImage(chatId, base64) {
+  try {
+    const response = await fetch(`chat/${chatId}/group-image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageBase64: base64 }),
+    });
+    const result = await response.json();
+    if (result.success) {
+      showNotification("Gruppenbild hochgeladen", "success");
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      alert(result.error || "Fehler beim Hochladen des Gruppenbilds.");
+    }
+  } catch (err) {
+    alert("Fehler beim Hochladen des Gruppenbilds.");
+  }
+}
+
+async function deleteGroupImage(chatId) {
+  try {
+    const response = await fetch(`chat/${chatId}/group-image`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    const result = await response.json();
+    if (result.success) {
+      showNotification("Gruppenbild entfernt", "success");
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      alert(result.error || "Fehler beim Entfernen des Gruppenbilds.");
+    }
+  } catch (err) {
+    alert("Fehler beim Entfernen des Gruppenbilds.");
+  }
+}
 
 function initializeChat() {
   // Get current user ID from the page

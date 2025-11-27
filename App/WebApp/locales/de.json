@@ -373,5 +373,7 @@
 	"CERTIFICATE_PASSWORD_COPIED": "Passwort in Zwischenablage kopiert!",
 	"CERTIFICATE_EMAIL_COPIED": "E-Mail-Vorlage in Zwischenablage kopiert!",
 	"CERTIFICATE_BACK_TO_USER": "Zurück zum Benutzer",
-	"CREATE_TEMPLATE_MODAL_TITLE": "Vorlage erstellen"
+	"CREATE_TEMPLATE_MODAL_TITLE": "Vorlage erstellen",
+	"UPLOAD_GROUP_IMAGE": "UPLOAD_GROUP_IMAGE",
+	"DELETE_GROUP_IMAGE": "DELETE_GROUP_IMAGE"
 }
