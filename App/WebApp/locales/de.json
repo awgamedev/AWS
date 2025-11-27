@@ -374,6 +374,11 @@
 	"CERTIFICATE_EMAIL_COPIED": "E-Mail-Vorlage in Zwischenablage kopiert!",
 	"CERTIFICATE_BACK_TO_USER": "Zurück zum Benutzer",
 	"CREATE_TEMPLATE_MODAL_TITLE": "Vorlage erstellen",
-	"UPLOAD_GROUP_IMAGE": "UPLOAD_GROUP_IMAGE",
-	"DELETE_GROUP_IMAGE": "DELETE_GROUP_IMAGE"
+	"UPLOAD_GROUP_IMAGE": "Gruppenbild hochladen",
+	"DELETE_GROUP_IMAGE": "Gruppenbild löschen",
+	"DASHBOARD_FUTURE_TASKS": "Zukünftige Aufgaben",
+	"DASHBOARD_RECENT_TASKS": "Neueste Aufgaben",
+	"TASK_NAME": "Aufgabenname",
+	"START_DATE": "Startdatum",
+	"NO_TASKS_YET": "Noch keine Aufgaben"
 }

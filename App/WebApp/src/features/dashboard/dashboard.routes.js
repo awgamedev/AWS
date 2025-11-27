@@ -12,8 +12,15 @@ const User = require("../user/user.model");
  */
 router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
   try {
+    const Task = require("../task/task.model");
     // Parallel DB queries for efficiency
-    const [userCount, stampingCount, recentStampings] = await Promise.all([
+    const [
+      userCount,
+      stampingCount,
+      recentStampings,
+      recentTasks,
+      futureTaskCount,
+    ] = await Promise.all([
       User.countDocuments(),
       Stamping.countDocuments(),
       Stamping.find()
@@ -21,9 +28,15 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
         .limit(10)
         .populate("userId", "username")
         .lean(),
+      Task.find()
+        .sort({ startDate: -1 })
+        .limit(10)
+        .populate("userId", "username")
+        .lean(),
+      Task.countDocuments({ startDate: { $gt: new Date() } }),
     ]);
 
-    // Dashboard metrics (easily extendable: add icon + color for each card)
+    // Dashboard metrics (add future tasks)
     const metrics = [
       {
         key: "users",
@@ -39,6 +52,13 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
         icon: "fa-clock",
         color: "emerald",
       },
+      {
+        key: "futureTasks",
+        label: req.__("DASHBOARD_FUTURE_TASKS") || "Future Tasks",
+        value: futureTaskCount,
+        icon: "fa-list-check",
+        color: "rose",
+      },
     ];
 
     // Transform recent stampings for display (keep view logic light)
@@ -50,6 +70,16 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
       date: s.date,
     }));
 
+    // Transform recent tasks for display
+    const tasksView = recentTasks.map((t) => ({
+      id: t._id,
+      taskName: t.taskName,
+      taskStatus: t.taskStatus,
+      taskPriority: t.taskPriority,
+      startDate: t.startDate,
+      user: t.userId?.username || t.createdBy || "-",
+    }));
+
     renderView(
       req,
       res,
@@ -58,6 +88,7 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
       {
         metrics,
         recentStampings: stampingsView,
+        recentTasks: tasksView,
       },
       // Additional styles hook (dashboard specific)
       '<link rel="stylesheet" href="/css/dashboard.css">'

@@ -30,6 +30,18 @@
       </div>
       <%- include('recent_stampings', { recentStampings: recentStampings }) %>
     </div>
+
+    <!-- Recent Tasks Widget -->
+    <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden mt-8">
+      <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-rose-500"></i>
+          <%= __('DASHBOARD_RECENT_TASKS') %>
+        </h2>
+        <span class="text-xs uppercase tracking-wide text-gray-400"><%= recentTasks.length %>  <%= __('ENTITIES') %></span>
+      </div>
+      <%- include('recent_tasks', { recentTasks: recentTasks }) %>
+    </div>
   </section>
 
   <!-- Activity Tab (can be extended later) -->
