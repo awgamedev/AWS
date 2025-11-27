@@ -814,21 +814,55 @@ function addChatToList(chat) {
     chatName = otherUser ? otherUser.username : "User";
   }
 
+  if (chat.creatorId && chat.creatorId._id) {
+    chatItem.dataset.creatorId = chat.creatorId._id;
+  }
+
+  // Match EJS logic for avatar and style
+  let avatarHtml = "";
+  let avatarClass =
+    "chat-item-avatar w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-indigo-300 overflow-hidden " +
+    (chat.type === "group" ? "bg-indigo-400" : "bg-indigo-600");
+
+  if (chat.type === "group") {
+    avatarHtml = '<i class="fas fa-users"></i>';
+  } else {
+    // Find the other user and their profile
+    let otherUser = null;
+    if (Array.isArray(chat.participants)) {
+      otherUser = chat.participants.find(
+        (p) => p._id && p._id.toString() !== currentUserId.toString()
+      );
+    }
+    let otherProfile = null;
+    if (
+      otherUser &&
+      window.userProfiles &&
+      window.userProfiles[otherUser._id.toString()]
+    ) {
+      otherProfile = window.userProfiles[otherUser._id.toString()];
+    }
+    if (otherProfile && otherProfile.profilePictureBase64) {
+      avatarHtml = `<img src="${otherProfile.profilePictureBase64}" alt="Avatar" class="w-full h-full object-cover" />`;
+    } else {
+      avatarHtml =
+        otherUser && otherUser.username
+          ? otherUser.username.substring(0, 2).toUpperCase()
+          : "U";
+    }
+    // For direct chat, show the other user's name
+    if (otherUser && otherUser.username) {
+      chatName = otherUser.username;
+    }
+  }
+
   chatItem.innerHTML = `
-        <div class="chat-item-avatar">
-            ${
-              chat.type === "group"
-                ? '<i class="fas fa-users"></i>'
-                : `<div class="user-initials">${chatName
-                    .substring(0, 2)
-                    .toUpperCase()}</div>`
-            }
+      <div class="${avatarClass}">${avatarHtml}</div>
+      <div class="chat-item-content">
+        <div class="chat-item-header">
+          <span class="chat-item-name">${chatName}</span>
         </div>
-        <div class="chat-item-content">
-            <div class="chat-item-header">
-                <span class="chat-item-name">${chatName}</span>
-            </div>
-        </div>
+      </div>
     `;
 
   chatItem.addEventListener("click", () => openChat(chat._id));
