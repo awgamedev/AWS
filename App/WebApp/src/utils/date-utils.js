@@ -44,7 +44,6 @@ function dateUpdateTime(date, timeAsString) {
   // setHours(Stunden, Minuten, Sekunden, Millisekunden)
   date.setHours(hours, minutes, 0, 0);
 
-  // console.log(`Datum erfolgreich auf ${stamping.date.toISOString()} aktualisiert.`);
   return date;
 }
 

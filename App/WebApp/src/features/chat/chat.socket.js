@@ -19,8 +19,6 @@ function initializeChatSocket(io) {
       });
     });
     console.log(`🔌 User connected: ${socket.id}`);
-    console.log("Session data:", socket.request.session);
-    console.log("Session passport:", socket.request.session?.passport);
 
     // Authenticate user from session
     const userId = socket.request.session?.passport?.user;
@@ -36,7 +34,6 @@ function initializeChatSocket(io) {
 
     // Store user socket mapping
     userSockets.set(userId.toString(), socket.id);
-    console.log(`✅ User ${userId} authenticated on socket ${socket.id}`);
 
     // Join user's personal room for notifications
     socket.join(`user:${userId}`);
@@ -62,7 +59,6 @@ function initializeChatSocket(io) {
         }
 
         socket.join(`chat:${chatId}`);
-        console.log(`User ${userId} joined chat ${chatId}`);
 
         // Load and send chat history
         const messages = await messageRepository.findByChatId(chatId);
@@ -78,7 +74,6 @@ function initializeChatSocket(io) {
      */
     socket.on("leave-chat", (chatId) => {
       socket.leave(`chat:${chatId}`);
-      console.log(`User ${userId} left chat ${chatId}`);
     });
 
     /**
@@ -260,7 +255,6 @@ function initializeChatSocket(io) {
      */
     socket.on("disconnect", () => {
       userSockets.delete(userId.toString());
-      console.log(`🔌 User ${userId} disconnected`);
     });
   });
 }

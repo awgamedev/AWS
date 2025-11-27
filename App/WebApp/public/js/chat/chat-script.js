@@ -450,7 +450,6 @@ function setupSocketListeners() {
   });
 
   socket.on("new-message", ({ chatId, message }) => {
-    console.log("[SOCKET] new-message received", { chatId, message });
     if (chatId === currentChatId) {
       appendMessage(message);
       scrollToBottom();

@@ -146,10 +146,6 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
  * POST /chat/group - Create a new group chat
  */
 router.post("/chat/group", ensureAuthenticated, async (req, res) => {
-  console.log("📨 POST /chat/group - Request received");
-  console.log("User:", req.user?.id, req.user?.username);
-  console.log("Body:", req.body);
-
   try {
     const { name, participants } = req.body;
 
@@ -193,10 +189,6 @@ router.post("/chat/group", ensureAuthenticated, async (req, res) => {
  * POST /chat/direct - Create or get a direct message chat
  */
 router.post("/chat/direct", ensureAuthenticated, async (req, res) => {
-  console.log("📨 POST /chat/direct - Request received");
-  console.log("User:", req.user?.id, req.user?.username);
-  console.log("Body:", req.body);
-
   try {
     const { userId } = req.body;
 
@@ -212,18 +204,11 @@ router.post("/chat/direct", ensureAuthenticated, async (req, res) => {
         .json({ error: "Cannot create chat with yourself" });
     }
 
-    console.log(
-      "✅ Creating/getting direct chat between",
-      req.user.id,
-      "and",
-      userId
-    );
     const chat = await chatRepository.getOrCreateDirectChat(
       req.user.id,
       userId
     );
 
-    console.log("✅ Chat created/retrieved:", chat._id);
     res.json({ success: true, chat });
   } catch (error) {
     console.error("❌ Error creating direct chat:", error);

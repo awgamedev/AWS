@@ -97,19 +97,14 @@ const handleReportSubmit = async (form) => {
   const reportId = document.getElementById("report-id").value;
   const isEditing = !!reportId;
 
-  console.log("handleReportSubmit called", { isEditing, reportId });
-
   setMessage(msg, "info", "Speichern...");
   clearErrors();
 
   try {
     const payload = Object.fromEntries(new FormData(form).entries());
-    console.log("Payload:", payload);
 
     const url = isEditing ? `api/reports/${reportId}` : "api/reports";
     const method = isEditing ? "PUT" : "POST";
-
-    console.log("Request:", { url, method });
 
     const response = await fetch(url, {
       method,
@@ -117,9 +112,7 @@ const handleReportSubmit = async (form) => {
       body: JSON.stringify(payload),
     });
 
-    console.log("Response status:", response.status);
     const data = await response.json();
-    console.log("Response data:", data);
 
     if (response.ok) {
       setMessage(msg, "success", data.msg || "Erfolgreich gespeichert!");
