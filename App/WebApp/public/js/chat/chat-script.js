@@ -54,8 +54,9 @@ async function renderHeaderAvatar(chatId) {
   // Create avatar wrapper
   const avatarWrapper = document.createElement("div");
   avatarWrapper.className =
-    "chat-header-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-indigo-400 overflow-hidden bg-indigo-400 relative group";
+    "chat-header-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-indigo-400 overflow-hidden bg-indigo-400 group";
   avatarWrapper.style.position = "relative";
+  avatarWrapper.style.zIndex = "10";
   avatarWrapper.style.cursor = isAdminOrCreator ? "pointer" : "default";
 
   if (groupImageBase64) {
@@ -72,14 +73,29 @@ async function renderHeaderAvatar(chatId) {
 
   // Only show actions for admin/creator
   if (isAdminOrCreator) {
-    // Upload button (always shown)
+    // Overlay for buttons, covers avatar, only visible on hover
+    const btnOverlay = document.createElement("div");
+    btnOverlay.style.position = "absolute";
+    btnOverlay.style.top = "0";
+    btnOverlay.style.left = "0";
+    btnOverlay.style.width = "100%";
+    btnOverlay.style.height = "100%";
+    btnOverlay.style.display = "flex";
+    btnOverlay.style.flexDirection = "row";
+    btnOverlay.style.alignItems = "center";
+    btnOverlay.style.justifyContent = "center";
+    btnOverlay.style.pointerEvents = "none";
+    btnOverlay.style.zIndex = "10";
+    btnOverlay.style.opacity = "0";
+    btnOverlay.style.transition = "opacity 0.2s";
+
+    // Upload button
     const uploadBtn = document.createElement("button");
     uploadBtn.className =
-      "group-upload-btn absolute z-10 bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100 transition-opacity opacity-0 group-hover:opacity-100";
+      "group-upload-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100";
     uploadBtn.title = "Gruppenbild hochladen";
-    uploadBtn.style.left = "-10px";
-    uploadBtn.style.top = "50%";
-    uploadBtn.style.transform = "translateY(-50%)";
+    uploadBtn.style.pointerEvents = "auto";
+    uploadBtn.style.margin = "0 4px";
     uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
     uploadBtn.dataset.chatId = chatId;
     // Hidden file input
@@ -107,18 +123,17 @@ async function renderHeaderAvatar(chatId) {
       const base64 = await fileToBase64(file);
       await uploadGroupImage(chatId, base64);
     });
-    avatarWrapper.appendChild(uploadBtn);
+    btnOverlay.appendChild(uploadBtn);
     avatarWrapper.appendChild(fileInput);
 
     // Delete button (only if image exists)
     if (groupImageBase64) {
       const deleteBtn = document.createElement("button");
       deleteBtn.className =
-        "group-delete-btn absolute z-10 bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100 transition-opacity opacity-0 group-hover:opacity-100";
+        "group-delete-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100";
       deleteBtn.title = "Gruppenbild entfernen";
-      deleteBtn.style.right = "-10px";
-      deleteBtn.style.top = "50%";
-      deleteBtn.style.transform = "translateY(-50%)";
+      deleteBtn.style.pointerEvents = "auto";
+      deleteBtn.style.margin = "0 4px";
       deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
       deleteBtn.dataset.chatId = chatId;
       deleteBtn.addEventListener("click", async function (e) {
@@ -126,8 +141,18 @@ async function renderHeaderAvatar(chatId) {
         if (!confirm("Gruppenbild wirklich entfernen?")) return;
         await deleteGroupImage(chatId);
       });
-      avatarWrapper.appendChild(deleteBtn);
+      btnOverlay.appendChild(deleteBtn);
     }
+
+    // Show overlay only on hover
+    avatarWrapper.addEventListener("mouseenter", () => {
+      btnOverlay.style.opacity = "1";
+    });
+    avatarWrapper.addEventListener("mouseleave", () => {
+      btnOverlay.style.opacity = "0";
+    });
+
+    avatarWrapper.appendChild(btnOverlay);
   }
 
   // Insert avatar before chat title
