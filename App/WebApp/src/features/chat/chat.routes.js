@@ -16,8 +16,15 @@ router.get("/chat", ensureAuthenticated, async (req, res) => {
     // Get all users for the sidebar
     const allUsers = await chatRepository.getAllUsers();
 
-    // Get user's chats
-    const userChats = await chatRepository.findByUserId(req.user.id);
+    // Get user's chats, ordered by lastMessageAt descending
+    let userChats = await chatRepository.findByUserId(req.user.id);
+    if (Array.isArray(userChats)) {
+      userChats = userChats.sort((a, b) => {
+        const aTime = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+        const bTime = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+        return bTime - aTime;
+      });
+    }
 
     // Get all user profiles for avatars (map by userId for fast lookup)
     const userIds = allUsers.map((u) => u._id.toString());
