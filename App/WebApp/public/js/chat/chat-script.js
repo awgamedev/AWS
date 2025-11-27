@@ -356,6 +356,16 @@ function openChat(chatId) {
   document.getElementById("welcomeScreen").style.display = "none";
   document.getElementById("chatWindow").style.display = "flex";
 
+  // Focus the chat input when chat is opened
+  function focusChatInput() {
+    var input = document.querySelector("#simpleMessageInput");
+    if (input) {
+      input.focus();
+    }
+  }
+
+  focusChatInput();
+
   // On mobile, hide sidebar when opening chat
   const sidebar = document.querySelector(".chat-sidebar");
   if (sidebar && window.innerWidth <= 768) {
