@@ -862,6 +862,9 @@ deletedStyle.textContent = `
     font-size: 0.95em;
     user-select: none;
   }
+  .message:not(.own-message) .deleted-message-hint {
+    color: #888888;
+  }
   .deleted-message {
     background: #f5f5f5;
     border: 1px dashed #ccc;
