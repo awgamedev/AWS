@@ -97,19 +97,38 @@ async function autoProvisionUser({
   }
 
   // Determine username and email
-  let username = candidate;
-  let email = looksLikeEmail ? candidate : null;
+  // Clean up candidate: trim and replace spaces with dots
+  let cleanedCandidate =
+    typeof candidate === "string"
+      ? candidate.trim().replace(/\s+/g, ".")
+      : candidate;
+  let username = cleanedCandidate;
+  let email = null;
+  // If candidate looks like email, use it, else null
+  if (looksLikeEmail) {
+    email = cleanedCandidate;
+  }
   // If matching field is email but candidate is not an email, skip provisioning
   if (!email && matchFieldEnv === "email") {
     if (req.logger)
       req.logger.warn(
-        `[mTLS AutoLogin] Auto-provision skipped: candidate '${candidate}' not an email while MTLS_MATCH_FIELD=email.`
+        `[mTLS AutoLogin] Auto-provision skipped: candidate '${cleanedCandidate}' not an email while MTLS_MATCH_FIELD=email.`
       );
     return null;
   }
   // If no email, fabricate a deterministic placeholder
   if (!email) {
-    email = `${candidate}@cert.local`;
+    email = `${cleanedCandidate}@onis.local`;
+  }
+  // Validate email format, fix if needed
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailRegex.test(email)) {
+    // Try to fix: replace spaces with dots and trim again
+    email = email.trim().replace(/\s+/g, ".");
+    if (!emailRegex.test(email)) {
+      // If still invalid, fallback to placeholder
+      email = `${cleanedCandidate}@onis.local`;
+    }
   }
 
   try {
