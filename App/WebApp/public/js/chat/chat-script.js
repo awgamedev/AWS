@@ -48,6 +48,12 @@ function initializeQuillEditor() {
     },
     placeholder: "Nachricht eingeben...",
   });
+  // Emit typing event on input (after quill is initialized)
+  quill.on("text-change", function () {
+    if (currentChatId) {
+      socket.emit("typing", { chatId: currentChatId });
+    }
+  });
 
   // Custom image handler for base64 encoding
   function imageHandler() {
@@ -122,6 +128,74 @@ function setupFullscreenEditor() {
 }
 
 function setupSocketListeners() {
+  // Typing indicator
+  let typingTimeout;
+  socket.on("user-typing", ({ chatId, userId }) => {
+    if (chatId === currentChatId && userId !== currentUserId) {
+      showTypingIndicator();
+      if (typingTimeout) clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(hideTypingIndicator, 2000);
+    }
+  });
+
+  function showTypingIndicator() {
+    const indicator = document.getElementById("typingIndicator");
+    if (indicator) {
+      indicator.style.display = "block";
+      indicator.innerHTML = `<span class="typing-dots">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </span> schreibt...`;
+    }
+  }
+
+  function hideTypingIndicator() {
+    const indicator = document.getElementById("typingIndicator");
+    if (indicator) {
+      indicator.style.display = "none";
+      indicator.innerHTML = "";
+    }
+  }
+
+  // Add CSS for animated dots
+  const typingStyle = document.createElement("style");
+  typingStyle.textContent = `
+      .chat-typing-indicator {
+        margin: 8px 0 0 12px;
+        min-height: 24px;
+        color: #666;
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        font-style: italic;
+        user-select: none;
+      }
+      .typing-dots {
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      .typing-dots .dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin: 0 1.5px;
+        background: #888;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: typing-bounce 1.2s infinite both;
+      }
+      .typing-dots .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-dots .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes typing-bounce {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+        40% { transform: scale(1.2); opacity: 1; }
+      }
+    `;
+  document.head.appendChild(typingStyle);
   // Connection events
   socket.on("connect", () => {
     console.log("✅ Connected to chat server");
@@ -181,6 +255,15 @@ function setupSocketListeners() {
 }
 
 function setupEventListeners() {
+  // Emit typing event for simple input
+  const simpleInput = document.getElementById("simpleMessageInput");
+  if (simpleInput) {
+    simpleInput.addEventListener("input", function () {
+      if (currentChatId) {
+        socket.emit("typing", { chatId: currentChatId });
+      }
+    });
+  }
   // Chat item click - open chat
   document.querySelectorAll(".chat-item").forEach((item) => {
     item.addEventListener("click", function () {

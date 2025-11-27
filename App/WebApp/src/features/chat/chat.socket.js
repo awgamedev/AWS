@@ -7,8 +7,17 @@ const { chatRepository, messageRepository } = require("./chat.repository");
 function initializeChatSocket(io) {
   // Store user socket mappings
   const userSockets = new Map(); // userId -> socketId
-
   io.on("connection", (socket) => {
+    /**
+     * Typing indicator
+     */
+    socket.on("typing", ({ chatId }) => {
+      // Broadcast to all users in the chat room except the sender
+      socket.to(`chat:${chatId}`).emit("user-typing", {
+        chatId,
+        userId,
+      });
+    });
     console.log(`🔌 User connected: ${socket.id}`);
     console.log("Session data:", socket.request.session);
     console.log("Session passport:", socket.request.session?.passport);
