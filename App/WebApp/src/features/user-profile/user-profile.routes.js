@@ -28,4 +28,9 @@ router.post("/admin/user-profile/:userId", ensureAuthenticated, (req, res) => {
   userProfileController.updateUserProfile(req, res);
 });
 
+// Get only the profile picture (base64) for a user (public or protected as needed)
+router.get("/profile/picture/:userId", (req, res) => {
+  userProfileController.getProfilePicture(req, res);
+});
+
 module.exports = router;

@@ -9,6 +9,24 @@ const userRepository = new UserRepository();
  * Controller for user profile operations (read-only)
  */
 class UserProfileController {
+    /**
+     * Get only the profile picture (base64) for a user
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getProfilePicture(req, res) {
+      try {
+        const userId = req.params.userId;
+        const profile = await userProfileRepository.findByUserId(userId);
+        if (!profile || !profile.profilePictureBase64) {
+          return res.status(404).json({ success: false, msg: "No profile picture" });
+        }
+        res.json({ success: true, profilePictureBase64: profile.profilePictureBase64 });
+      } catch (error) {
+        req.logger?.error?.("Error fetching profile picture:", error);
+        res.status(500).json({ success: false, msg: "Server error" });
+      }
+    }
   /**
    * Display the user profile page
    * @param {Object} req - Express request object

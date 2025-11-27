@@ -808,6 +808,12 @@ function addChatToList(chat) {
   chatItem.dataset.chatId = chat._id;
   chatItem.dataset.chatType = chat.type;
 
+  // --- Merge userProfiles if present in chat object ---
+  if (chat.userProfiles && typeof chat.userProfiles === "object") {
+    if (!window.userProfiles) window.userProfiles = {};
+    Object.assign(window.userProfiles, chat.userProfiles);
+  }
+
   let chatName = chat.name;
   if (chat.type === "direct") {
     const otherUser = chat.participants.find((p) => p._id !== currentUserId);
@@ -849,6 +855,30 @@ function addChatToList(chat) {
         otherUser && otherUser.username
           ? otherUser.username.substring(0, 2).toUpperCase()
           : "U";
+      // --- If profile missing, fetch and update avatar ---
+      if (
+        otherUser &&
+        otherUser._id &&
+        (!otherProfile || !otherProfile.profilePictureBase64)
+      ) {
+        fetch(`profile/picture/${otherUser._id}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data && data.profilePictureBase64) {
+              if (!window.userProfiles) window.userProfiles = {};
+              if (!window.userProfiles[otherUser._id.toString()])
+                window.userProfiles[otherUser._id.toString()] = {};
+              window.userProfiles[
+                otherUser._id.toString()
+              ].profilePictureBase64 = data.profilePictureBase64;
+              // Update avatar in DOM
+              const avatarDiv = chatItem.querySelector(".chat-item-avatar");
+              if (avatarDiv) {
+                avatarDiv.innerHTML = `<img src="${data.profilePictureBase64}" alt="Avatar" class="w-full h-full object-cover" />`;
+              }
+            }
+          });
+      }
     }
     // For direct chat, show the other user's name
     if (otherUser && otherUser.username) {
