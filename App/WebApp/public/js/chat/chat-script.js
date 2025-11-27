@@ -255,9 +255,14 @@ function setupSocketListeners() {
 }
 
 function setupEventListeners() {
-  // Emit typing event for simple input
   const simpleInput = document.getElementById("simpleMessageInput");
   if (simpleInput) {
+    simpleInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
     simpleInput.addEventListener("input", function () {
       if (currentChatId) {
         socket.emit("typing", { chatId: currentChatId });
@@ -605,7 +610,7 @@ function updateMessageInUI(message, isDelete = false) {
 const deletedStyle = document.createElement("style");
 deletedStyle.textContent = `
   .deleted-message-hint {
-    color: #888;
+    color: #f0f0f0;
     font-style: italic;
     font-size: 0.95em;
     user-select: none;
