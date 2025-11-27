@@ -10,7 +10,6 @@ let isRichMode = false; // default to simple mode now
 
 document.addEventListener("DOMContentLoaded", function () {
   initializeChat();
-  setupGroupImageActions();
   setupDynamicHeaderAvatar();
 });
 
@@ -24,184 +23,183 @@ function setupDynamicHeaderAvatar() {
     if (typeof origOpenChat === "function") origOpenChat(chatId);
     renderHeaderAvatar(chatId);
   };
-}
 
-async function renderHeaderAvatar(chatId) {
-  const activeChatItem = document.querySelector(
-    `.chat-item[data-chat-id="${chatId}"]`
-  );
-  const chatHeaderInfo = document.querySelector(".chat-header-info");
-  if (!activeChatItem || !chatHeaderInfo) return;
+  async function renderHeaderAvatar(chatId) {
+    // Remove overflow clipping from parent containers so overlay/buttons are not cut off
+    const chatHeaderInfoOverflowFix =
+      document.querySelector(".chat-header-info");
+    if (chatHeaderInfoOverflowFix)
+      chatHeaderInfoOverflowFix.style.overflow = "visible";
+    const chatHeaderOverflowFix = document.querySelector(".chat-header");
+    if (chatHeaderOverflowFix) chatHeaderOverflowFix.style.overflow = "visible";
+    const activeChatItem = document.querySelector(
+      `.chat-item[data-chat-id="${chatId}"]`
+    );
+    const chatHeaderInfo = document.querySelector(".chat-header-info");
+    if (!activeChatItem || !chatHeaderInfo) return;
 
-  // Remove any previous avatar
-  let oldAvatar = chatHeaderInfo.querySelector(".chat-header-avatar");
-  if (oldAvatar) oldAvatar.remove();
+    // Remove any previous avatar
+    let oldAvatar = chatHeaderInfo.querySelector(".chat-header-avatar");
+    if (oldAvatar) oldAvatar.remove();
 
-  const chatType = activeChatItem.dataset.chatType;
-  if (chatType !== "group") return;
+    const chatType = activeChatItem.dataset.chatType;
+    if (chatType !== "group") return;
 
-  // Get group image or fallback
-  let groupImg = activeChatItem.querySelector(".group-avatar-img");
-  let groupIcon = activeChatItem.querySelector(".group-avatar-icon");
-  let groupImageBase64 = groupImg ? groupImg.src : null;
+    // Get group image or fallback
+    let groupImg = activeChatItem.querySelector(".group-avatar-img");
+    let groupIcon = activeChatItem.querySelector(".group-avatar-icon");
+    let groupImageBase64 = groupImg ? groupImg.src : null;
 
-  // Permissions
-  const creatorId = activeChatItem.dataset.creatorId;
-  const container = document.querySelector(".chat-container");
-  const userRole = container ? container.dataset.userRole : null;
-  const isAdminOrCreator = creatorId === currentUserId || userRole === "admin";
+    // Permissions
+    const creatorId = activeChatItem.dataset.creatorId;
+    const container = document.querySelector(".chat-container");
+    const userRole = container ? container.dataset.userRole : null;
+    const isAdminOrCreator =
+      creatorId === currentUserId || userRole === "admin";
 
-  // Create avatar wrapper
-  const avatarWrapper = document.createElement("div");
-  avatarWrapper.className =
-    "chat-header-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-indigo-400 overflow-hidden bg-indigo-400 group";
-  avatarWrapper.style.position = "relative";
-  avatarWrapper.style.zIndex = "10";
-  avatarWrapper.style.cursor = isAdminOrCreator ? "pointer" : "default";
+    // Create avatar wrapper
+    const avatarWrapper = document.createElement("div");
+    avatarWrapper.className =
+      "chat-header-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-indigo-400 overflow-hidden bg-indigo-400 group";
+    avatarWrapper.style.position = "relative";
+    avatarWrapper.style.zIndex = "10";
+    avatarWrapper.style.cursor = isAdminOrCreator ? "pointer" : "default";
 
-  if (groupImageBase64) {
-    const img = document.createElement("img");
-    img.src = groupImageBase64;
-    img.alt = "Group";
-    img.className = "w-full h-full object-cover";
-    avatarWrapper.appendChild(img);
-  } else {
-    const icon = document.createElement("i");
-    icon.className = "fas fa-users text-2xl group-avatar-icon";
-    avatarWrapper.appendChild(icon);
-  }
-
-  // Only show actions for admin/creator
-  if (isAdminOrCreator) {
-    // Overlay for buttons, covers avatar, only visible on hover
-    const btnOverlay = document.createElement("div");
-    btnOverlay.style.position = "absolute";
-    btnOverlay.style.top = "0";
-    btnOverlay.style.left = "0";
-    btnOverlay.style.width = "100%";
-    btnOverlay.style.height = "100%";
-    btnOverlay.style.display = "flex";
-    btnOverlay.style.flexDirection = "row";
-    btnOverlay.style.alignItems = "center";
-    btnOverlay.style.justifyContent = "center";
-    btnOverlay.style.pointerEvents = "none";
-    btnOverlay.style.zIndex = "10";
-    btnOverlay.style.opacity = "0";
-    btnOverlay.style.transition = "opacity 0.2s";
-
-    // Upload button
-    const uploadBtn = document.createElement("button");
-    uploadBtn.className =
-      "group-upload-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100";
-    uploadBtn.title = "Gruppenbild hochladen";
-    uploadBtn.style.pointerEvents = "auto";
-    uploadBtn.style.margin = "0 4px";
-    uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
-    uploadBtn.dataset.chatId = chatId;
-    // Hidden file input
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.className = "group-image-input";
-    fileInput.style.display = "none";
-    fileInput.dataset.chatId = chatId;
-    uploadBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      fileInput.click();
-    });
-    fileInput.addEventListener("change", async function (e) {
-      const file = this.files[0];
-      if (!file) return;
-      if (!file.type.startsWith("image/")) {
-        alert("Bitte ein gültiges Bild wählen.");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Bild darf maximal 5MB groß sein.");
-        return;
-      }
-      const base64 = await fileToBase64(file);
-      await uploadGroupImage(chatId, base64);
-    });
-    btnOverlay.appendChild(uploadBtn);
-    avatarWrapper.appendChild(fileInput);
-
-    // Delete button (only if image exists)
     if (groupImageBase64) {
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className =
-        "group-delete-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100";
-      deleteBtn.title = "Gruppenbild entfernen";
-      deleteBtn.style.pointerEvents = "auto";
-      deleteBtn.style.margin = "0 4px";
-      deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
-      deleteBtn.dataset.chatId = chatId;
-      deleteBtn.addEventListener("click", async function (e) {
-        e.stopPropagation();
-        if (!confirm("Gruppenbild wirklich entfernen?")) return;
-        await deleteGroupImage(chatId);
-      });
-      btnOverlay.appendChild(deleteBtn);
+      const img = document.createElement("img");
+      img.src = groupImageBase64;
+      img.alt = "Group";
+      img.className = "w-full h-full object-cover";
+      avatarWrapper.appendChild(img);
+    } else {
+      const icon = document.createElement("i");
+      icon.className = "fas fa-users text-2xl group-avatar-icon";
+      avatarWrapper.appendChild(icon);
     }
 
-    // Show overlay only on hover
-    avatarWrapper.addEventListener("mouseenter", () => {
-      btnOverlay.style.opacity = "1";
-    });
-    avatarWrapper.addEventListener("mouseleave", () => {
-      btnOverlay.style.opacity = "0";
-    });
+    // Remove any previous overlay
+    const chatHeaderInfoOverlayParent =
+      document.querySelector(".chat-header-info");
+    if (chatHeaderInfoOverlayParent) {
+      const oldOverlay = chatHeaderInfoOverlayParent.querySelector(
+        ".chat-header-avatar-overlay"
+      );
+      if (oldOverlay) oldOverlay.remove();
+      chatHeaderInfoOverlayParent.style.position = "relative";
+    }
 
-    avatarWrapper.appendChild(btnOverlay);
-  }
+    // Only show actions for admin/creator
+    if (isAdminOrCreator) {
+      // Overlay for buttons, covers avatar, only visible on hover
+      const btnOverlay = document.createElement("div");
+      btnOverlay.style.position = "absolute";
+      btnOverlay.style.top = "0";
+      btnOverlay.style.left = "0";
+      btnOverlay.style.width = "100%";
+      btnOverlay.style.height = "100%";
+      btnOverlay.style.display = "flex";
+      btnOverlay.style.flexDirection = "row";
+      btnOverlay.style.alignItems = "center";
+      btnOverlay.style.justifyContent = "center";
+      btnOverlay.style.pointerEvents = "none";
+      btnOverlay.style.zIndex = "10";
+      if (isAdminOrCreator && chatHeaderInfoOverlayParent) {
+        // Overlay for buttons, positioned absolutely relative to .chat-header-info
+        const btnOverlay = document.createElement("div");
+        btnOverlay.className = "chat-header-avatar-overlay";
+        btnOverlay.style.position = "absolute";
+        // Position overlay centered over the avatar
+        btnOverlay.style.left = avatarWrapper.offsetLeft - 8 + "px";
+        btnOverlay.style.top = avatarWrapper.offsetTop - 8 + "px";
+        btnOverlay.style.width = avatarWrapper.offsetWidth + 16 + "px";
+        btnOverlay.style.height = avatarWrapper.offsetHeight + 16 + "px";
+        btnOverlay.style.display = "flex";
+        btnOverlay.style.flexDirection = "row";
+        btnOverlay.style.alignItems = "center";
+        btnOverlay.style.justifyContent = "center";
+        btnOverlay.style.pointerEvents = "none";
+        btnOverlay.style.zIndex = "100";
+        btnOverlay.style.opacity = "0";
+        btnOverlay.style.transition = "opacity 0.2s";
 
-  // Insert avatar before chat title
-  const chatTitle = document.getElementById("chatTitle");
-  if (chatTitle) {
-    chatHeaderInfo.insertBefore(avatarWrapper, chatTitle);
+        // Upload button
+        const uploadBtn = document.createElement("button");
+        uploadBtn.className =
+          "group-upload-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100";
+        uploadBtn.title = "Gruppenbild hochladen";
+        uploadBtn.style.pointerEvents = "auto";
+        uploadBtn.style.margin = "0 4px";
+        uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
+        uploadBtn.dataset.chatId = chatId;
+        // Hidden file input
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.className = "group-image-input";
+        fileInput.style.display = "none";
+        fileInput.dataset.chatId = chatId;
+        uploadBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          fileInput.click();
+        });
+        fileInput.addEventListener("change", async function (e) {
+          const file = this.files[0];
+          if (!file) return;
+          if (!file.type.startsWith("image/")) {
+            alert("Bitte ein gültiges Bild wählen.");
+            return;
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            alert("Bild darf maximal 5MB groß sein.");
+            return;
+          }
+          const base64 = await fileToBase64(file);
+          await uploadGroupImage(chatId, base64);
+        });
+        btnOverlay.appendChild(uploadBtn);
+        chatHeaderInfoOverlayParent.appendChild(fileInput);
+
+        // Delete button (only if image exists)
+        if (groupImageBase64) {
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className =
+            "group-delete-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100";
+          deleteBtn.title = "Gruppenbild entfernen";
+          deleteBtn.style.pointerEvents = "auto";
+          deleteBtn.style.margin = "0 4px";
+          deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
+          deleteBtn.dataset.chatId = chatId;
+          deleteBtn.addEventListener("click", async function (e) {
+            e.stopPropagation();
+            if (!confirm("Gruppenbild wirklich entfernen?")) return;
+            await deleteGroupImage(chatId);
+          });
+          btnOverlay.appendChild(deleteBtn);
+        }
+
+        // Show overlay only on hover of avatar
+        avatarWrapper.addEventListener("mouseenter", () => {
+          btnOverlay.style.opacity = "1";
+        });
+        avatarWrapper.addEventListener("mouseleave", () => {
+          btnOverlay.style.opacity = "0";
+        });
+
+        // Append overlay as sibling to avatar, not as its child
+        chatHeaderInfoOverlayParent.appendChild(btnOverlay);
+      }
+    }
+    // Insert avatar as the first child so it appears left of the title
+    chatHeaderInfo.insertBefore(avatarWrapper, chatHeaderInfo.firstChild);
   }
 }
-// Group chat image upload/delete logic
-function setupGroupImageActions() {
-  // Delegate for upload button
-  document.querySelectorAll(".group-upload-btn").forEach((btn) => {
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      const chatId = this.dataset.chatId;
-      const input = document.querySelector(
-        `.group-image-input[data-chat-id="${chatId}"]`
-      );
-      if (input) input.click();
-    });
-  });
 
-  // Delegate for file input
-  document.querySelectorAll(".group-image-input").forEach((input) => {
-    input.addEventListener("change", async function (e) {
-      const chatId = this.dataset.chatId;
-      const file = this.files[0];
-      if (!file) return;
-      if (!file.type.startsWith("image/")) {
-        alert("Bitte ein gültiges Bild wählen.");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Bild darf maximal 5MB groß sein.");
-        return;
-      }
-      const base64 = await fileToBase64(file);
-      await uploadGroupImage(chatId, base64);
-    });
-  });
-
-  // Delegate for delete button
-  document.querySelectorAll(".group-delete-btn").forEach((btn) => {
-    btn.addEventListener("click", async function (e) {
-      e.stopPropagation();
-      const chatId = this.dataset.chatId;
-      if (!confirm("Gruppenbild wirklich entfernen?")) return;
-      await deleteGroupImage(chatId);
-    });
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
