@@ -89,105 +89,104 @@ function setupDynamicHeaderAvatar() {
     }
 
     // Only show actions for admin/creator
-    if (isAdminOrCreator) {
-      // Overlay for buttons, covers avatar, only visible on hover
+    if (isAdminOrCreator && chatHeaderInfoOverlayParent) {
+      // Overlay for buttons, positioned absolutely relative to .chat-header-info
       const btnOverlay = document.createElement("div");
+      btnOverlay.className = "chat-header-avatar-overlay";
       btnOverlay.style.position = "absolute";
-      btnOverlay.style.top = "0";
-      btnOverlay.style.left = "0";
-      btnOverlay.style.width = "100%";
-      btnOverlay.style.height = "100%";
+      // Position overlay centered over the avatar
+      btnOverlay.style.left = avatarWrapper.offsetLeft + 13 + "px";
+      btnOverlay.style.top = avatarWrapper.offsetTop - 8 + "px";
+      btnOverlay.style.width = avatarWrapper.offsetWidth + 16 + "px";
+      btnOverlay.style.height = avatarWrapper.offsetHeight + 16 + "px";
       btnOverlay.style.display = "flex";
       btnOverlay.style.flexDirection = "row";
       btnOverlay.style.alignItems = "center";
       btnOverlay.style.justifyContent = "center";
       btnOverlay.style.pointerEvents = "none";
-      btnOverlay.style.zIndex = "10";
-      if (isAdminOrCreator && chatHeaderInfoOverlayParent) {
-        // Overlay for buttons, positioned absolutely relative to .chat-header-info
-        const btnOverlay = document.createElement("div");
-        btnOverlay.className = "chat-header-avatar-overlay";
-        btnOverlay.style.position = "absolute";
-        // Position overlay centered over the avatar
-        btnOverlay.style.left = avatarWrapper.offsetLeft - 8 + "px";
-        btnOverlay.style.top = avatarWrapper.offsetTop - 8 + "px";
-        btnOverlay.style.width = avatarWrapper.offsetWidth + 16 + "px";
-        btnOverlay.style.height = avatarWrapper.offsetHeight + 16 + "px";
-        btnOverlay.style.display = "flex";
-        btnOverlay.style.flexDirection = "row";
-        btnOverlay.style.alignItems = "center";
-        btnOverlay.style.justifyContent = "center";
-        btnOverlay.style.pointerEvents = "none";
-        btnOverlay.style.zIndex = "100";
-        btnOverlay.style.opacity = "0";
-        btnOverlay.style.transition = "opacity 0.2s";
+      btnOverlay.style.zIndex = "100";
+      btnOverlay.style.opacity = "0";
+      btnOverlay.style.transition = "opacity 0.2s";
 
-        // Upload button
-        const uploadBtn = document.createElement("button");
-        uploadBtn.className =
-          "group-upload-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100";
-        uploadBtn.title = "Gruppenbild hochladen";
-        uploadBtn.style.pointerEvents = "auto";
-        uploadBtn.style.margin = "0 4px";
-        uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
-        uploadBtn.dataset.chatId = chatId;
-        // Hidden file input
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
-        fileInput.className = "group-image-input";
-        fileInput.style.display = "none";
-        fileInput.dataset.chatId = chatId;
-        uploadBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          fileInput.click();
-        });
-        fileInput.addEventListener("change", async function (e) {
-          const file = this.files[0];
-          if (!file) return;
-          if (!file.type.startsWith("image/")) {
-            alert("Bitte ein gültiges Bild wählen.");
-            return;
-          }
-          if (file.size > 5 * 1024 * 1024) {
-            alert("Bild darf maximal 5MB groß sein.");
-            return;
-          }
-          const base64 = await fileToBase64(file);
-          await uploadGroupImage(chatId, base64);
-        });
-        btnOverlay.appendChild(uploadBtn);
-        chatHeaderInfoOverlayParent.appendChild(fileInput);
-
-        // Delete button (only if image exists)
-        if (groupImageBase64) {
-          const deleteBtn = document.createElement("button");
-          deleteBtn.className =
-            "group-delete-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100";
-          deleteBtn.title = "Gruppenbild entfernen";
-          deleteBtn.style.pointerEvents = "auto";
-          deleteBtn.style.margin = "0 4px";
-          deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
-          deleteBtn.dataset.chatId = chatId;
-          deleteBtn.addEventListener("click", async function (e) {
-            e.stopPropagation();
-            if (!confirm("Gruppenbild wirklich entfernen?")) return;
-            await deleteGroupImage(chatId);
-          });
-          btnOverlay.appendChild(deleteBtn);
+      // Upload button
+      const uploadBtn = document.createElement("button");
+      uploadBtn.className =
+        "group-upload-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-indigo-100";
+      uploadBtn.title = "Gruppenbild hochladen";
+      uploadBtn.style.pointerEvents = "auto";
+      uploadBtn.style.margin = "0 4px";
+      uploadBtn.innerHTML = '<i class="fas fa-upload text-indigo-600"></i>';
+      uploadBtn.dataset.chatId = chatId;
+      // Hidden file input
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.className = "group-image-input";
+      fileInput.style.display = "none";
+      fileInput.dataset.chatId = chatId;
+      uploadBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      fileInput.addEventListener("change", async function (e) {
+        const file = this.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          alert("Bitte ein gültiges Bild wählen.");
+          return;
         }
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Bild darf maximal 5MB groß sein.");
+          return;
+        }
+        const base64 = await fileToBase64(file);
+        await uploadGroupImage(chatId, base64);
+      });
+      btnOverlay.appendChild(uploadBtn);
+      chatHeaderInfoOverlayParent.appendChild(fileInput);
 
-        // Show overlay only on hover of avatar
-        avatarWrapper.addEventListener("mouseenter", () => {
-          btnOverlay.style.opacity = "1";
+      // Delete button (only if image exists)
+      if (groupImageBase64) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className =
+          "group-delete-btn bg-white bg-opacity-90 rounded-full p-1 shadow hover:bg-red-100";
+        deleteBtn.title = "Gruppenbild entfernen";
+        deleteBtn.style.pointerEvents = "auto";
+        deleteBtn.style.margin = "0 4px";
+        deleteBtn.innerHTML = '<i class="fas fa-trash text-red-500"></i>';
+        deleteBtn.dataset.chatId = chatId;
+        deleteBtn.addEventListener("click", async function (e) {
+          e.stopPropagation();
+          if (!confirm("Gruppenbild wirklich entfernen?")) return;
+          await deleteGroupImage(chatId);
         });
-        avatarWrapper.addEventListener("mouseleave", () => {
-          btnOverlay.style.opacity = "0";
-        });
-
-        // Append overlay as sibling to avatar, not as its child
-        chatHeaderInfoOverlayParent.appendChild(btnOverlay);
+        btnOverlay.appendChild(deleteBtn);
       }
+
+      // Toggle overlay on avatar click
+      let overlayVisible = false;
+      avatarWrapper.addEventListener("click", function (e) {
+        e.stopPropagation();
+        overlayVisible = !overlayVisible;
+        btnOverlay.style.opacity = overlayVisible ? "1" : "0";
+        // Optional: hide overlay if click outside
+        if (overlayVisible) {
+          const hideOverlay = (ev) => {
+            if (
+              !avatarWrapper.contains(ev.target) &&
+              !btnOverlay.contains(ev.target)
+            ) {
+              overlayVisible = false;
+              btnOverlay.style.opacity = "0";
+              document.removeEventListener("click", hideOverlay);
+            }
+          };
+          setTimeout(() => document.addEventListener("click", hideOverlay), 0);
+        }
+      });
+
+      // Append overlay as sibling to avatar, not as its child
+      chatHeaderInfoOverlayParent.appendChild(btnOverlay);
     }
     // Insert avatar as the first child so it appears left of the title
     chatHeaderInfo.insertBefore(avatarWrapper, chatHeaderInfo.firstChild);
