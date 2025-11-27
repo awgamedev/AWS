@@ -279,7 +279,7 @@
             const selectedMonth = monthSelect.value;
             const selectedYear = yearSelect.value;
             // Seite mit den neuen Query-Parametern neu laden
-            window.location.href = `/time-tracking/stamping-overview?month=${selectedMonth}&year=${selectedYear}`;
+            window.location.href = `time-tracking/stamping-overview?month=${selectedMonth}&year=${selectedYear}`;
         };
 
         monthSelect.addEventListener('change', navigateToSelectedMonth);
