@@ -86,7 +86,12 @@ function initializeChatSocket(io) {
      */
     socket.on("send-message", async ({ chatId, content }) => {
       try {
-        if (!content || !content.trim()) {
+        // Accept if content is non-empty text or contains valid HTML (e.g., <img ...>)
+        const isEmptyText = !content || !content.trim();
+        const isHtmlWithImage =
+          typeof content === "string" &&
+          /<img\s+[^>]*src=["'][^"']+["'][^>]*>/i.test(content);
+        if (isEmptyText && !isHtmlWithImage) {
           socket.emit("error", { message: "Message cannot be empty" });
           return;
         }

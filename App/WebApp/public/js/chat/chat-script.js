@@ -450,6 +450,7 @@ function setupSocketListeners() {
   });
 
   socket.on("new-message", ({ chatId, message }) => {
+    console.log("[SOCKET] new-message received", { chatId, message });
     if (chatId === currentChatId) {
       appendMessage(message);
       scrollToBottom();
@@ -782,7 +783,8 @@ function sendMessage() {
     // Rich mode: HTML from Quill
     content = quill.root.innerHTML;
     const text = quill.getText().trim();
-    if (!text || text === "") return;
+    const hasImage = /<img\s+[^>]*src=["'][^"']+["'][^>]*>/i.test(content);
+    if ((!text || text === "") && !hasImage) return;
   } else {
     // Simple mode: plain text input
     const inputEl = document.getElementById("simpleMessageInput");

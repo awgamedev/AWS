@@ -1183,7 +1183,7 @@ body.fullscreen-active {
 
 @media (max-width: 480px) {
     .chat-container {
-        height: calc(100vh - 170px);
+        /* height: calc(100vh - 170px); */
         border-radius: 0;
     }
 
