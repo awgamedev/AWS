@@ -391,7 +391,7 @@ function openChat(chatId) {
         chatType === "group" &&
         (creatorId === currentUserId || userRole === "admin")
       ) {
-        renameBtn.style.display = "inline-flex";
+        renameBtn.style.display = "block";
       } else {
         renameBtn.style.display = "none";
       }

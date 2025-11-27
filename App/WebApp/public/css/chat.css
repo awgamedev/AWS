@@ -395,24 +395,7 @@
     opacity: 0.9;
 }
 
-.btn-rename-chat {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-rename-chat:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
+.btn-rename-chat,
 .btn-close-chat,
 .btn-back-mobile {
     background: rgba(255, 255, 255, 0.2);
@@ -425,6 +408,7 @@
     transition: all 0.2s;
 }
 
+.btn-rename-chat:hover,
 .btn-close-chat:hover,
 .btn-back-mobile:hover {
     background: rgba(255, 255, 255, 0.3);
