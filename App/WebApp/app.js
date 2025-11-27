@@ -137,6 +137,10 @@ app.use(passport.session());
 // Export session middleware for Socket.IO
 app.set("sessionMiddleware", sessionMiddleware);
 
+// mTLS auto-login before dev auto-login so production prefers certificate auth
+app.use(mtlsAutoLogin);
+// app.use(devAutoLogin);
+
 // Middleware to provide global variables for all EJS templates (res.locals)
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
@@ -168,10 +172,6 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
-// mTLS auto-login before dev auto-login so production prefers certificate auth
-app.use(mtlsAutoLogin);
-// app.use(devAutoLogin);
 
 // Dynamically load routers (including subfolders)
 routerFiles.forEach((file) => {
