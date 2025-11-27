@@ -77,6 +77,7 @@ router.get("/dashboard", ensureAuthenticated, async (req, res, next) => {
       taskStatus: t.taskStatus,
       taskPriority: t.taskPriority,
       startDate: t.startDate,
+      endDate: t.endDate,
       user: t.userId?.username || t.createdBy || "-",
     }));
 

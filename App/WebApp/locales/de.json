@@ -380,5 +380,8 @@
 	"DASHBOARD_RECENT_TASKS": "Neueste Aufgaben",
 	"TASK_NAME": "Aufgabenname",
 	"START_DATE": "Startdatum",
-	"NO_TASKS_YET": "Noch keine Aufgaben"
+	"NO_TASKS_YET": "Noch keine Aufgaben",
+	"OVERVIEW": "Übersicht",
+	"ACTIVITY": "Aktivitäten",
+	"END_DATE": "Enddatum"
 }

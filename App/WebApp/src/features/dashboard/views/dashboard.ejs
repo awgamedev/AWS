@@ -1,18 +1,14 @@
-<div class="space-y-10" x-data="{ tab: 'overview' }">
+<div class="space-y-5" x-data="{ tab: 'overview' }">
   <!-- Page Intro / Title Subheader -->
   <section class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-800"><%= __('APP_DASHBOARD_TITLE') %></h1>
-      <p class="text-sm text-gray-500 mt-1"><%= __('DASHBOARD_SUBTITLE') %></p>
-    </div>
     <div class="flex items-center space-x-2">
-      <button @click="tab='overview'" :class="tab==='overview' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition">Overview</button>
-      <button @click="tab='activity'" :class="tab==='activity' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition">Activity</button>
+      <button @click="tab='overview'" :class="tab==='overview' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition"><%= __('OVERVIEW') %></button>
+      <button @click="tab='activity'" :class="tab==='activity' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600'" class="px-3 py-2 rounded-md text-sm font-medium shadow border transition"><%= __('ACTIVITY') %></button>
     </div>
   </section>
 
   <!-- Metrics Grid -->
-  <section x-show="tab==='overview'" class="space-y-6">
+  <section x-show="tab==='overview'" class="space-y-5">
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       <% metrics.forEach(function(m){ %>
         <%- include('metric_card', { metric: m }) %>
@@ -45,7 +41,7 @@
   </section>
 
   <!-- Activity Tab (can be extended later) -->
-  <section x-show="tab==='activity'" class="space-y-6">
+  <section x-show="tab==='activity'" class="space-y-5">
     <div class="bg-white rounded-xl shadow p-6 border border-gray-200">
       <h2 class="text-lg font-semibold mb-3 text-gray-800"><%= __('DASHBOARD_ACTIVITY_TITLE') %></h2>
       <p class="text-sm text-gray-500"><%= __('DASHBOARD_ACTIVITY_DESCRIPTION') %></p>
