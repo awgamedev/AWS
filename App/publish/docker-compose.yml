@@ -4,12 +4,23 @@ services:
     image: onis-web-app:latest
     container_name: node-web-app
     ports:
-      # - "4000:4000"
       - "9229:9229"
     depends_on:
       - mongo
     environment:
       - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+      - REGISTRATION_ENABLED=true
+      - MTLS_AUTO_LOGIN_ENABLED=true
+      - MTLS_REQUIRE_SUCCESS=true
+      - MTLS_DN_ATTRIBUTE=CN
+      - MTLS_MATCH_FIELD=username
+      - MTLS_FALLBACK_TO_EMAIL=true
+      - MTLS_AUTO_PROVISION_ENABLED=true
+      - MTLS_AUTO_PROVISION_DEFAULT_ROLE=user
+      - MTLS_AUTO_PROVISION_USE_OU_FOR_ROLE=true
+      - MTLS_AUTO_PROVISION_RANDOM_PASSWORD_LENGTH=32
+      - MTLS_AUTO_PROVISION_ALLOW=true
+      - MENU_FLATTEN_SINGLE_DROPDOWN=true
     command: ["npm", "start"]
     logging:
       driver: "json-file"
@@ -19,7 +30,7 @@ services:
     image: mongo:6.0
     container_name: mongodb
     volumes:
-      - mongo-data:/data/db 
+      - /root/publish/mongo-data:/data/db
 
   # Mongo Express (MongoDB Web-GUI)
   mongo-express:
@@ -39,14 +50,10 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
-    # Exponiert den Standard-HTTP-Port 80 nach außen
     ports:
-      - "80:80"
       - "443:443"
     volumes:
-      # Mountet die lokale nginx.conf in den Container
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      # Mountet die TLS Zertifikate
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       - web
