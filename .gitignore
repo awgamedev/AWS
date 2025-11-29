@@ -55,4 +55,4 @@ certs/
 lib/
 
 
-App/publish/docker-compose.yml
+publish/docker-compose.yml
