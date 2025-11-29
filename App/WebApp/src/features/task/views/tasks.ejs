@@ -11,12 +11,11 @@ const getStatusLabel = (status) => {
 const createTaskTitle = __("CREATE_NEW_TASK");
 %>
 
-<div class="mb-3 md:mb-4">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <div class="flex items-center justify-between sm:justify-start gap-3">
-            <button id="prev-week" class="px-3 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg shadow hover:bg-gray-300 transition duration-150 flex items-center">
+<div>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
+        <div class="flex items-center justify-between sm:justify-start gap-1">
+            <button id="prev-week" class="px-2 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg shadow hover:bg-gray-300 transition duration-150 flex items-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                <span class="ml-1 hidden sm:inline"><%= __("PREVIOUS") %></span>
             </button>
             
             <div class="flex-1 sm:flex-none text-center">
@@ -24,37 +23,35 @@ const createTaskTitle = __("CREATE_NEW_TASK");
                 <p class="text-xs text-gray-500" id="week-offset-display"></p>
             </div>
             
-            <button id="next-week" class="px-3 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg shadow hover:bg-gray-300 transition duration-150 flex items-center">
-                <span class="mr-1 hidden sm:inline"><%= __("NEXT") %></span>
+            <button id="next-week" class="px-2 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg shadow hover:bg-gray-300 transition duration-150 flex items-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
         </div>
         
         <div class="w-full sm:w-auto sm:ml-auto flex flex-row items-stretch items-center gap-1 sm:gap-3">
-            <!-- <button id="switch-to-list-view" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
+            <!-- <button id="switch-to-list-view" class="text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
                 <span class="inline-block sm:hidden"><i class="fa fa-list"></i></span>
                 <span class="hidden sm:inline"><%= __('SWITCH_TO_LIST_VIEW') %></span>
             </button> -->
-            <button id="open-task-modal" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation flex items-center justify-center">
+            <button id="open-task-modal" class="px-2 py-0 sm:py-2 text-[22px] sm:text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none touch-manipulation flex items-center justify-center">
                 <%= __("CREATE_TASK_BUTTON") %>
             </button>
-            <button id="today-week" class="px-1 py-0.5 sm:px-4 sm:py-2 text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
+            <button id="today-week" class="px-2 py-0 sm:py-2 text-[22px] sm:text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:outline-none touch-manipulation flex items-center justify-center">
                 <span class="inline-block sm:hidden"><i class="fa fa-calendar-week"></i></span>
                 <span class="hidden sm:inline">
                     <%= __("THIS_WEEK") %>
                 </span>
             </button>
             <!-- Manual button: always a button, book icon, label hidden on mobile -->
-            <button id="manual-toggle" type="button" class="flex items-center gap-2 px-3 py-0 h-9 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 rounded transition duration-200 border border-blue-100 focus:outline-none" title="<%= __('SHOW_MANUAL') %>">
+            <button id="manual-toggle" type="button" class="px-2 py-0 sm:py-2 flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 rounded transition duration-200 border border-blue-100 focus:outline-none" title="<%= __('SHOW_MANUAL') %>">
                 <i class="fas fa-book-open"></i>
-                <span class="font-semibold hidden sm:inline"><%= __('SHOW_MANUAL') %></span>
             </button>
         </div>
     </div>
 </div>
 
 <!-- Collapsible Manual (hidden by default, shown on mobile, toggled by button) -->
-<div class="mb-4 bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+<div class="mb-1 bg-white rounded-lg shadow-md overflow-hidden">
     <div id="manual-content" class="px-4 py-4 bg-white border-t border-gray-200 hidden">
         <div class="prose prose-sm max-w-none text-gray-700">
             <!-- ...manual content unchanged... -->
