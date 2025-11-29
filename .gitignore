@@ -53,3 +53,6 @@ certs/
 
 # Exclude library files
 lib/
+
+
+App/publish/docker-compose.yml

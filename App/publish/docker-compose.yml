@@ -8,7 +8,7 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+      - MONGODB_URI=mongodb://root:3uXFd7LmQ4TbH1cdS32ZFEaBdhs@mongo:27017/onis-db?authSource=admin
       - REGISTRATION_ENABLED=true
       - MTLS_AUTO_LOGIN_ENABLED=true
       - MTLS_REQUIRE_SUCCESS=true
@@ -31,6 +31,9 @@ services:
     container_name: mongodb
     volumes:
       - /root/publish/mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "3uXFd7LmQ4TbH1cdS32ZFEaBdhs"
 
   # Mongo Express (MongoDB Web-GUI)
   mongo-express:
@@ -43,7 +46,9 @@ services:
      ME_CONFIG_MONGODB_SERVER: mongo 
      ME_CONFIG_MONGODB_PORT: 27017 
      ME_CONFIG_BASICAUTH_USERNAME: user 
-     ME_CONFIG_BASICAUTH_PASSWORD: password 
+     ME_CONFIG_BASICAUTH_PASSWORD: 6vQ!p9wZr2keT8sL
+     ME_CONFIG_MONGODB_ADMINUSERNAME: root 
+     ME_CONFIG_MONGODB_ADMINPASSWORD: "3uXFd7LmQ4TbH1cdS32ZFEaBdhs"
    depends_on:
      - mongo
 
@@ -57,6 +62,7 @@ services:
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       - web
+      - mongo-express
 
 volumes:
   mongo-data:

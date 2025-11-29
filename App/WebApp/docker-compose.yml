@@ -13,11 +13,9 @@ services:
       - mongo
       # - loki # Füge loki hinzu, damit promtail/grafana später logs haben
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/mein-app-db
+      - MONGODB_URI=mongodb://root:3uXFd7LmQ4TbH1cdS32ZFEaBdhs@mongo:27017/onis-db?authSource=admin
     volumes:
       - .:/usr/src/app
-      # - ./certs:/usr/src/app/certs:ro
-      # - ./scripts:/usr/src/app/scripts:ro
       - /usr/src/app/node_modules
     command: ["npm", "run", "dev"]
     # WICHTIG: Verwende den Standard-Logging-Driver
@@ -66,8 +64,11 @@ services:
   mongo:
     image: mongo:6.0
     container_name: mongodb
-    volumes:
-      - mongo-data:/data/db 
+    # volumes:
+    #   - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "3uXFd7LmQ4TbH1cdS32ZFEaBdhs"
 
   # Mongo Express (MongoDB Web-GUI)
   mongo-express:
@@ -84,12 +85,12 @@ services:
      ME_CONFIG_MONGODB_PORT: 27017 
      # Optionale Zugangsdaten, falls Sie sie für die GUI benötigen
      ME_CONFIG_BASICAUTH_USERNAME: user 
-     ME_CONFIG_BASICAUTH_PASSWORD: password 
+     ME_CONFIG_BASICAUTH_PASSWORD: "6vQ!p9wZr2keT8sL" 
      # Admin-Benutzer und Passwort, falls Sie MongoDB mit AUTH starten (derzeit nicht der Fall)
-     # ME_CONFIG_MONGODB_ADMINUSERNAME: rootuser 
-     # ME_CONFIG_MONGODB_ADMINPASSWORD: rootpassword
+     ME_CONFIG_MONGODB_ADMINUSERNAME: root 
+     ME_CONFIG_MONGODB_ADMINPASSWORD: "3uXFd7LmQ4TbH1cdS32ZFEaBdhs"
    depends_on:
-     - mongo # Stellt sicher, dass MongoDB zuerst startet
+     - mongo
 
 # NGINX Reverse Proxy Service
   nginx:
@@ -106,7 +107,7 @@ services:
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       - web
-      # - mongo-express
+      - mongo-express
       # - grafana # Fügen Sie alle Dienste hinzu, die Sie proxyn möchten
 
 # Volumes für persistente Daten
