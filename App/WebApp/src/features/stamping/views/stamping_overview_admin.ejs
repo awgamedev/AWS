@@ -1,14 +1,14 @@
 <div class="bg-white p-3 rounded-lg shadow-sm mb-3">
     <div class="text-xs sm:text-sm font-medium text-gray-600 mb-2"><%= __('SELECT_PERIOD') %></div>
     <div class="flex flex-row gap-2 items-center">
-        <select id="month-select" class="flex-1 p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400 focus:border-blue-400">
+        <select id="month-select" class="flex-1 p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400 focus:border-blue-400 h-9">
             <% monthOptions.forEach(option => { %>
                 <option value="<%= option.value %>" <%= option.isSelected ? 'selected' : '' %>>
                     <%= option.name %>
                 </option>
             <% }); %>
         </select>
-        <select id="year-select" class="w-16 p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400 focus:border-blue-400" style="width:5.5em;">
+        <select id="year-select" class="w-16 p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400 focus:border-blue-400 h-9" style="width:5.5em;">
             <% yearOptions.forEach(option => { %>
                 <option value="<%= option.value %>" <%= option.isSelected ? 'selected' : '' %>>
                     <%= option.value %>
@@ -16,7 +16,7 @@
             <% }); %>
         </select>
         <!-- Manual button: always a button, book icon, label hidden on mobile -->
-        <button id="manual-toggle" type="button" class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 rounded transition duration-200 border border-blue-100 focus:outline-none" title="<%= __('SHOW_MANUAL') %>">
+        <button id="manual-toggle" type="button" class="flex items-center gap-2 px-3 py-0 h-9 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 rounded transition duration-200 border border-blue-100 focus:outline-none" title="<%= __('SHOW_MANUAL') %>">
             <i class="fas fa-book-open"></i>
             <span class="font-semibold hidden sm:inline"><%= __('SHOW_MANUAL') %></span>
         </button>
