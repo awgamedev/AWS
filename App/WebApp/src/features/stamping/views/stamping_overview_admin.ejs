@@ -1,6 +1,6 @@
 <div class="bg-white p-3 rounded-lg shadow-sm mb-3">
     <div class="text-xs sm:text-sm font-medium text-gray-600 mb-2"><%= __('SELECT_PERIOD') %></div>
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2 items-center">
         <select id="month-select" class="flex-1 p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400 focus:border-blue-400">
             <% monthOptions.forEach(option => { %>
                 <option value="<%= option.value %>" <%= option.isSelected ? 'selected' : '' %>>
@@ -15,22 +15,16 @@
                 </option>
             <% }); %>
         </select>
+        <!-- Manual button: always a button, book icon, label hidden on mobile -->
+        <button id="manual-toggle" type="button" class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 rounded transition duration-200 border border-blue-100 focus:outline-none" title="<%= __('SHOW_MANUAL') %>">
+            <i class="fas fa-book-open"></i>
+            <span class="font-semibold hidden sm:inline"><%= __('SHOW_MANUAL') %></span>
+        </button>
     </div>
 </div>
 
 <!-- Collapsible Manual (German) -->
 <div class="mb-4 bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-    <button id="manual-toggle" class="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition duration-200">
-        <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-            </svg>
-            <span class="font-semibold text-gray-800">Bedienungsanleitung – Wie funktioniert diese Seite?</span>
-        </div>
-        <svg id="manual-chevron" class="w-5 h-5 text-gray-600 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-    </button>
 
     <div id="manual-content" class="hidden px-4 py-4 bg-white border-top border-gray-200">
         <div class="prose prose-sm max-w-none text-gray-700">
@@ -273,7 +267,6 @@
         const yearSelect = document.getElementById('year-select');
         const manualToggle = document.getElementById('manual-toggle');
         const manualContent = document.getElementById('manual-content');
-        const manualChevron = document.getElementById('manual-chevron');
         
         const navigateToSelectedMonth = () => {
             const selectedMonth = monthSelect.value;
@@ -286,16 +279,9 @@
         yearSelect.addEventListener('change', navigateToSelectedMonth);
 
         // Manual: expand/collapse
-        if (manualToggle && manualContent && manualChevron) {
+        if (manualToggle && manualContent) {
             manualToggle.addEventListener('click', () => {
-                const isHidden = manualContent.classList.contains('hidden');
-                if (isHidden) {
-                    manualContent.classList.remove('hidden');
-                    manualChevron.style.transform = 'rotate(180deg)';
-                } else {
-                    manualContent.classList.add('hidden');
-                    manualChevron.style.transform = 'rotate(0deg)';
-                }
+                manualContent.classList.toggle('hidden');
             });
         }
 

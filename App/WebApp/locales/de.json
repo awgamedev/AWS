@@ -383,5 +383,6 @@
 	"NO_TASKS_YET": "Noch keine Aufgaben",
 	"OVERVIEW": "Übersicht",
 	"ACTIVITY": "Aktivitäten",
-	"END_DATE": "Enddatum"
+	"END_DATE": "Enddatum",
+	"SHOW_MANUAL": "SHOW_MANUAL"
 }
