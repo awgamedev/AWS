@@ -140,11 +140,12 @@ const updateTaskBoard = (html, weekRange) => {
     contentContainer.innerHTML = `<div class="task-board-content">${html}</div>`;
   }
 
-  // Reattach event listeners to new task items
+  // Reattach event listeners to new task items and cells
   reattachTaskListeners();
-
   // Reinitialize hover highlighting for multi-day tasks
   initTaskHoverHighlight();
+  // Re-initialize drag and drop for cell selection
+  initDragAndDrop();
 };
 
 // ============================================================================
@@ -179,6 +180,8 @@ const loadListView = async (offset = currentWeekOffset) => {
 
       // Reattach event listeners
       reattachTaskListeners();
+      // Re-initialize drag and drop for cell selection
+      initDragAndDrop();
     } else {
       console.error("Failed to load list view:", response);
       const errorMsg =
